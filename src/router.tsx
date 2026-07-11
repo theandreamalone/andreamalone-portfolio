@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import dynamic from "@/util/dynamic";
 
+const CaseStudyDetail = dynamic(() => import("@/pages/CaseStudyDetail"));
 const NotFound = dynamic(() => import("@/pages/NotFound"));
 const Home = dynamic(() => import("@/pages/Home"));
 const Archive1 = dynamic(() => import("@/pages/Archive1"));
@@ -24,6 +25,7 @@ const Single3 = dynamic(() => import("@/pages/Single3"));
 
 export const router = createBrowserRouter([
     { path: "/", element: <Home /> },
+    { path: "/case-studies/:slug", element: <CaseStudyDetail /> },
     { path: "/archive-1", element: <Archive1 /> },
     { path: "/archive-2", element: <Archive2 /> },
     { path: "/archive-3", element: <Archive3 /> },
