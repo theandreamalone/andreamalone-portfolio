@@ -74,7 +74,6 @@ export async function fetchCaseStudyBySlug(slug: string): Promise<CaseStudyDetai
     skills,
     has_demo_video: data.has_demo_video,
     client_name: data.client_name,
-    client_name: data.client_name,
     client_disclosure: data.client_disclosure,
     client_name_public: data.client_name_public,
     industry: data.industry,
