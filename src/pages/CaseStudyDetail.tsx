@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchCaseStudyBySlug, type CaseStudyDetailRow } from '@/lib/queries/caseStudyBySlug';
 import { formatYearDuration } from '@/lib/templateGlossary';
+import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
 
 type FetchState =
   | { status: 'loading' }
