@@ -19,6 +19,8 @@ import type { CaseStudyRow } from '@/lib/templateGlossary';
 export type CaseStudyDetailRow = CaseStudyRow & {
   client_name: string | null;
   industry: string | null;
+  client_disclosure: string | null;
+  client_name_public: string | null;
   role_title: string | null;
   cover_alt_text: string | null;
 };
