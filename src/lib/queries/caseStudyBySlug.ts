@@ -19,6 +19,8 @@ import type { CaseStudyRow } from '@/lib/templateGlossary';
 export type CaseStudyDetailRow = CaseStudyRow & {
   client_name: string | null;
   industry: string | null;
+  client_disclosure: string | null;
+  client_name_public: string | null;
   role_title: string | null;
   cover_alt_text: string | null;
 };
@@ -35,6 +37,8 @@ export async function fetchCaseStudyBySlug(slug: string): Promise<CaseStudyDetai
       title,
       short_description,
       client_name,
+      client_disclosure,
+      client_name_public,
       industry,
       role_title,
       project_year,
@@ -70,6 +74,8 @@ export async function fetchCaseStudyBySlug(slug: string): Promise<CaseStudyDetai
     skills,
     has_demo_video: data.has_demo_video,
     client_name: data.client_name,
+    client_disclosure: data.client_disclosure,
+    client_name_public: data.client_name_public,
     industry: data.industry,
     role_title: data.role_title,
     cover_alt_text: cover?.alt_text ?? null,

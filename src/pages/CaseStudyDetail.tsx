@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchCaseStudyBySlug, type CaseStudyDetailRow } from '@/lib/queries/caseStudyBySlug';
 import { formatYearDuration } from '@/lib/templateGlossary';
+import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
 
 type FetchState =
   | { status: 'loading' }
@@ -120,10 +121,13 @@ export default function CaseStudyDetail() {
           <div className="p-4 rounded-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
             <h5 className="mb-3">Project Brief</h5>
             <dl className="fs-7">
-              {cs.client_name && (
+              // NEW
+              {(cs.client_disclosure === 'named' ? cs.client_name : cs.client_name_public) && (
                 <>
                   <dt className="text-600">Client</dt>
-                  <dd className="mb-2">{cs.client_name}</dd>
+                  <dd className="mb-2">
+                    {cs.client_disclosure === 'named' ? cs.client_name : cs.client_name_public}
+                  </dd>
                 </>
               )}
               {cs.industry && (
@@ -145,7 +149,9 @@ export default function CaseStudyDetail() {
                 </>
               )}
             </dl>
-
+            {cs.client_disclosure === 'anonymized' && (
+              <ClientDisclosureNote />
+            )}
             {/* Skills chips */}
             {cs.skills.length > 0 && (
               <>
