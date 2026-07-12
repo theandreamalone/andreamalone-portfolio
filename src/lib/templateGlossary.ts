@@ -47,6 +47,16 @@ export type CaseStudyRow = {
   has_demo_video: boolean;         // drives ArticleCard7 play-icon visibility
 };
 
+// Decision #21 — Client name disclosure control.
+// Some case studies (NDA / anonymized client) can't show the real client
+// name publicly. `client_disclosure` ("anonymized" | "named") picks between
+// `client_name` (real) and `client_name_public` (a safe descriptor, e.g.
+// "a Fortune 100 telecommunications company"). Detail-page-only — cards
+// never show client name, so these live on `CaseStudyDetailRow` in
+// caseStudyBySlug.ts, not on this leaner card-level CaseStudyRow. When
+// disclosure is "anonymized", CaseStudyDetail.tsx also renders
+// <ClientDisclosureNote /> alongside the public descriptor.
+
 // ---- Case study card variants ---------------------------------------------
 
 /**

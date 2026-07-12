@@ -25,6 +25,7 @@ const Single3 = dynamic(() => import("@/pages/Single3"));
 
 export const router = createBrowserRouter([
     { path: "/", element: <Home /> },
+    { path: "/case-studies", element: <PortfolioArchive1 /> },
     { path: "/case-studies/:slug", element: <CaseStudyDetail /> },
     { path: "/archive-1", element: <Archive1 /> },
     { path: "/archive-2", element: <Archive2 /> },
@@ -39,7 +40,6 @@ export const router = createBrowserRouter([
     { path: "/page-contact", element: <PageContact /> },
     { path: "/page-login", element: <PageLogin /> },
     { path: "/page-search-results", element: <PageSearchResults /> },
-    { path: "/portfolio-archive-1", element: <PortfolioArchive1 /> },
     { path: "/portfolio-details", element: <PortfolioDetails /> },
     { path: "/single-1", element: <Single1 /> },
     { path: "/single-2", element: <Single2 /> },

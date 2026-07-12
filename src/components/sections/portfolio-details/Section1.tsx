@@ -24,7 +24,7 @@ export default function Section1() {
                                         </span>
                                     </li>
                                     <li className="breadcrumb-item active text-dark fs-7" aria-current="page">
-                                        <Link href="/portfolio-archive-1">Portfolio</Link>
+                                        <Link href="/case-studies">Portfolio</Link>
                                     </li>
                                     <li className="breadcrumb-item">
                                         <span className="icon-shape icon-xxs">

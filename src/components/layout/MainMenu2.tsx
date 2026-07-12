@@ -100,7 +100,7 @@ export default function MainMenu2() {
                         </Link>
                         <ul className="sub-menu">
                             <li>
-                                <Link className="dropdown-item" href="/portfolio-archive-1">
+                                <Link className="dropdown-item" href="/case-studies">
                                     Portfolio Archive
                                 </Link>
                             </li>

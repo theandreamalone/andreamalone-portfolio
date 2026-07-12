@@ -116,7 +116,7 @@ export default function SideBarInteractive() {
                 </a>
                 <ul className="collapse-menu d-flex flex-column gap-1 list-unstyled">
                     <li>
-                        <Link className="collapse-item" href="/portfolio-archive-1" onClick={handleLinkClick}>
+                        <Link className="collapse-item" href="/case-studies" onClick={handleLinkClick}>
                             Portfolio Archive
                         </Link>
                     </li>
