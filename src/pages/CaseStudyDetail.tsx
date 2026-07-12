@@ -148,7 +148,9 @@ export default function CaseStudyDetail() {
                 </>
               )}
             </dl>
-
+            {cs.client_disclosure === 'anonymized' && (
+              <ClientDisclosureNote />
+            )}
             {/* Skills chips */}
             {cs.skills.length > 0 && (
               <>
