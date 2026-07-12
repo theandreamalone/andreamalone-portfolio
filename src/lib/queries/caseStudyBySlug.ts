@@ -35,6 +35,8 @@ export async function fetchCaseStudyBySlug(slug: string): Promise<CaseStudyDetai
       title,
       short_description,
       client_name,
+      client_disclosure,
+      client_name_public,
       industry,
       role_title,
       project_year,
