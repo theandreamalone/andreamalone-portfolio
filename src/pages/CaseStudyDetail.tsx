@@ -2,23 +2,24 @@
 // CaseStudyDetail.tsx
 // Page route: /case-studies/:slug
 //
-// Task 3 scope: prove routing + Supabase fetch work end to end with real data.
-// Renders header + sidebar from live Supabase row.
+// Renders header + sidebar from a live Supabase row, routed through
+// templateGlossary's mapCaseStudyToDetail — this component only renders
+// the resulting CaseStudyDetailData, it doesn't decide anything itself
+// (see templateGlossary.ts file header).
 // Body is stubbed — block rendering with layout variants comes in Phase 3.
-// Cover image + skills chips + CTA polish also Phase 3.
 // ============================================================================
 
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchCaseStudyBySlug, type CaseStudyDetailRow } from '@/lib/queries/caseStudyBySlug';
-import { formatYearDuration } from '@/lib/templateGlossary';
+import { fetchCaseStudyBySlug } from '@/lib/queries/caseStudyBySlug';
+import { mapCaseStudyToDetail, type CaseStudyDetailData } from '@/lib/templateGlossary';
 import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
 
 type FetchState =
   | { status: 'loading' }
   | { status: 'not-found' }
   | { status: 'error'; message: string }
-  | { status: 'loaded'; data: CaseStudyDetailRow };
+  | { status: 'loaded'; data: CaseStudyDetailData };
 
 export default function CaseStudyDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -31,10 +32,10 @@ export default function CaseStudyDetail() {
     }
     let cancelled = false;
     fetchCaseStudyBySlug(slug)
-      .then((data) => {
+      .then((row) => {
         if (cancelled) return;
-        if (!data) setState({ status: 'not-found' });
-        else setState({ status: 'loaded', data });
+        if (!row) setState({ status: 'not-found' });
+        else setState({ status: 'loaded', data: mapCaseStudyToDetail(row) });
       })
       .catch((err) => {
         if (cancelled) return;
@@ -73,7 +74,6 @@ export default function CaseStudyDetail() {
   }
 
   const cs = state.data;
-  const yearDuration = formatYearDuration(cs.project_year, cs.timeline);
 
   return (
     <section className="container py-5">
@@ -96,7 +96,7 @@ export default function CaseStudyDetail() {
           <div className="col-12">
             <img
               src={cs.thumbnail_url}
-              alt={cs.cover_alt_text ?? cs.title}
+              alt={cs.cover_alt_text}
               className="w-100 rounded-4"
             />
           </div>
@@ -121,12 +121,10 @@ export default function CaseStudyDetail() {
           <div className="p-4 rounded-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
             <h5 className="mb-3">Project Brief</h5>
             <dl className="fs-7">
-              {(cs.client_disclosure === 'named' ? cs.client_name : cs.client_name_public) && (
+              {cs.client && (
                 <>
                   <dt className="text-600">Client</dt>
-                  <dd className="mb-2">
-                    {cs.client_disclosure === 'named' ? cs.client_name : cs.client_name_public}
-                  </dd>
+                  <dd className="mb-2">{cs.client}</dd>
                 </>
               )}
               {cs.industry && (
@@ -141,14 +139,14 @@ export default function CaseStudyDetail() {
                   <dd className="mb-2">{cs.role_title}</dd>
                 </>
               )}
-              {yearDuration && (
+              {cs.when && (
                 <>
                   <dt className="text-600">When</dt>
-                  <dd className="mb-2">{yearDuration}</dd>
+                  <dd className="mb-2">{cs.when}</dd>
                 </>
               )}
             </dl>
-            {cs.client_disclosure === 'anonymized' && (
+            {cs.showClientDisclosureNote && (
               <ClientDisclosureNote />
             )}
             {/* Skills chips */}
@@ -159,7 +157,7 @@ export default function CaseStudyDetail() {
                   {cs.skills.map((s) => (
                     <Link
                       key={s.slug}
-                      to={`/skills/${s.slug}`}
+                      to={s.linkHref}
                       className="badge bg-1 fs-8 text-decoration-none"
                     >
                       {s.name}

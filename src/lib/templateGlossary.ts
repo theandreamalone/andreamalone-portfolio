@@ -52,10 +52,58 @@ export type CaseStudyRow = {
 // name publicly. `client_disclosure` ("anonymized" | "named") picks between
 // `client_name` (real) and `client_name_public` (a safe descriptor, e.g.
 // "a Fortune 100 telecommunications company"). Detail-page-only — cards
-// never show client name, so these live on `CaseStudyDetailRow` in
-// caseStudyBySlug.ts, not on this leaner card-level CaseStudyRow. When
-// disclosure is "anonymized", CaseStudyDetail.tsx also renders
-// <ClientDisclosureNote /> alongside the public descriptor.
+// never show client name, so these fields live on `CaseStudyDetailRow`
+// below, not on this leaner card-level CaseStudyRow. mapCaseStudyToDetail
+// resolves the disclosure branch, and CaseStudyDetail.tsx renders
+// <ClientDisclosureNote /> when showClientDisclosureNote is true.
+
+/**
+ * Extended row shape used ONLY on the detail page. Card-level components
+ * use the leaner CaseStudyRow above. Fetched by fetchCaseStudyBySlug
+ * (caseStudyBySlug.ts), which imports this type rather than defining its
+ * own — this file is the single place row shapes live (see file header).
+ */
+export type CaseStudyDetailRow = CaseStudyRow & {
+  client_name: string | null;
+  client_disclosure: string | null;
+  client_name_public: string | null;
+  industry: string | null;
+  role_title: string | null;
+  cover_alt_text: string | null;
+};
+
+/**
+ * Decision #14 (detail-page variant) — CaseStudyDetail.tsx.
+ * Resolves the client-disclosure branch and skill link hrefs once here,
+ * so the page component only renders — it doesn't decide anything.
+ */
+export type CaseStudyDetailData = {
+  title: string;
+  short_description: string;
+  thumbnail_url: string;
+  cover_alt_text: string;
+  client: string | null;              // resolved named/anonymized value
+  showClientDisclosureNote: boolean;  // true when disclosure is "anonymized"
+  industry: string | null;
+  role_title: string | null;
+  when: string;                       // formatYearDuration output
+  skills: Array<{ slug: string; name: string; linkHref: string }>;
+};
+
+export function mapCaseStudyToDetail(cs: CaseStudyDetailRow): CaseStudyDetailData {
+  return {
+    title: cs.title,
+    short_description: cs.short_description,
+    thumbnail_url: cs.thumbnail_url,
+    cover_alt_text: cs.cover_alt_text ?? cs.title,
+    client: cs.client_disclosure === "named" ? cs.client_name : cs.client_name_public,
+    showClientDisclosureNote: cs.client_disclosure === "anonymized",
+    industry: cs.industry,
+    role_title: cs.role_title,
+    when: formatYearDuration(cs.project_year, cs.timeline),
+    skills: cs.skills.map((s) => ({ ...s, linkHref: `/skills/${s.slug}` })),
+  };
+}
 
 // ---- Case study card variants ---------------------------------------------
 

@@ -10,20 +10,7 @@
 // ============================================================================
 
 import { supabase } from '@/lib/supabaseClient';
-import type { CaseStudyRow } from '@/lib/templateGlossary';
-
-/**
- * Extended row shape used ONLY on the detail page.
- * Card-level components use the leaner CaseStudyRow from the glossary.
- */
-export type CaseStudyDetailRow = CaseStudyRow & {
-  client_name: string | null;
-  industry: string | null;
-  client_disclosure: string | null;
-  client_name_public: string | null;
-  role_title: string | null;
-  cover_alt_text: string | null;
-};
+import type { CaseStudyDetailRow } from '@/lib/templateGlossary';
 
 /**
  * Fetch one case study by slug.
