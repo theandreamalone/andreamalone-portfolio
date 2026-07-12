@@ -392,5 +392,43 @@ export type BlogPostRow = {
 // AuthorCard's original "author" semantics → repurposed for testimonials only.
 //
 // ArticleCard1     → not used anywhere (Home Section1 hero swap sends users
-//                    to CaseStudyCardArchive1Data via portfolio-archive-1 style).
+//                    to CaseStudyCardArchive1Data via the /case-studies archive).
 // /page-author     → route remains but unlinked.
+
+// ============================================================================
+// 11. Career highlights (Work Experience / Education tabs)
+// Decision #22 — home-4/Section4Client's Tabs ("Work Experience" /
+// "Education"), reused on the About page. Requires a new career_highlights
+// table — not in the current schema; hand off the CREATE TABLE separately
+// (no DDL access from here, same as the skills.slug fix).
+//
+// This mapper produces one card's data, matching the "block-experience"
+// markup rendered inside each tab — it does NOT build the Tabs component's
+// `tabs` prop (id/title/content) itself. Grouping rows by category into
+// the two tabs, and wrapping each group's cards in the tab content JSX,
+// stays call-site logic in Section4Client.tsx, consistent with how this
+// file only ever hands components plain data, never JSX (see file header).
+// ============================================================================
+
+export type CareerHighlightRow = {
+  start_year: number;
+  end_year: number | null;      // null = "Present"
+  role_title: string;
+  organization: string;
+  category: "work" | "education";
+  sort_order: number;
+};
+
+export type CareerHighlightCardData = {
+  date: string;                 // "2012 - 2014" or "2019 - Present"
+  title: string;                // role_title
+  subtitle: string;             // organization
+};
+
+export function mapCareerHighlightToCard(row: CareerHighlightRow): CareerHighlightCardData {
+  return {
+    date: `${row.start_year} - ${row.end_year ?? "Present"}`,
+    title: row.role_title,
+    subtitle: row.organization,
+  };
+}
