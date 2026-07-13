@@ -32,11 +32,11 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ## Section 1 — Dynamic AI-Orchestrated UI (core proof-of-concept, highest priority)
 
 ### 1A. Remaining decisions
-- [ ] 1. Audit whether existing `AdaptiveBlock` (in `react-portfolio-3`) survives as-is or is superseded by the view-component architecture — do not port code the new design obsoletes
+- [x ] 1. Audit whether existing `AdaptiveBlock` (in `react-portfolio-3`) survives as-is or is superseded by the view-component architecture — do not port code the new design obsoletes
 
 ### 1B. Build (each step shippable, in order)
-- [ ] 2. Lock view schema as a strict JSON contract (4 v1 views: name + required data shape)
-- [ ] 3. Define MDX block structure: chunk prose into blocks with stable IDs + a registry mapping IDs → blocks (Option A requirement)
+- [x] 2. Lock view schema as a strict JSON contract (4 v1 views: name + required data shape)
+- [x] 3. Define MDX block structure: chunk prose into blocks with stable IDs + a registry mapping IDs → blocks (Option A requirement)
 - [ ] 4. DB readiness audit against 5-point checklist — partly done: structured outcomes columns exist; view/competency tagging does not
 - [ ] 5. Tag records to views and competencies — **the intelligence substrate; matters more than the view components**
 - [ ] 6. Build 4 view components with hardcoded payloads; validate the feel before AI wiring
@@ -59,9 +59,9 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 
 ## Section 2 — Site functionality (blocking)
 
-- [ ] 15. Wire up routing in `App.tsx`; connect `CaseStudyDetail.tsx` as reachable route
-- [ ] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — **check first:** may be absorbed by Section 1B view-component work; don't build twice
-- [ ] 17. Create `/case-studies` grid route
+- [x] 15. Wire up routing in `App.tsx`; connect `CaseStudyDetail.tsx` as reachable route (routing actually lives in `router.tsx`, not `App.tsx`)
+- [x] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — **check first:** may be absorbed by Section 1B view-component work; don't build twice
+- [x] 17. Create `/case-studies` grid route
 - [ ] 18. Port n8n pipeline from `react-portfolio-3`; repoint source URL to `andreamalone-portfolio` once content folder exists
 
 ## Section 3 — Content gaps (case studies won't hold up to review)
@@ -81,7 +81,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ## Section 5 — Known bugs (fix before promotion)
 
 - [ ] 27. n8n YAML inline-comment frontmatter bug — proper regex fix (workaround: trailing comments stripped manually)
-- [ ] 28. Duplicate Supabase client files — resolve to single import: `from '../lib/supabaseClient'`
+- [x] 28. Duplicate Supabase client files — resolve to single import: `from '../lib/supabaseClient'`
 - [ ] 29. Leading-space filename bug in `templateGlossary.ts`
 
 ---
