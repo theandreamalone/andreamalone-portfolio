@@ -62,7 +62,8 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 - [x] 15. Wire up routing in `App.tsx`; connect `CaseStudyDetail.tsx` as reachable route (routing actually lives in `router.tsx`, not `App.tsx`)
 - [x] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — **check first:** may be absorbed by Section 1B view-component work; don't build twice
 - [x] 17. Create `/case-studies` grid route
-- [ ] 18. Port n8n pipeline from `react-portfolio-3`; repoint source URL to `andreamalone-portfolio` once content folder exists
+- [x] 18. Port n8n pipeline from `react-portfolio-3`; repoint source URL to `andreamalone-portfolio` once content folder exists
+- [ ] 18c. Case study program-level MDX files (executive-dashboard.mdx, fault-iq.mdx, nethive-iq.mdx, voice-ready-ai-experience.mdx) — verify frontmatter matches the case_studies parser branch and that sync_case_study RPC accepts current payload.
 
 ## Section 3 — Content gaps (case studies won't hold up to review)
 
