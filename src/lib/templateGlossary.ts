@@ -12,6 +12,8 @@
 // 1. Shared helpers
 // ============================================================================
 
+export const MEDIA_FALLBACK = "/assets/imgs/page/img-4.png";
+
 /**
  * Card-slot format: "2025 · 6 weeks"
  * Decision #5 — case study cards repurpose blog's date/readTime slots.
@@ -94,7 +96,7 @@ export function mapCaseStudyToDetail(cs: CaseStudyDetailRow): CaseStudyDetailDat
   return {
     title: cs.title,
     short_description: cs.short_description,
-    thumbnail_url: cs.thumbnail_url,
+    thumbnail_url: cs.thumbnail_url || MEDIA_FALLBACK,
     cover_alt_text: cs.cover_alt_text ?? cs.title,
     client: cs.client_disclosure === "named" ? cs.client_name : cs.client_name_public,
     showClientDisclosureNote: cs.client_disclosure === "anonymized",
@@ -131,7 +133,7 @@ export function mapCaseStudyToArchive1Card(cs: CaseStudyRow): CaseStudyCardArchi
   const [s1, s2] = [cs.skills[0], cs.skills[1]];
   return {
     linkPost: `/case-studies/${cs.slug}`,
-    img: cs.thumbnail_url,
+    img: cs.thumbnail_url || MEDIA_FALLBACK,
     title: cs.title,
     readTime: formatYearDuration(cs.project_year, cs.timeline),
     classBadge1: "bg-1",
@@ -170,7 +172,7 @@ export type CaseStudyCardBentoLargeData = {
 export function mapCaseStudyToBentoLarge(cs: CaseStudyRow): CaseStudyCardBentoLargeData {
   const s1 = cs.skills[0];
   return {
-    img: cs.thumbnail_url,
+    img: cs.thumbnail_url || MEDIA_FALLBACK,
     linkBadge: s1 ? `/skills/${s1.slug}` : "#",
     linkPost: `/case-studies/${cs.slug}`,
     badge: s1?.name ?? "",
@@ -208,7 +210,7 @@ export type CaseStudyCardBentoSmallData = {
 export function mapCaseStudyToBentoSmall(cs: CaseStudyRow): CaseStudyCardBentoSmallData {
   const s1 = cs.skills[0];
   return {
-    img: cs.thumbnail_url,
+    img: cs.thumbnail_url || MEDIA_FALLBACK,
     linkBadge: s1 ? `/skills/${s1.slug}` : "#",
     linkPost: `/case-studies/${cs.slug}`,
     badge: s1?.name ?? "",
@@ -218,6 +220,40 @@ export function mapCaseStudyToBentoSmall(cs: CaseStudyRow): CaseStudyCardBentoSm
     linkComment: "",
     comment: "",
     readNum: "",
+  };
+}
+
+/**
+ * Decision #23 — Home Section9 full-bleed feature, repurposed as
+ * CaseStudyFeature. Section9 had no glossary mapping; this adds it.
+ * Slots repurposed: author → resolved client name, date → "year · duration".
+ * Needs CaseStudyDetailRow (not the lean CaseStudyRow) because the client
+ * disclosure branch lives on the detail shape.
+ */
+export type CaseStudyFeatureData = {
+  bg: string;               // thumbnail_url — rendered as full-bleed background
+  badge: string;            // primary skill name
+  linkBadge: string;        // "/skills/{primary_skill_slug}"
+  title: string;
+  link: string;             // "/case-studies/{slug}"
+  description: string;      // short_description
+  client: string | null;    // resolved named/anonymized value — was "author" slot
+  showClientDisclosureNote: boolean;
+  when: string;             // "2025 · 6 weeks" — was "date" slot
+};
+
+export function mapCaseStudyToFeature(cs: CaseStudyDetailRow): CaseStudyFeatureData {
+  const s1 = cs.skills[0];
+  return {
+    bg: cs.thumbnail_url || MEDIA_FALLBACK,
+    badge: s1?.name ?? "",
+    linkBadge: s1 ? `/skills/${s1.slug}` : "#",
+    title: cs.title,
+    link: `/case-studies/${cs.slug}`,
+    description: cs.short_description,
+    client: cs.client_disclosure === "named" ? cs.client_name : cs.client_name_public,
+    showClientDisclosureNote: cs.client_disclosure === "anonymized",
+    when: formatYearDuration(cs.project_year, cs.timeline),
   };
 }
 
@@ -255,29 +291,59 @@ export function mapSkillToPill(skill: SkillRow): SkillPillData {
 // ============================================================================
 // 4. Testimonials
 // Decision #10 — Home Section5 AuthorCard repurposed as TestimonialCard.
-// Requires markup addition to AuthorCard: quote text block below name/role.
+//
+// Three bugs in the old version, all confirmed against the live schema
+// (2026-07-14):
+//   1. TestimonialCardData used {name, role, imgAvatar, quote} but AuthorCard's
+//      real props are {img, linkPost, name, position, bgstickyCorner}. The
+//      mapper produced props no component accepts.
+//   2. TestimonialRow declared `quote: string` sourced from Supabase. The
+//      testimonials table has NO quote column — confirmed. Quote prose lives
+//      in MDX and resolves through blockRegistry (Option A). Reading quote
+//      text from the DB would have violated the prose boundary.
+//   3. TestimonialRow declared `photo_url`. The real column is
+//      `photo_media_id` (uuid FK → media_assets), same pattern as
+//      case_studies.cover_media_id. The query resolves the join; this type
+//      takes the resolved URL.
+//
+// Real schema: id, quote_slug, person_name, title, company, rating,
+//              photo_media_id, featured, client, created_at, updated_at
 // ============================================================================
 
 export type TestimonialRow = {
+  quote_slug: string;          // key into the MDX registry — NOT prose
   person_name: string;
-  role_and_company: string;    // e.g. "Design Director, T-Mobile"
-  photo_url: string;
-  quote: string;               // NEW element added to AuthorCard markup
+  title: string | null;        // e.g. "Design Director"
+  company: string | null;      // e.g. "T-Mobile"
+  client: string | null;       // which engagement this relates to
+  photo_url: string | null;    // resolved from photo_media_id join at query time
+  featured: boolean;
 };
 
 export type TestimonialCardData = {
-  name: string;                // AuthorCard's existing field
-  role: string;                // AuthorCard's existing "Travel Editor" slot
-  imgAvatar: string;           // AuthorCard's existing photo field
-  quote: string;               // rendered by markup addition
+  img: string;
+  linkPost: string;            // testimonials don't link out — "#"
+  name: string;
+  position: string;            // "title, company" composed here
+  bgstickyCorner: string;      // cosmetic template class
+  quoteSlug: string;           // AuthorCard resolves this via blockRegistry
 };
+
+const TESTIMONIAL_FALLBACK_AVATAR = "/assets/imgs/template/author/author-5.png";
+
+function composeRoleAndCompany(title: string | null, company: string | null): string {
+  if (title && company) return `${title}, ${company}`;
+  return title ?? company ?? "";
+}
 
 export function mapTestimonialToCard(t: TestimonialRow): TestimonialCardData {
   return {
+    img: t.photo_url ?? TESTIMONIAL_FALLBACK_AVATAR,
+    linkPost: "#",
     name: t.person_name,
-    role: t.role_and_company,
-    imgAvatar: t.photo_url,
-    quote: t.quote,
+    position: composeRoleAndCompany(t.title, t.company),
+    bgstickyCorner: "bg-1",
+    quoteSlug: t.quote_slug,
   };
 }
 

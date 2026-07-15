@@ -5,10 +5,6 @@
  * render <SectionRouter spec={s} /> for each. Adding a new section kind = add
  * a case here.
  *
- * Sections that consume router payloads receive `record_ids`. Sections not yet
- * refactored render their existing content and ignore the payload — they are
- * marked below and get converted in Stage A/B.
- *
  * Missing components render nothing (dev-mode console note). The section is
  * dropped rather than crashing the page — contract invariant 5.
  */
@@ -29,23 +25,21 @@ interface SectionRouterProps {
 function renderSection(spec: SectionSpec) {
   switch (spec.kind) {
     case 'Hero':
-      // NOT YET REFACTORED — renders its own adaptive block.
+      // NOT YET REFACTORED — renders its own adaptive block via AdaptiveBlock.
       return <SectionIntro />;
 
     case 'SkillTicker':
-      // NOT YET REFACTORED — renders hardcoded template tags.
+      // NOT YET REFACTORED — renders hardcoded template tags. Stage B.
       return <Section2 />;
 
     case 'CaseStudyFeature':
       return <Section9 displayBtn="d-none" record_ids={spec.record_ids} />;
 
     case 'CaseStudyBento':
-      // NOT YET REFACTORED — Stage A pending.
-      return <Section3 />;
+      return <Section3 record_ids={spec.record_ids} />;
 
     case 'Testimonials':
-      // NOT YET REFACTORED — Stage A pending.
-      return <Section5 />;
+      return <Section5 record_ids={spec.record_ids} />;
 
     case 'CareerHighlights':
       // Self-fetching; no record_ids needed today.

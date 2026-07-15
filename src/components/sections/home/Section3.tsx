@@ -1,84 +1,104 @@
+import { useEffect, useMemo, useState } from "react";
 import ArticleCard2 from "@/components/cards/ArticleCard2";
-
-
 import ArticleCard3 from "@/components/cards/ArticleCard3";
-import ArticleCard4 from "@/components/cards/ArticleCard4";
 import TitleWhite from "@/components/elements/TitleWhite";
-import cardHome1 from "@/data/cardHome-1.json";
-import SwiperDynamic from "@/components/shared/SwiperDynamic2";
-const card2data = [
-  {
-    linkBadge: "#",
-    linkPost: "single-3",
-    linkAuthor: "#",
-    img: "/assets/imgs/page/img-4.png",
-    badge: "Fashion",
-    bgBadge: "bg-1",
-    date: "Jun 13, 2025",
-    readTime: "6 mins read",
-    title: "Canvas & Couture: Art-Inspired Runways 2025",
-    author: "Evara Rose",
-    imgAuthor: "/assets/imgs/template/author/author-2.png",
-  },
-];
-export default function Section3() {
+import { fetchCaseStudiesBySlugs } from "@/lib/queries/caseStudies";
+import {
+  mapCaseStudyToBentoLarge,
+  mapCaseStudyToBentoSmall,
+  type CaseStudyRow,
+} from "@/lib/templateGlossary";
+import type { RecordId } from "@/lib/viewContract";
+
+/**
+ * Section3 — the CaseStudyBento section (1 large card + N stacked small cards).
+ *
+ * Consumes `record_ids` from the router/static baseline. Position 0 becomes the
+ * large card (ArticleCard2); the rest stack as small cards (ArticleCard3), in
+ * the order given — contract invariant 2.
+ *
+ * Changes from the original Magzin Section3:
+ *  - Dropped the hardcoded card2data array and cardHome-1.json import.
+ *  - Dropped the ArticleCard4 swiper row: templateGlossary decision #2 maps
+ *    only the large + stacked-small bento, and ArticleCard4 has no mapping.
+ *  - Section title is a prop, not hardcoded blog copy.
+ *
+ * Renders nothing when no records resolve — an empty bento is worse than none.
+ */
+
+interface Section3Props {
+  record_ids?: RecordId[];
+  title?: string;
+  description?: string;
+}
+
+export default function Section3({
+  record_ids = [],
+  title = "Selected work",
+  description = "",
+}: Section3Props) {
+  const [rows, setRows] = useState<CaseStudyRow[]>([]);
+
+  const slugs = useMemo(
+    () =>
+      record_ids
+        .filter((id) => {
+          if (id.startsWith("cs:")) return true;
+          console.warn(`[Section3] non-case-study id dropped: ${id}`);
+          return false;
+        })
+        .map((id) => id.slice("cs:".length)),
+    [record_ids.join("|")]
+  );
+
+  useEffect(() => {
+    if (slugs.length === 0) {
+      setRows([]);
+      return;
+    }
+    let cancelled = false;
+
+    fetchCaseStudiesBySlugs(slugs)
+      .then((r) => {
+        if (!cancelled) setRows(r);
+      })
+      .catch((err) => {
+        console.warn("[Section3] fetch failed", err);
+        if (!cancelled) setRows([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slugs.join("|")]);
+
+  if (rows.length === 0) return null;
+
+  const [feature, ...rest] = rows;
+  const large = mapCaseStudyToBentoLarge(feature);
+  const smalls = rest.map(mapCaseStudyToBentoSmall);
+
   return (
     <>
-      {/*Home 1 Section 3*/}
+      {/* Home 1 Section 3 — CaseStudyBento */}
       <section className="sec-3-home-1 sec-padding overflow-hidden">
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <TitleWhite title="Latest News" description="Real-Time Updates That Matter" />
+              <TitleWhite title={title} description={description} />
             </div>
           </div>
           <div className="row mt-3 g-4 align-items-stretch">
-            {card2data.map((card, idx) => (
-              <div className="col-lg-7 col-12" key={idx}>
-                <ArticleCard2 key={idx} card={card} idx={idx} />
-              </div>
-            ))}
-            <div className="col-lg-5 col-12 d-flex flex-column gap-2 justify-content-between">
-              {cardHome1.sec3Card3.map((card, idx) => (
-                <ArticleCard3 key={idx} card={card} idx={idx} />
-              ))}
+            <div className="col-lg-7 col-12">
+              <ArticleCard2 card={large} idx={0} />
             </div>
-            <div className="col-12">
-              <SwiperDynamic
-                className="swiper slider-2 rounded-16 overflow-hidden"
-                slidesPerView={3}
-                spaceBetween={27}
-                slidesPerGroup={1}
-                centeredSlides={false}
-                loop={true}
-                autoplay={{
-                  delay: 5000,
-                }}
-                breakpoints={{
-                  1200: {
-                    slidesPerView: 2,
-                  },
-                  992: {
-                    slidesPerView: 2,
-                  },
-                  768: {
-                    slidesPerView: 1,
-                  },
-                  576: {
-                    slidesPerView: 1,
-                  },
-                  0: {
-                    slidesPerView: 1,
-                  },
-                }}
-              >
-                {cardHome1.sec3Card4.map((card, idx) => (
-                  <div key={idx} className="rounded-16 overflow-hidden">
-                    <ArticleCard4 card={card} />
-                  </div>
+            {smalls.length > 0 && (
+              <div className="col-lg-5 col-12 d-flex flex-column gap-2 justify-content-between">
+                {smalls.map((card, idx) => (
+                  <ArticleCard3 key={idx} card={card} idx={idx} />
                 ))}
-              </SwiperDynamic>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

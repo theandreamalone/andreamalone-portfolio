@@ -1,96 +1,138 @@
+import { useEffect, useMemo, useState } from "react";
 import SectionTitle from "@/components/elements/TitleWhite";
-
-
 import AuthorCard from "@/components/cards/AuthorCard";
-import card from "@/data/cardHome-1.json";
 import SwiperDynamic from "@/components/shared/SwiperDynamic";
-import Link from "@/components/common/Link";
+import { fetchTestimonials, fetchTestimonialsBySlugs } from "@/lib/queries/testimonials";
+import { mapTestimonialToCard, type TestimonialCardData } from "@/lib/templateGlossary";
+import type { RecordId } from "@/lib/viewContract";
 
-export default function Section5() {
+/**
+ * Section5 — the Testimonials section.
+ *
+ * Consumes `record_ids` (`tm:` prefix). When empty, falls back to fetching all
+ * testimonials, featured first — that's the static-baseline behaviour.
+ *
+ * Quote prose is NOT fetched here. Each card carries a `quoteSlug`; AuthorCard
+ * resolves the prose from bundled MDX via blockRegistry (Option A — prose never
+ * enters the database).
+ *
+ * Changes from the original Magzin Section5:
+ *  - Dropped cardHome-1.json import.
+ *  - Dropped the "Become an author" CTA (templateGlossary: single-author site).
+ *  - Dropped the "Leading experts…" blog blurb.
+ *  - Section title is a prop, not hardcoded blog copy.
+ *  - slidesPerView and loop adapt to card count — a 4-up loop with one card
+ *    renders broken and triggers Swiper's loop warning.
+ *
+ * Renders nothing when no testimonials resolve.
+ */
+
+interface Section5Props {
+  record_ids?: RecordId[];
+  title?: string;
+  description?: string;
+}
+
+export default function Section5({
+  record_ids = [],
+  title = "What collaborators say",
+  description = "",
+}: Section5Props) {
+  const [cards, setCards] = useState<TestimonialCardData[]>([]);
+
+  const slugs = useMemo(
+    () =>
+      record_ids
+        .filter((id) => {
+          if (id.startsWith("tm:")) return true;
+          console.warn(`[Section5] non-testimonial id dropped: ${id}`);
+          return false;
+        })
+        .map((id) => id.slice("tm:".length)),
+    [record_ids.join("|")]
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = slugs.length > 0 ? fetchTestimonialsBySlugs(slugs) : fetchTestimonials();
+
+    load
+      .then((rows) => {
+        if (!cancelled) setCards(rows.map(mapTestimonialToCard));
+      })
+      .catch((err) => {
+        console.warn("[Section5] fetch failed", err);
+        if (!cancelled) setCards([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slugs.join("|")]);
+
+  if (cards.length === 0) return null;
+
+  const perView = Math.min(4, cards.length);
+  const canLoop = cards.length > perView;
+
   return (
     <>
-      {/*Home 1 Section 5*/}
-      <section className="sec-5-home-1 sec-padding overflow-hidden" data-background="/assets/imgs/page/bg-home1-sec5.png">
+      {/* Home 1 Section 5 — Testimonials */}
+      <section
+        className="sec-5-home-1 sec-padding overflow-hidden"
+        data-background="/assets/imgs/page/bg-home1-sec5.png"
+      >
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <SectionTitle title="Top Authors" description="Writers You’ll Want to Follow" />
-            </div>
-          </div>
-          <div className="row mt-4">
-            <div className="col-12">
-              <div className="d-flex flex-wrap gap-3 justify-content-between align-items-end">
-                <h6 className="ds-6 mb-0 text-anime-style-2">
-                  Leading experts in the fields <br className="d-none d-lg-block" />
-                  provide you with in-depth knowledge
-                </h6>
-              </div>
+              <SectionTitle title={title} description={description} />
             </div>
           </div>
           <div className="row py-5">
             <div className="col-md-12 col-8 mx-auto position-relative">
               <SwiperDynamic
                 className="swiper slider-4 rounded-16"
-                slidesPerView={4}
+                slidesPerView={perView}
                 spaceBetween={30}
                 slidesPerGroup={1}
                 centeredSlides={false}
-                loop={true}
-                autoplay={{
-                  delay: 5000,
-                }}
+                loop={canLoop}
+                autoplay={canLoop ? { delay: 5000 } : false}
                 breakpoints={{
-                  1200: {
-                    slidesPerView: 4,
-                  },
-                  992: {
-                    slidesPerView: 3,
-                  },
-                  768: {
-                    slidesPerView: 2,
-                  },
-                  576: {
-                    slidesPerView: 1,
-                  },
-                  0: {
-                    slidesPerView: 1,
-                  },
+                  1200: { slidesPerView: perView },
+                  992: { slidesPerView: Math.min(3, cards.length) },
+                  768: { slidesPerView: Math.min(2, cards.length) },
+                  576: { slidesPerView: 1 },
+                  0: { slidesPerView: 1 },
                 }}
                 navigation={{
                   nextEl: ".swiper-btn-next",
                   prevEl: ".swiper-btn-prev",
                 }}
               >
-                {card.authorCard.map((card, idx) => (
+                {cards.map((card, idx) => (
                   <div key={idx}>
                     <AuthorCard card={card} idx={idx} />
                   </div>
                 ))}
               </SwiperDynamic>
-              <div className="d-flex align-items-center gap-2 swiper-btn">
-                <div className="swiper-btn-next">
-                  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none">
-                    <path d="M10.25 6.75L4.75 12L10.25 17.25" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M19.25 12H5" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+              {canLoop && (
+                <div className="d-flex align-items-center gap-2 swiper-btn">
+                  <div className="swiper-btn-next">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none">
+                      <path d="M10.25 6.75L4.75 12L10.25 17.25" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M19.25 12H5" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <div className="swiper-btn-prev">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none">
+                      <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M19 12H4.75" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="swiper-btn-prev">
-                  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none">
-                    <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M19 12H4.75" stroke="#0e0e0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <div className="block-btn d-flex flex-wrap align-items-center gap-3 justify-content-center">
-                <Link href="/page-author" className="btn btn-dark hover-up">
-                  Become an author
-                </Link>
-                <p>Join the content creation community and earn income</p>
-              </div>
+              )}
             </div>
           </div>
         </div>
