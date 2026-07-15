@@ -1,0 +1,42 @@
+---
+title: "Bounded Retrieval Architecture for an Audience-Adaptive Portfolio"
+audience: "engineer-peer"
+oneLiner: "Built a bounded-retrieval architecture — MDX, Supabase, n8n — where audience classification and orchestration logic drive adaptive content without relying on open-ended generation."
+---
+
+## The Problem Space
+
+Most AI-on-portfolio projects use RAG: embed unstructured content, retrieve by semantic similarity, generate a fresh answer per query. That's the flexible path, but it comes with a failure mode I wasn't willing to accept — hallucination or drift in the exact content someone uses to judge my work.
+
+I wanted personalization (different visitors see different framing) without generation risk (no visitor sees fabricated or inconsistent claims).
+
+## Architecture
+
+**Content layer:** Case studies are authored as MDX, one per project per audience (Recruiter / Hiring Manager / Engineer / Peer). Nothing is synthesized at runtime — MDX files are the full, final, human-reviewed text.
+
+**Data layer:** Supabase stores the case study metadata, audience tags, and ranking signals (project relevance, recency, tech overlap). This is a structured index the orchestrator queries — not a vector store for open retrieval.
+
+**Orchestration layer:** n8n handles the workflow: classify the incoming visitor's declared or inferred audience → query Supabase for the ranked set of relevant case studies for that audience → return references, not generated prose → React renders the matched MDX.
+
+The LLM's role is narrow and bounded: classification and ranking decisions, not content generation. This is closer to a recommender system with an LLM-based classifier than a chatbot.
+
+## Key Trade-off
+
+**Retrieval-and-rank vs. RAG-and-generate.**
+
+RAG buys flexibility — it can answer questions I never anticipated. It costs guarantees — every answer is a fresh generation, meaning fidelity and consistency aren't structurally guaranteed, only prompt-engineered toward.
+
+Bounded retrieval buys the opposite: zero hallucination risk, guaranteed consistency across all visitors reading the same project, and full authorial control — at the cost of not handling arbitrary free-text questions gracefully.
+
+For a portfolio specifically — where the content *is* the credibility — I judged that trade-off worth making. This is the same logic enterprise talent-cloud platforms (Phenom, Beamery) apply when personalizing career sites: rank and route pre-approved content, don't generate.
+
+## Open Problem I'm Still Solving
+
+The current blocker is the n8n → Supabase connection layer — diagnosing an intermittent handshake issue before wiring in the finished audience-specific prompts. Happy to talk through the debugging approach if useful — it's a good proxy for how I approach ambiguous technical failures generally.
+
+## Stack Summary
+
+- **Frontend:** React, MDX rendering
+- **Orchestration:** n8n (workflow automation, audience classification, ranking logic)
+- **Data:** Supabase (case study metadata, audience tags, ranking signals)
+- **AI:** LLM used narrowly for classification/ranking, not generation

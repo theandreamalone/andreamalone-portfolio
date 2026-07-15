@@ -1,0 +1,29 @@
+---
+title: "Designing an AI Orchestrator for My Own Portfolio"
+audience: "hiring-manager"
+oneLiner: "Designed a curated AI experience that personalizes content by audience while protecting the credibility, consistency, and accuracy of the story presented."
+---
+
+## The Problem
+
+A portfolio is a one-size-fits-all artifact used by very different readers. A recruiter needs a 30-second scan. A hiring manager needs judgment and rationale. An engineer wants architecture. A peer wants nuance. Writing one version forces a compromise that under-serves all four.
+
+The obvious fix — an open-ended AI chatbot that answers anything — introduces a different risk: generated text can drift from what actually happened, soften a hard decision into something vaguer, or simply get a detail wrong. In a hiring context, that's not a cosmetic issue. It's the moment someone is forming a judgment about my work, based on text I didn't write and can't fully control.
+
+## The Decision
+
+I chose **retrieval-and-rank over open generation**.
+
+Every case study on this site is pre-written by me, in full, for each audience. The AI's job is narrower than "answer anything" — it classifies who's visiting and selects/ranks which pre-authored content to surface. It never improvises new narrative.
+
+This was a deliberate trade: I gave up the flexibility of "ask me anything" in exchange for a guarantee that whatever a visitor reads is accurate, reviewed, and consistent with what every other visitor sees about the same project. The AI personalizes *what* you see, never *what it says*.
+
+## Why This Matters as a Design Choice
+
+This mirrors a judgment call I make constantly in product and UX work: when to automate for convenience versus when to constrain automation to protect trust. Enterprise "talent cloud" platforms (Phenom, Beamery) make the same call when personalizing candidate-facing career sites — they rank and route pre-approved content rather than generate open-ended copy, for the same reason: credibility can't be left to chance at the exact moment a decision is being made about a person.
+
+Applying that same principle to my own candidacy — rather than just to a company's career site — was the point of the project.
+
+## Outcome
+
+The result is a site that adapts to you as a hiring manager specifically: this page exists because the system identified that as the relevant lens, and served the version of my work written for how you evaluate — decisions, trade-offs, and reasoning — rather than the version written for a recruiter's scan or an engineer's architecture review.

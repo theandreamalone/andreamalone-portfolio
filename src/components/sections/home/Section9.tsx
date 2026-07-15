@@ -1,71 +1,90 @@
-import Link from "@/components/common/Link";
-import React, { useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SwiperDynamic from "@/components/shared/SwiperDynamic";
 import Image from "@/components/common/Image";
+import { fetchCaseStudyBySlug } from "@/lib/queries/caseStudyBySlug";
+import { mapCaseStudyToFeature, type CaseStudyFeatureData } from "@/lib/templateGlossary";
+import type { RecordId } from "@/lib/viewContract";
 
-// Import Swiper CSS
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-export default function Section9({ displayBtn }: { displayBtn: string }) {
+/**
+ * Section9 — the CaseStudyFeature section (full-bleed featured case study).
+ *
+ * Consumes `record_ids` from the router/static baseline. Renders one slide per
+ * `cs:` ID, in the order given (contract invariant 2 — router order is the
+ * design). Non-`cs:` IDs and unresolvable slugs are dropped and logged
+ * (invariant 5).
+ *
+ * Renders nothing when it has no resolvable records — an empty shell would be
+ * worse than an absent section.
+ *
+ * Template markup preserved from the original Magzin Section9; only the data
+ * source changed. The original hardcoded slides array is gone.
+ */
+
+interface Section9Props {
+  displayBtn?: string;
+  record_ids?: RecordId[];
+}
+
+export default function Section9({ displayBtn = "d-none", record_ids = [] }: Section9Props) {
+  const [slides, setSlides] = useState<CaseStudyFeatureData[]>([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const swiperRef = useRef<any>(null);
 
-  const slides = [
-    {
-      bg: "/assets/imgs/page/bg-home1-sec9-1.png",
-      badge: "Lifestyle",
-      title: "The Future of Work: Remote, AI-Driven, and Flexible",
-      link: "/single-3",
-      description: "Once dismissed as counterculture, urban fashion has climbed its way from city sidewalks to the catwalks of major fashion capitals.",
-      author: "John Doe",
-      authorImage: "/assets/imgs/template/author/author-5.png",
-      date: "25th July 2025"
-    },
-    {
-      bg: "/assets/imgs/page/bg-home1-sec9-2.png",
-      badge: "Technology",
-      link: "/single-2",
-      title: "AI Revolution: Transforming Industries Worldwide",
-      description: "Artificial intelligence is reshaping how we work, live, and interact with technology in unprecedented ways.",
-      author: "Jane Smith",
-      authorImage: "/assets/imgs/template/author/author-6.png",
-      date: "26th July 2025"
-    },
-    {
-      bg: "/assets/imgs/page/bg-home1-sec9-3.png",
-      badge: "Health",
-      link: "/single-1",
-      title: "Wellness Trends: Mindful Living in Modern Times",
-      description: "Discover the latest approaches to mental and physical wellness that are gaining popularity worldwide.",
-      author: "Mike Johnson",
-      authorImage: "/assets/imgs/template/author/author-7.png",
-      date: "27th July 2025"
-    },
-    {
-      bg: "/assets/imgs/page/bg-home1-sec9-2.png",
-      badge: "Travel",
-      title: "Sustainable Tourism: Exploring the World Responsibly",
-      link: "/single-2",
-      description: "How travelers are making conscious choices to protect the environment while exploring new destinations.",
-      author: "Sarah Wilson",
-      authorImage: "/assets/imgs/template/author/author-8.png",
-      date: "28th July 2025"
+  const slugs = useMemo(
+    () =>
+      record_ids
+        .filter((id) => {
+          if (id.startsWith("cs:")) return true;
+          console.warn(`[Section9] non-case-study id dropped: ${id}`);
+          return false;
+        })
+        .map((id) => id.slice("cs:".length)),
+    [record_ids.join("|")]
+  );
+
+  useEffect(() => {
+    if (slugs.length === 0) {
+      setSlides([]);
+      return;
     }
-  ];
+    let cancelled = false;
 
-  const handleSlideChange = (swiper: any) => {
-    setCurrentSlideIndex(swiper.realIndex);
-  };
+    Promise.all(slugs.map((slug) => fetchCaseStudyBySlug(slug)))
+      .then((rows) => {
+        if (cancelled) return;
+        const resolved = rows
+          .map((row, i) => {
+            if (!row) {
+              console.warn(`[Section9] unknown case study dropped: cs:${slugs[i]}`);
+              return null;
+            }
+            return mapCaseStudyToFeature(row);
+          })
+          .filter((r): r is CaseStudyFeatureData => r !== null);
+        setSlides(resolved);
+      })
+      .catch((err) => {
+        console.warn("[Section9] fetch failed", err);
+        if (!cancelled) setSlides([]);
+      });
 
-  const handleSwiperInit = (swiper: any) => {
-    swiperRef.current = swiper;
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [slugs.join("|")]);
+
+  if (slides.length === 0) return null;
+
+  const handleSlideChange = (swiper: any) => setCurrentSlideIndex(swiper.realIndex);
+  const handleSwiperInit = (swiper: any) => (swiperRef.current = swiper);
 
   return (
     <>
-      {/*Home 1 Section 9*/}
+      {/* Home 1 Section 9 — CaseStudyFeature */}
       <section className="sec-9-home-1">
         <div className="custom-container position-relative">
           <div className={`swiper-btn ${displayBtn} align-items-center justify-content-between`}>
@@ -105,17 +124,10 @@ export default function Section9({ displayBtn }: { displayBtn: string }) {
                     className="gallery-left position-relative"
                     spaceBetween={10}
                     slidesPerView={1}
-                    loop={true}
-                    autoplay={{ delay: 5000, disableOnInteraction: false }}
-                    pagination={{
-                      clickable: true,
-                      el: ".swiper-pagination",
-                      type: "bullets"
-                    }}
-                    navigation={{
-                      nextEl: ".swiper-btn-next",
-                      prevEl: ".swiper-btn-prev",
-                    }}
+                    loop={slides.length > 1}
+                    autoplay={slides.length > 1 ? { delay: 5000, disableOnInteraction: false } : false}
+                    pagination={{ clickable: true, el: ".swiper-pagination", type: "bullets" }}
+                    navigation={{ nextEl: ".swiper-btn-next", prevEl: ".swiper-btn-prev" }}
                     onSlideChange={handleSlideChange}
                     onSwiper={handleSwiperInit}
                   >
@@ -123,23 +135,28 @@ export default function Section9({ displayBtn }: { displayBtn: string }) {
                       <div key={index}>
                         <div className="article">
                           <div className="card-body">
-                            <a href="#" className="badge bg-2 fs-8 mb-3">
+                            <a href={slide.linkBadge} className="badge bg-2 fs-8 mb-3">
                               {slide.badge}
                             </a>
                             <h5 className="card-title mb-0 text-white changeless">
                               <a href={slide.link}>{slide.title}</a>
                             </h5>
-                            <p className="card-text text-white mb-0 fs-7 mt-3 changeless">{slide.description}</p>
+                            <p className="card-text text-white mb-0 fs-7 mt-3 changeless">
+                              {slide.description}
+                            </p>
                             <div className="bottom mt-auto d-flex flex-wrap align-items-center gap-2 pt-5">
-                              <a href={slide.link} className="author d-flex align-items-center gap-2">
-                                <Image className="avatar avatar-md rounded-circle" src={slide.authorImage} alt="magzin" width={500} height={500} />
-                                <span className="fs-7 text-white fw-regular changeless">{slide.author}</span>
-                              </a>
-                              <ul className="d-flex align-items-center gap-4 text-white m-0 ps-3 changeless">
-                                <li>
-                                  <p className="fs-7 m-0 text-white changeless">{slide.date}</p>
-                                </li>
-                              </ul>
+                              {slide.client && (
+                                <span className="fs-7 text-white fw-regular changeless">
+                                  {slide.client}
+                                </span>
+                              )}
+                              {slide.when && (
+                                <ul className="d-flex align-items-center gap-4 text-white m-0 ps-3 changeless">
+                                  <li>
+                                    <p className="fs-7 m-0 text-white changeless">{slide.when}</p>
+                                  </li>
+                                </ul>
+                              )}
                             </div>
                           </div>
                         </div>
