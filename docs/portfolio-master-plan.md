@@ -20,6 +20,9 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 | D4 | v1 personalization ceiling | **Levels 0–2** (ordering, selection/progressive disclosure, layout/emphasis). Level 3 deferred. |
 | D5 | v1 view count | **4 of 8:** Landing/default, AI/agentic work, Case deep-dive, Conversational fallback. Views 5–8 deferred. |
 | D6 | Build sequence discipline | Hardcoded routing first (plan step: view components with hardcoded payloads, validate the feel, then wire Claude). Adaptive demo must be shippable on hardcoded routing alone if the clock runs out. |
+| D7 | Metadata source of truth | **Supabase is the live source of truth** for structured metadata (tags, skills, view assignments, status). MDX frontmatter carries baseline/default values that seed the DB on sync and serve as a fallback if DB values are missing. Tag/skill updates happen in Supabase, not MDX; frontmatter changes only on new content or file renames — same "static baseline as safety net" pattern as the UI fallback. |
+| D8 | Composition ambition and tagging density | **Option A stays** — the AI does not generate prose — but answers must be specific to what was asked, not "adjacent but approved." Tagging must be dense enough to support intersection queries (AI × team, leadership × complex-systems, etc.), not just single-dimension filters. Anecdote-level blocks become the composition layer's main ammunition; router prompt design must decompose questions into multiple filter dimensions. |
+| D9 | Tagging sequencing (X → Y) | Complete v1 tagging as scoped (case-study level, broad skill assignment). Ship v1. Log real visitor questions via the events table (item 11). Expand to anecdote-level blocks + intersection-friendly tags based on what's actually being asked — evidence-driven density beats speculative density, and it protects the contract deadline. |
 
 **Standing principles (from memory, still binding):**
 - Claims integrity is structural: AI layer touches metadata/ordering only, never prose.
@@ -54,6 +57,11 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ### 1D. Deferred (explicit, so they don't creep)
 - Level 3 alternate pre-authored framings (compatible with Option A — paired MDX blocks with stable IDs, router picks the ID; deferred for deadline only)
 - Views 5–8 (Enterprise scale, Leadership, Design systems, Competency/skills map)
+- Anecdote-level MDX blocks tagged with specific evidence they carry (unblocks intersection composition)
+- Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
+- Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
+
+Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
 
 ---
 
