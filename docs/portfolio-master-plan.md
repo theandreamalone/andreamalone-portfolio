@@ -41,7 +41,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 - [x] 2. Lock view schema as a strict JSON contract (4 v1 views: name + required data shape)
 - [x] 3. Define MDX block structure: chunk prose into blocks with stable IDs + a registry mapping IDs → blocks (Option A requirement)
 - [ ] 4. DB readiness audit against 5-point checklist — partly done: structured outcomes columns exist; view/competency tagging does not
-- [ ] 5. Tag records to views and competencies — **the intelligence substrate; matters more than the view components**
+- [x] 5. ~~Tag records to views and competencies~~ DONE 2026-07-13 (case-study level per D9 X→Y sequencing): 8 view tags + 15 case_study_tags rows; 35 skills in reference; 27 case_study_skills rows across 4 case studies. Content_blocks skill tagging and anecdote-level tagging deferred to Y phase, driven by events log data.
 - [ ] 6. Build 4 view components with hardcoded payloads; validate the feel before AI wiring
 - [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{view, record_ids, emphasis}` only
 - [ ] 8. Free-text question input path (core per D3): question → router → composition. pgvector semantic matching if needed for quality; evaluate after step 7
