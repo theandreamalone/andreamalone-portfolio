@@ -1,108 +1,174 @@
 /**
- * View Schema Contract — v1 (types)
+ * View Schema Contract — v2 (sections model)
  *
  * Source of truth: docs/view-schema-contract.md — that doc wins on conflict.
- * Consumed by: view components (props), Edge Function router (tool schema),
+ * Consumed by: section components (props), Edge Function router (tool schema),
  * resolver (ID validation), events logging.
  *
  * Claims-integrity invariant, enforced here by construction:
  * the router payload contains IDs and enums only — no free-text fields.
  * Do not add string fields that could carry prose.
+ *
+ * v1 (views-as-templates) retired 2026-07-13.
  */
 
-export const VIEW_NAMES = [
-  'landing_default',
-  'ai_agentic_work',
-  'case_deep_dive',
-  'conversational_fallback',
+// ============================================================================
+// Section kinds — the v1 portfolio section vocabulary
+// ============================================================================
+
+export const SECTION_KINDS = [
+  'Hero',
+  'SkillTicker',
+  'CaseStudyBento',
+  'CaseStudyFeature',
+  'Testimonials',
+  'CareerHighlights',
+  'Outcomes',
+  'CTABar',
+  'CaseStudyArchive',
+  'FallbackAnswer',
+  'Contact',
 ] as const;
 
-export type ViewName = (typeof VIEW_NAMES)[number];
+export type SectionKind = (typeof SECTION_KINDS)[number];
 
-/** Legal emphasis values per view. Level 2: salience only, never meaning. */
-export const EMPHASIS_BY_VIEW = {
-  landing_default: ['positioning', 'breadth', 'ai_focus'],
-  ai_agentic_work: ['explainability', 'human_in_loop', 'architecture', 'outcomes'],
-  case_deep_dive: ['process', 'decisions', 'outcomes', 'craft'],
-  conversational_fallback: ['redirect', 'answer'],
-} as const satisfies Record<ViewName, readonly string[]>;
+/**
+ * Legal emphasis values per section. Level 2: salience only, never meaning.
+ * Sections without entries below take no emphasis.
+ */
+export const EMPHASIS_BY_SECTION = {
+  Hero: ['positioning', 'ai_focus', 'leadership'],
+  CaseStudyBento: ['breadth', 'depth', 'ai_focus'],
+  CaseStudyFeature: ['ai_focus', 'human_in_loop', 'explainability', 'architecture'],
+  Testimonials: ['leadership', 'collaboration'],
+  Outcomes: ['scale', 'impact'],
+  FallbackAnswer: ['answer', 'redirect'],
+} as const satisfies Partial<Record<SectionKind, readonly string[]>>;
 
-export type EmphasisFor<V extends ViewName> = (typeof EMPHASIS_BY_VIEW)[V][number];
-export type EmphasisValue = EmphasisFor<ViewName>;
+/**
+ * Legal variant values per section. Layout options within a section kind.
+ */
+export const VARIANT_BY_SECTION = {
+  CaseStudyBento: ['default', 'compact'],
+  CTABar: ['contact', 'resume', 'case-studies', 'external'],
+} as const satisfies Partial<Record<SectionKind, readonly string[]>>;
 
-/** ID namespaces. Anything claim-bearing must be a BlockId (MDX-resolved). */
-export type CaseStudyId = `cs:${string}`;      // Supabase metadata by slug
-export type BlockId = `block:${string}`;       // bundled MDX prose block
-export type HighlightId = `hl:${string}`;      // Supabase career highlight
+// ============================================================================
+// Record ID namespaces
+// ============================================================================
+
+export type CaseStudyId = `cs:${string}`;
+export type BlockId = `block:${string}`;
+export type HighlightId = `hl:${string}`;
 export type TestimonialId = `tm:${string}`;
 export type SkillId = `skill:${string}`;
+export type CTAId = `cta:${string}`;
+export type OutcomeId = `outcome:${string}`;
 
 export type RecordId =
   | CaseStudyId
   | BlockId
   | HighlightId
   | TestimonialId
-  | SkillId;
+  | SkillId
+  | CTAId
+  | OutcomeId;
 
-export type Confidence = 'high' | 'medium' | 'low';
-
-/**
- * The complete router payload. Array order of record_ids = display order
- * (Level 0). Omission = deprioritization, never unreachability (Level 1).
- */
-export interface RouterResponse<V extends ViewName = ViewName> {
-  view: V;
-  record_ids: RecordId[]; // may be [] (honest empty state in fallback view)
-  emphasis: EmphasisFor<V>;
-  confidence: Confidence; // low → frontend prefers fallback/static baseline
-}
-
-/** Runtime guard — use at the Edge Function boundary and in the resolver. */
-export function isValidRouterResponse(x: unknown): x is RouterResponse {
-  if (typeof x !== 'object' || x === null) return false;
-  const r = x as Record<string, unknown>;
-  if (!VIEW_NAMES.includes(r.view as ViewName)) return false;
-  if (!Array.isArray(r.record_ids)) return false;
-  if (!r.record_ids.every(isRecordId)) return false;
-  const legal = EMPHASIS_BY_VIEW[r.view as ViewName] as readonly string[];
-  if (!legal.includes(r.emphasis as string)) return false;
-  if (!['high', 'medium', 'low'].includes(r.confidence as string)) return false;
-  return true;
-}
-
-const ID_PATTERN = /^(cs|block|hl|tm|skill):[a-z0-9][a-z0-9-]*$/;
+const ID_PATTERN = /^(cs|block|hl|tm|skill|cta|outcome):[a-z0-9][a-z0-9-]*$/;
 
 export function isRecordId(x: unknown): x is RecordId {
   return typeof x === 'string' && ID_PATTERN.test(x);
 }
 
-/**
- * View-specific structural rules the resolver enforces after type validation.
- * Violations: drop the offending IDs, log, render what remains.
- * - landing_default: position 0 must be a block: (hero); expect 3 cs: after.
- * - case_deep_dive: position 0 must be a cs:; all subsequent block: IDs must
- *   belong to that case study (registry lookup).
- * - conversational_fallback: block: IDs must come from the authored
- *   answer-block set; empty record_ids renders the authored empty state.
- */
+// ============================================================================
+// Router response envelope
+// ============================================================================
 
-/** JSON Schema for the Edge Function's Claude tool definition. */
+export type Confidence = 'high' | 'medium' | 'low';
+
+export interface SectionSpec {
+  kind: SectionKind;
+  order: number;
+  record_ids: RecordId[];
+  emphasis?: string;
+  variant?: string;
+}
+
+export interface RouterResponse {
+  sections: SectionSpec[];
+  confidence: Confidence;
+  /** Metadata for events log. NOT a layout directive. */
+  intent_tag?: string;
+}
+
+// ============================================================================
+// Runtime validation
+// ============================================================================
+
+export function isValidRouterResponse(x: unknown): x is RouterResponse {
+  if (typeof x !== 'object' || x === null) return false;
+  const r = x as Record<string, unknown>;
+  if (!Array.isArray(r.sections)) return false;
+  if (!r.sections.every(isValidSectionSpec)) return false;
+  if (!['high', 'medium', 'low'].includes(r.confidence as string)) return false;
+  return true;
+}
+
+export function isValidSectionSpec(x: unknown): x is SectionSpec {
+  if (typeof x !== 'object' || x === null) return false;
+  const s = x as Record<string, unknown>;
+  if (!SECTION_KINDS.includes(s.kind as SectionKind)) return false;
+  if (typeof s.order !== 'number') return false;
+  if (!Array.isArray(s.record_ids)) return false;
+  if (!s.record_ids.every(isRecordId)) return false;
+  if (s.emphasis !== undefined && typeof s.emphasis !== 'string') return false;
+  if (s.variant !== undefined && typeof s.variant !== 'string') return false;
+
+  // Per-kind legality checks
+  if (s.emphasis) {
+    const legal = (EMPHASIS_BY_SECTION as Record<string, readonly string[]>)[s.kind as string];
+    if (legal && !legal.includes(s.emphasis as string)) return false;
+  }
+  if (s.variant) {
+    const legal = (VARIANT_BY_SECTION as Record<string, readonly string[]>)[s.kind as string];
+    if (legal && !legal.includes(s.variant as string)) return false;
+  }
+  return true;
+}
+
+// ============================================================================
+// Edge Function tool schema (for Claude structured outputs, step 7)
+// ============================================================================
+
 export const ROUTER_TOOL_SCHEMA = {
-  name: 'compose_view',
+  name: 'compose_sections',
   description:
-    'Select which view answers the visitor question and which evidence records populate it. Return IDs only — never text.',
+    'Compose portfolio sections that answer the visitor question. Return sections with their record IDs. Never return text — the frontend resolves IDs to authored content.',
   input_schema: {
     type: 'object',
     additionalProperties: false,
-    required: ['view', 'record_ids', 'emphasis', 'confidence'],
+    required: ['sections', 'confidence'],
     properties: {
-      view: { type: 'string', enum: [...VIEW_NAMES] },
-      record_ids: {
+      sections: {
         type: 'array',
-        items: { type: 'string', pattern: ID_PATTERN.source },
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['kind', 'order', 'record_ids'],
+          properties: {
+            kind: { type: 'string', enum: [...SECTION_KINDS] },
+            order: { type: 'integer', minimum: 0 },
+            record_ids: {
+              type: 'array',
+              items: { type: 'string', pattern: ID_PATTERN.source },
+            },
+            emphasis: { type: 'string' },
+            variant: { type: 'string' },
+          },
+        },
       },
-      emphasis: { type: 'string' }, // per-view legality enforced in code
       confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+      intent_tag: { type: 'string' },
     },
   },
 } as const;

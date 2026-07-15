@@ -1,48 +1,52 @@
-# View Schema Contract — v1
+# View Schema Contract — v2 (sections model)
 
-**Status:** Locked once committed. The router tool definition, view components,
-and tagging schema (plan step 5) all key off this file.
+**Status:** Locked once committed. Supersedes v1 (views-as-templates). The
+router now composes **sections**, not views. Views were retired 2026-07-13.
 **Plan reference:** `portfolio-master-plan.md` Section 1B step 2.
-**Guiding star:** `ai-orchestration-purpose.md` — record_ids and emphasis are
-the payload that matters; the view is almost derivable from the evidence.
+**Guiding star:** `ai-orchestration-purpose.md` — record_ids are the payload
+that matters. Composition = section arrangement.
 **Companion code:** `src/lib/viewContract.ts` (types must stay in sync with
 this doc; this doc wins on conflict).
+**Section vocabulary:** `src/lib/templateGlossary.ts` (mappers + data shapes).
 
 ---
 
 ## The contract in one line
 
-The router returns **`{ view, record_ids, emphasis }`** — IDs and enums only,
-never text. The frontend resolves IDs to content it already has.
+The router returns **`{ sections, confidence, intent_tag? }`** where each
+section carries its kind, order, record IDs, and optional emphasis/variant.
+IDs and enums only, never text.
 
 ```json
 {
-  "view": "ai_agentic_work",
-  "record_ids": ["cs:voice-ready-ai", "block:voice-ready-ai-hitl-anecdote", "cs:fault-iq"],
-  "emphasis": "human_in_loop"
+  "sections": [
+    { "kind": "Hero", "order": 0, "record_ids": ["block:home-hero"] },
+    { "kind": "CaseStudyFeature", "order": 1, "record_ids": ["cs:voice-ready-ai-experience"], "emphasis": "ai_focus" },
+    { "kind": "CaseStudyBento", "order": 2, "record_ids": ["cs:nethive-iq", "cs:fault-iq", "cs:executive-dashboard"] },
+    { "kind": "CTABar", "order": 3, "record_ids": ["cta:contact-primary"] }
+  ],
+  "confidence": "high",
+  "intent_tag": "landing_default"
 }
 ```
 
+The same site, composed differently per question: a leadership question might
+return `[Hero, Testimonials, CareerHighlights, CaseStudyBento(leadership-tagged), CTABar]`.
+
 ---
 
-## Invariants (apply to every view)
+## Invariants (apply to every response)
 
 1. **No text fields.** The router never returns prose, titles, labels, or
    summaries. Any schema change adding a free-text field is a
    claims-integrity violation by definition.
-2. **`record_ids` order is meaningful.** Array order = display order
-   (Level 0 personalization). The router reorders; components never re-sort.
-3. **Selection is disclosure, not deletion** (Level 1). IDs omitted from
-   `record_ids` are deprioritized in the UI, never made unreachable. The
-   persistent "full case study" path ignores this payload entirely.
-4. **`emphasis` changes salience, never meaning** (Level 2). It maps to
-   visual weight in components — which fields render as chips, which blocks
-   expand by default. It must never suppress caveats or alter what a
-   reasonable viewer walks away believing.
-5. **Unknown IDs are dropped by the resolver and logged** — never rendered as
-   empty shells, never guessed at.
-6. **Every payload must be renderable with zero AI calls.** Hardcoded payloads
-   conforming to this contract are the D6 fallback demo.
+2. **`sections` order is meaningful.** Array order = page order (Level 0).
+3. **Selection is disclosure, not deletion** (Level 1). Omitted sections
+   are deprioritized, never unreachable. The archive path ignores payload.
+4. **`emphasis` and `variant` change salience, never meaning** (Level 2).
+5. **Unknown IDs are dropped by the resolver and logged.**
+6. **Every payload must be renderable with zero AI calls.** Hardcoded
+   payloads are the static baseline (plan item 10).
 
 ---
 
@@ -50,74 +54,36 @@ never text. The frontend resolves IDs to content it already has.
 
 | Prefix | Resolves to | Source of truth |
 |--------|-------------|-----------------|
-| `cs:` | Case study card/summary data by slug | Supabase (metadata) |
-| `block:` | Pre-authored prose block by stable ID | Bundled MDX (`content/blocks/`, case-study section files) |
-| `hl:` | Career highlight record | Supabase |
-| `tm:` | Testimonial | Supabase + MDX |
+| `cs:` | Case study by slug | Supabase |
+| `block:` | Pre-authored prose block | Bundled MDX |
+| `hl:` | Career highlight | Supabase |
+| `tm:` | Testimonial | Supabase |
 | `skill:` | Skill record | Supabase |
+| `cta:` | Call-to-action | Supabase |
+| `outcome:` | Outcome/metric | Supabase |
 
-Rule of thumb: anything that *makes a claim in sentences* must resolve to a
-`block:` (MDX). Anything structured (metrics, years, tags) resolves to a
-Supabase-backed ID. This is Option A enforced at the type level.
-
----
-
-## The 4 v1 views
-
-### 1. `landing_default`
-Cold-load state and the router's answer to greetings/vague intent.
-
-- **record_ids:** exactly 1 hero `block:` first, then 3 `cs:` (highlight
-  reel), optionally 1 `tm:`.
-- **emphasis:** `positioning` (pitch-line forward) | `breadth` (range of
-  work) | `ai_focus` (AI work forward).
-- **Notes:** This view rendered with a hardcoded payload **is** the static
-  baseline (plan item 10). One artifact, two duties.
-
-### 2. `ai_agentic_work`
-The differentiator view. Triggered by AI/agentic/human-in-the-loop intent.
-
-- **record_ids:** 1–3 `cs:` tagged to AI competencies, interleaved with
-  supporting `block:` anecdotes/artifact captions relevant to the asked
-  question. Composition varies per question — two visitors should see
-  different assemblies here.
-- **emphasis:** `explainability` | `human_in_loop` | `architecture` |
-  `outcomes`.
-
-### 3. `case_deep_dive`
-"Tell me about X." One project, full structure.
-
-- **record_ids:** exactly 1 `cs:` in position 0 (the subject), followed by
-  its section `block:` IDs in narrative order (problem → role → decisions →
-  outcome). Router may reorder/omit sections per Levels 0–1.
-- **emphasis:** `process` | `decisions` | `outcomes` | `craft`.
-- **Constraint:** all `block:` IDs after position 0 must belong to that case
-  study. Resolver enforces; cross-study blocks are dropped and logged.
-
-### 4. `conversational_fallback`
-The long tail — oddball, personal, or unmatchable questions.
-
-- **record_ids:** 0–2 `block:` IDs from a set of **pre-authored answer
-  blocks** (e.g. "outside work," "how this site works," "contact"), plus up
-  to 2 `cs:` as "you might have meant" suggestions.
-- **emphasis:** `redirect` (nudge toward a structured view) | `answer`
-  (the authored block is the answer).
-- **Honest empty state:** if nothing matches, the router returns
-  `record_ids: []` and the component renders an authored
-  "I don't have content that answers that — here's what I can show you"
-  block. The router **never** bridges gaps with generated text.
+Anything claim-bearing must be `block:` (MDX). Anything structured (metrics,
+years, tags, links) resolves via Supabase. Option A at the type level.
 
 ---
 
-## ⚠️ One deviation to confirm
+## Section kinds — v1 vocabulary
 
-The original 8-view plan described this fallback as a "grounded text answer" —
-i.e., AI-generated prose. **That is incompatible with Option A.** This
-contract replaces it with pre-authored answer blocks + honest empty state.
-Cost: the long tail is only as good as the answer blocks you write.
-Benefit: the boundary story stays absolute — *no* generated sentence appears
-anywhere on the site, including the fallback. Confirm or push back before
-committing.
+Each is a React component consuming a mapped shape from `templateGlossary.ts`.
+
+| Kind | Purpose | Accepts | Notes |
+|---|---|---|---|
+| `Hero` | Intro/positioning | 1 `block:` | Usually position 0 |
+| `SkillTicker` | Skill pills marquee | N `skill:` | Repurposes Section2 |
+| `CaseStudyBento` | 3 case studies bento | 3 `cs:` | Section3 layout |
+| `CaseStudyFeature` | Featured case study | 1 `cs:` | Section9 repurpose |
+| `Testimonials` | Client/collaborator quotes | N `tm:` | Section5 layout |
+| `CareerHighlights` | Work + Education tabs | N `hl:` | Section4Client (live) |
+| `Outcomes` | Metric stat blocks | N `outcome:` | OdometerCounter |
+| `CTABar` | Call-to-action bar | 1 `cta:` | TitleDark layout |
+| `CaseStudyArchive` | Full grid | N `cs:` | archive-1 |
+| `FallbackAnswer` | Pre-authored answer | 1–2 `block:` | Unmatchable questions |
+| `Contact` | Contact form | none | Anchor `#contact-form` |
 
 ---
 
@@ -125,25 +91,42 @@ committing.
 
 ```ts
 interface RouterResponse {
-  view: ViewName;
-  record_ids: string[];      // namespaced, ordered, may be []
-  emphasis: EmphasisValue;   // must be legal for the chosen view
+  sections: SectionSpec[];
   confidence: 'high' | 'medium' | 'low';
-  // low → frontend prefers conversational_fallback or static baseline
+  intent_tag?: string;
+}
+
+interface SectionSpec {
+  kind: SectionKind;
+  order: number;
+  record_ids: RecordId[];
+  emphasis?: string;
+  variant?: string;
 }
 ```
 
-`confidence` exists so the frontend can degrade gracefully without the router
-ever guessing. It gates *which* authored content shows — it is not a license
-to generate.
+`confidence` is not a license to generate. `intent_tag` is metadata for the
+events log; it is NOT a layout directive.
 
 ## Events log shape (plan item 11)
 
 ```ts
 interface RoutingEvent {
-  question: string;          // visitor's raw input
-  response: RouterResponse;  // what the router returned
+  question: string;
+  response: RouterResponse;
   ts: string;
   session_id: string;
 }
 ```
+
+---
+
+## What retired from v1
+
+- The `view` field on the response envelope
+- View-as-layout concept (`landing_default`, `ai_agentic_work`, etc.)
+- Per-view emphasis enums
+
+Reason: the guiding star says views are grammar, not intelligence. Sections
+are the real grammar. The 8 view tags in `tags` remain but function as
+*intent labels* for scoring, not layouts.

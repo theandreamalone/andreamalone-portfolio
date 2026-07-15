@@ -1,34 +1,28 @@
-import Layout from "@/components/layout/Layout";
+/**
+ * Home — the `/` route.
+ *
+ * Renders the static baseline composition (`src/lib/staticBaseline.ts`)
+ * via SectionRouter. This is the D6-mandated shippable fallback: even if
+ * every downstream adaptive path fails, this page works.
+ *
+ * When AdaptiveHome (Option 2) is ready, `/` may switch to it or coexist —
+ * this file remains the guaranteed-working baseline either way.
+ */
 
-import Section1 from "@/components/sections/home/Section1";
-import SectionIntro from "@/components/sections/home/SectionIntro";
-import Section2 from "@/components/sections/home/Section2";
-import Section3 from "@/components/sections/home/Section3";
-import Section4 from "@/components/sections/home/Section4";
-import Section5 from "@/components/sections/home/Section5";
-import Section6 from "@/components/sections/home/Section6";
-import Section7 from "@/components/sections/home/Section7";
-import Section8 from "@/components/sections/home/Section8";
-import Section9 from "@/components/sections/home/Section9";
-import Section10 from "@/components/sections/home/Section10";
-import Section11 from "@/components/sections/home/Section11";
+import Layout from '@/components/layout/Layout';
+import SectionRouter from '@/components/SectionRouter';
+import { STATIC_BASELINE } from '@/lib/staticBaseline';
+
 export default function Home() {
-    return (
-        <>
-            <Layout>
-                <Section1 />
-                <SectionIntro />
-                <Section2 />
-                <Section3 />
-                <Section4 />
-                <Section5 />
-                <Section6 />
-                <Section7 />
-                <Section8 />
-                <Section9 displayBtn="d-none" />
-                <Section10 />
-                <Section11 />
-            </Layout>
-        </>
-    );
+  const orderedSections = [...STATIC_BASELINE.sections].sort(
+    (a, b) => a.order - b.order
+  );
+
+  return (
+    <Layout>
+      {orderedSections.map((spec, idx) => (
+        <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
+      ))}
+    </Layout>
+  );
 }
