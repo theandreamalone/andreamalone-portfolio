@@ -52,7 +52,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ### 1C. Trust surface
 - [ ] 12. Persistent "full case study" path that ignores audience — deprioritize, never hide
 - [ ] 13. Visible "Tailored for X — switch view" chip
-- [ ] 14. "How this site works" page — the boundary-as-product articulation (draws directly from `ai-orchestration-purpose.md`)
+- [x] 14. "How this site works" page — the boundary-as-product articulation (draws directly from `ai-orchestration-purpose.md`)
 
 ### 1D. Deferred (explicit, so they don't creep)
 - Level 3 alternate pre-authored framings (compatible with Option A — paired MDX blocks with stable IDs, router picks the ID; deferred for deadline only)
