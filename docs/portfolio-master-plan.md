@@ -60,6 +60,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 - Anecdote-level MDX blocks tagged with specific evidence they carry (unblocks intersection composition)
 - Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
 - Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
+- ai-portfolio-orchestrator case study row + prose — post-ship. Blocked on the events log (item 11) producing real composition data; writing it before launch would make speculative claims about a system with no outcomes yet. Item 14 ("How this site works") carries the boundary story in v1. The three grandfathered Level 3 MDX variants already exist and stay as-is.
 
 Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
 
