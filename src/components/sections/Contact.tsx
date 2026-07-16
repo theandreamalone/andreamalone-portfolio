@@ -21,6 +21,8 @@ import type { ContactFormSubmission } from "@/lib/templateGlossary";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
 const EMPTY: ContactFormSubmission = {
   name: "",
   email: "",
@@ -44,6 +46,10 @@ export default function Contact() {
 
     if (!form.name?.trim() || !form.email?.trim()) {
       setError("Name and email are required.");
+      return;
+    }
+    if (!EMAIL_PATTERN.test(form.email.trim())) {
+      setError("That email address doesn't look right.");
       return;
     }
 
