@@ -456,6 +456,11 @@ advance state independently.
 - No batch fetcher for career highlights or skills by ID yet
 - `CaseStudyArchive` section not built
 - Framer Motion vs GSAP discrepancy unresolved
+- `media_assets` real schema now confirmed: id, file_name, file_url,
+  media_type, alt_text, caption, width, height, file_size, created_at,
+  updated_at. No columns beyond what codebase-ground-truth.md already
+  listed as gotchas (cover_media_id / photo_media_id are FKs on other
+  tables, not columns here).
 
 **Known parser/tooling bugs:**
 - n8n YAML inline-comment handling — workaround in place

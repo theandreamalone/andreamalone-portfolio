@@ -40,7 +40,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ### 1B. Build (each step shippable, in order)
 - [x] 2. Lock view schema as a strict JSON contract (4 v1 views: name + required data shape)
 - [x] 3. Define MDX block structure: chunk prose into blocks with stable IDs + a registry mapping IDs → blocks (Option A requirement)
-- [x] 4. DB readiness audit against 5-point checklist — partly done: structured outcomes columns exist; view/competency tagging does not
+- [x] 4. DB readiness audit against 5-point checklist — COMPLETE. Tagging already exists via join tables (case_study_tags: 15 rows, case_study_skills: 27 rows). No new columns needed on case_studies; router queries through join tables. (Verified 2026-07-16.)
 - [x] 5. ~~Tag records to views and competencies~~ DONE 2026-07-13 (case-study level per D9 X→Y sequencing): 8 view tags + 15 case_study_tags rows; 35 skills in reference; 27 case_study_skills rows across 4 case studies. Content_blocks skill tagging and anecdote-level tagging deferred to Y phase, driven by events log data.
 - [ ] 6. Build 4 view components with hardcoded payloads; validate the feel before AI wiring
 - [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{view, record_ids, emphasis}` only
@@ -69,8 +69,8 @@ Move to active tasks when events log shows real questions the current tagging ca
 ## Section 2 — Site functionality (blocking)
 
 - [x] 15. Wire up routing in `App.tsx`; connect `CaseStudyDetail.tsx` as reachable route (routing actually lives in `router.tsx`, not `App.tsx`)
-- [x] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — **check first:** may be absorbed by Section 1B view-component work; don't build twice
-- [x] 17. Create `/case-studies` grid route
+- [x] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — COMPLETE, not absorbed by Section 1B. Archive1 is a flat published-only grid (no tag/skill matching); Section 1B's view components are a separate, tag-driven system. Both coexist. (Verified 2026-07-16.)
+- [x] 17. Create `/case-studies` grid route — COMPLETE, already implemented via Section1.tsx / PortfolioArchive1. Renders all 4 published case studies (fault-iq and executive-dashboard now published per 2026-07-15 publishing rule). (Verified 2026-07-16.)
 - [x] 18. Port n8n pipeline from `react-portfolio-3`; repoint source URL to `andreamalone-portfolio` once content folder exists
 - [ ] 18c. Case study program-level MDX files (executive-dashboard.mdx, fault-iq.mdx, nethive-iq.mdx, voice-ready-ai-experience.mdx) — verify frontmatter matches the case_studies parser branch and that sync_case_study RPC accepts current payload.
 
@@ -90,15 +90,15 @@ Move to active tasks when events log shows real questions the current tagging ca
 
 ## Section 5 — Known bugs (fix before promotion)
 
-- [x] 27. n8n YAML inline-comment frontmatter bug — proper regex fix (workaround: trailing comments stripped manually)
-- [x] 28. Duplicate Supabase client files — resolve to single import: `from '../lib/supabaseClient'`
+- [x] 27. n8n YAML inline-comment frontmatter bug — FIXED. Root cause: blind `indexOf('#')` treated any '#' as a comment start, truncating unquoted values containing '#' (e.g. URL fragments). Fixed with whitespace-aware comment detection (# only starts a comment at string start or after whitespace). Verified via live n8n test — fragment preserved intact. (Fixed & verified 2026-07-16.)
+- [x] 28. Duplicate Supabase client files — NOT A BUG. Verified via `grep -r "createClient" src` — only src/lib/supabaseClient.ts exists. No duplicate found. (Verified 2026-07-16.)
 - [ ] 29. Leading-space filename bug in `templateGlossary.ts`
 
 ---
 
 ## Interactions & watch items
 
-- Item 16 ↔ Section 1B: view components may supersede the Archive1 Supabase wiring. Decide during step 6.
+- Item 16 ↔ Section 1B: RESOLVED 2026-07-16 — not superseded, both coexist. Archive1 is a flat published-only grid (no tag/skill matching); Section 1B's view components are a separate tag-driven system. No decision needed at step 6.
 - Item 18 ↔ Item 3: n8n sync scope stays frontmatter-only under Option A. Prose block registry is a frontend artifact, not a sync target.
 - Contract deadline: if time runs out, the shippable line is end of 1B step 6 (hardcoded routing) + Sections 2, 3 (items 19–21 minimum), 4, 5.
 
