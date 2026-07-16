@@ -6,12 +6,14 @@ section: process
 component: CaseStudySection
 content_type: prose
 audience: [recruiter, hiring-manager, collaborator]
-skill: [information-architecture-and-workflow-mapping, complex-enterprise-workflow-design, operational-prioritization-and-alert-design]
+skill: [information-architecture-and-workflow-mapping, complex-enterprise-workflow-design, operational-prioritization-and-alert-design, user-research-and-behavioral-analysis, technical-design-and-engineering-collaboration, rapid-prototyping-and-iterative-design]
 proof_type: scoped-visible
 status: published
-order: 1
+order: 2
 ---
 
-I restructured Fault IQ's navigation around user workflows rather than mirroring the boundaries between its independent products. The goal was to reduce the effort required to move between related tasks, so I brought connected tools into the same workflow path and reduced navigation depth to two levels. [NEED: Name the top-level workflow groups and identify which tools or functions were moved into them.] This grouping supported faster task completion by making the hierarchy reflect how users worked, not how the platform had been built.
+I learned the domain through SME reviews and shadowing, using existing screens, alert types, ticket states, and network-performance views to understand how field responders moved from detection to diagnosis. I framed the work around preserving operational context across outage summaries, impacted sites, KPI trends, router and circuit analysis, and ticket status, bringing connected tools into the same workflow path and reducing navigation depth to two levels, rather than treating each screen as a separate destination.
 
-Existing product boundaries limited how much functionality could be combined, so I treated the architecture as a reconciliation problem rather than a full consolidation. I preserved the separations required by product ownership and implementation while removing unnecessary navigation distinctions at the experience level. That balance allowed the platform to feel more connected without implying that its underlying products had become a single system.
+Actions such as calling the NOC, generating a script, or reviewing and amending a ticket remained explicit responder decisions, so the interface could support judgment without obscuring accountability.
+
+Existing product boundaries limited how much functionality could be combined, so I treated the work as a reconciliation problem rather than a full consolidation — preserving the separations required by product ownership and implementation while removing unnecessary distinctions at the experience level. I iterated through Figma reviews, client approvals, implementation checks, and engineering handoff updates, reconciling shared patterns for impacted-site, performance, ticket, map, filter, and script-generation flows while documenting the exceptions that needed to remain workflow-specific.

@@ -90,7 +90,7 @@ Move to active tasks when events log shows real questions the current tagging ca
 
 ## Section 5 — Known bugs (fix before promotion)
 
-- [ ] 27. n8n YAML inline-comment frontmatter bug — proper regex fix (workaround: trailing comments stripped manually)
+- [x] 27. n8n YAML inline-comment frontmatter bug — proper regex fix (workaround: trailing comments stripped manually)
 - [x] 28. Duplicate Supabase client files — resolve to single import: `from '../lib/supabaseClient'`
 - [ ] 29. Leading-space filename bug in `templateGlossary.ts`
 
