@@ -4,6 +4,7 @@ import dynamic from "@/util/dynamic";
 const CaseStudyDetail = dynamic(() => import("@/pages/CaseStudyDetail"));
 const NotFound = dynamic(() => import("@/pages/NotFound"));
 const Home = dynamic(() => import("@/pages/Home"));
+const AdaptiveHome = dynamic(() => import("@/pages/AdaptiveHome"));
 const Archive1 = dynamic(() => import("@/pages/Archive1"));
 const Archive2 = dynamic(() => import("@/pages/Archive2"));
 const Archive3 = dynamic(() => import("@/pages/Archive3"));
@@ -25,6 +26,7 @@ const Single3 = dynamic(() => import("@/pages/Single3"));
 
 export const router = createBrowserRouter([
     { path: "/", element: <Home /> },
+    { path: "/adaptive", element: <AdaptiveHome /> },
     { path: "/case-studies", element: <PortfolioArchive1 /> },
     { path: "/case-studies/:slug", element: <CaseStudyDetail /> },
     { path: "/archive-1", element: <Archive1 /> },
