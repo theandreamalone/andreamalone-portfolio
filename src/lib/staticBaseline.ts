@@ -43,7 +43,7 @@ export const STATIC_BASELINE: RouterResponse = {
     {
       kind: 'Outcomes',
       order: 4,
-      record_ids: [], // resolver fetches all outcomes for featured case study
+      record_ids: ['cs:nethive-iq'],
     },
     {
       kind: 'Testimonials',

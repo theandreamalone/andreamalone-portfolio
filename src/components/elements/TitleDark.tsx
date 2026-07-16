@@ -1,10 +1,37 @@
-import Link from "@/components/common/Link"
+import Link from "@/components/common/Link";
 
+/**
+ * TitleDark — section title bar, also serving as the parameterized CTA bar
+ * (templateGlossary decision #12).
+ *
+ * linkHref and linkLabel were hardcoded to "/archive-3" / "View More" — blog
+ * archive routing. They are now optional props defaulting to the original
+ * values, so existing call sites (home-2/Section4, home-2/Section6) are
+ * unchanged.
+ *
+ * Pass showLink={false} to hide the link entirely.
+ */
 
-export default function TitleDark({ title, description, classList }: { title: string; description: string; classList?: string }) {
+interface TitleDarkProps {
+  title: string;
+  description: string;
+  classList?: string;
+  linkHref?: string;
+  linkLabel?: string;
+  showLink?: boolean;
+}
+
+export default function TitleDark({
+  title,
+  description,
+  classList,
+  linkHref = "/archive-3",
+  linkLabel = "View More",
+  showLink = true,
+}: TitleDarkProps) {
   return (
     <>
-      <div className={`section-title dark ${classList} d-flex align-items-center justify-content-between flex-wrap gap-3`}>
+      <div className={`section-title dark ${classList ?? ""} d-flex align-items-center justify-content-between flex-wrap gap-3`}>
         <div className="d-flex">
           <div className="d-flex align-items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none">
@@ -12,16 +39,18 @@ export default function TitleDark({ title, description, classList }: { title: st
             </svg>
             <h5 className="mb-0">{title}</h5>
           </div>
-          <p className="fs-7 ms-3 mb-2 d-none d-lg-block">{description}</p>
+          {description && <p className="fs-7 ms-3 mb-2 d-none d-lg-block">{description}</p>}
         </div>
-        <div className="d-none d-md-block">
-          <Link href="/archive-3" className="view-more white">
-            <span className="circle" aria-hidden="true">
-              <span className="icon arrow" />
-            </span>
-            <span className="button-text">View More</span>
-          </Link>
-        </div>
+        {showLink && (
+          <div className="d-none d-md-block">
+            <Link href={linkHref} className="view-more white">
+              <span className="circle" aria-hidden="true">
+                <span className="icon arrow" />
+              </span>
+              <span className="button-text">{linkLabel}</span>
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );

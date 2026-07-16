@@ -17,6 +17,10 @@ import Section3 from '@/components/sections/home/Section3';
 import Section4Client from '@/components/sections/home-4/Section4Client';
 import Section5 from '@/components/sections/home/Section5';
 import Section9 from '@/components/sections/home/Section9';
+import FallbackAnswer from '@/components/sections/FallbackAnswer';
+import Contact from '@/components/sections/Contact';
+import Outcomes from '@/components/sections/Outcomes';
+import CTABar from '@/components/sections/CTABar';
 
 interface SectionRouterProps {
   spec: SectionSpec;
@@ -45,11 +49,19 @@ function renderSection(spec: SectionSpec) {
       // Self-fetching; no record_ids needed today.
       return <Section4Client />;
 
-    case 'Outcomes':
-    case 'CTABar':
-    case 'CaseStudyArchive':
     case 'FallbackAnswer':
+      return <FallbackAnswer record_ids={spec.record_ids} />;
+
     case 'Contact':
+      return <Contact />;
+
+    case 'Outcomes':
+      return <Outcomes record_ids={spec.record_ids} />;
+
+    case 'CTABar':
+      return <CTABar record_ids={spec.record_ids} variant={spec.variant} />;
+
+    case 'CaseStudyArchive':
       // Stage B builds these. Silent skip is intentional.
       if (import.meta.env.DEV) {
         console.info(`[SectionRouter] "${spec.kind}" not yet implemented; skipping.`);

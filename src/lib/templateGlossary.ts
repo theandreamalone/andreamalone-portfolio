@@ -351,28 +351,44 @@ export function mapTestimonialToCard(t: TestimonialRow): TestimonialCardData {
 // 5. Outcomes / metrics
 // Decision #11 — OdometerCounter (unused elsewhere in template) powers stat blocks.
 // Same component wraps individual stats on Home and About outcomes rows.
+//
+// Old OutcomeRow was {label, count, prefix, suffix} — none of those are column
+// names. Real columns: case_study_id, metric_name, metric_value, metric_type,
+// metric_prefix, metric_count, metric_suffix, sort_order.
+//
+// Row type now mirrors the schema (consistent with TestimonialRow). The mapper
+// produces OdometerCounter's props.
+//
+// metric_count (int) drives the odometer animation. metric_value (text) is the
+// authored display string and acts as a static fallback when metric_count is
+// null — a known number rendered flat beats a metric silently dropped.
 // ============================================================================
 
 export type OutcomeRow = {
-  label: string;               // "task completion faster"
-  count: number;               // 40
-  prefix: string | null;       // e.g. "+" or "$"
-  suffix: string | null;       // e.g. "%" or " min"
+  metric_name: string;          // display label, e.g. "Task completion time"
+  metric_value: string | null;  // authored display string, e.g. "-38%"
+  metric_count: number | null;  // integer the odometer animates to
+  metric_prefix: string | null; // e.g. "-" or "$"
+  metric_suffix: string | null; // e.g. "%" or " min"
+  metric_type: string | null;   // "percentage" | "count" | ...
+  sort_order: number;
 };
 
 export type OdometerData = {
-  count: number;
+  count: number | null;   // null → render staticValue instead of animating
   prefix: string;
   suffix: string;
   label: string;
+  staticValue: string;    // fallback text when count is null
 };
 
 export function mapOutcomeToOdometer(o: OutcomeRow): OdometerData {
   return {
-    count: o.count,
-    prefix: o.prefix ?? "",
-    suffix: o.suffix ?? "",
-    label: o.label,
+    count: o.metric_count,
+    prefix: o.metric_prefix ?? "",
+    suffix: o.metric_suffix ?? "",
+    label: o.metric_name,
+    staticValue: o.metric_value ?? "",
   };
 }
 
@@ -381,17 +397,32 @@ export function mapOutcomeToOdometer(o: OutcomeRow): OdometerData {
 // Decision #12 — TitleDark bar becomes a parameterized CTA component.
 // Template additions: linkHref & linkLabel become props (not hardcoded).
 // Decision #18 — Any CTA with target=contact scrolls to #contact-form.
+//
+// Old CTARow was {audience, title, description, target, external_href,
+// link_label} — only title and description exist. There is no audience column,
+// no target enum, no external_href.
+//
+// Real columns: id, title, description, button_text, target_url, cta_type,
+// priority, active.
+//
+// The target→href switch is gone: target_url is already the href. cta_type
+// stays as the selector the router/variant addresses ("contact", "resume").
+//
+// CONTACT_ANCHOR is retained: a CTA row with target_url = "/contact" is
+// rewritten to the on-page anchor so the CTA scrolls rather than navigates
+// (decision #18).
 // ============================================================================
 
 export const CONTACT_ANCHOR = "#contact-form";
 
 export type CTARow = {
-  audience: string | null;     // "recruiter" | "hiring-manager" | "collaborator" | null
-  title: string;               // top bar text
-  description: string;         // subtext (may be empty)
-  target: "contact" | "resume" | "case-studies" | "external";
-  external_href: string | null;
-  link_label: string;          // "Contact me" | "Download resume" | etc.
+  title: string;
+  description: string | null;
+  button_text: string;
+  target_url: string;
+  cta_type: string;            // "contact" | "resume" | "case-studies" | "external"
+  priority: string | null;     // "high" | "medium" | "low"
+  active: boolean;
 };
 
 export type CTABarData = {
@@ -401,20 +432,21 @@ export type CTABarData = {
   linkLabel: string;
 };
 
+/** Explicit order — priority is text, so alphabetical sorting is a coincidence. */
+export const CTA_PRIORITY_RANK: Record<string, number> = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
 export function mapCTAToBar(cta: CTARow): CTABarData {
-  const linkHref = (() => {
-    switch (cta.target) {
-      case "contact":       return CONTACT_ANCHOR;
-      case "resume":        return "/assets/resume.pdf";   // static asset path; confirm before wiring
-      case "case-studies":  return "/case-studies";
-      case "external":      return cta.external_href ?? "#";
-    }
-  })();
+  // Decision #18 — contact CTAs scroll to the on-page form, they don't navigate.
+  const linkHref = cta.cta_type === "contact" ? CONTACT_ANCHOR : cta.target_url;
   return {
     title: cta.title,
-    description: cta.description,
+    description: cta.description ?? "",
     linkHref,
-    linkLabel: cta.link_label,
+    linkLabel: cta.button_text,
   };
 }
 
