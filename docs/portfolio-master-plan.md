@@ -61,6 +61,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 - Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
 - Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
 - ai-portfolio-orchestrator case study row + prose — post-ship. Blocked on the events log (item 11) producing real composition data; writing it before launch would make speculative claims about a system with no outcomes yet. Item 14 ("How this site works") carries the boundary story in v1. The three grandfathered Level 3 MDX variants already exist and stay as-is.
+- Fault IQ case study (both thin drafts)
 
 Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
 
@@ -81,8 +82,8 @@ Move to active tasks when events log shows real questions the current tagging ca
 - [ ] 19. Fix template contamination on AT&T, DirecTV, IBM pages (World's Children content pasted in); DirecTV has no original content — rebuild from verified facts
 - [ ] 20. Replace lorem ipsum in Voice-Ready AI Experience showcase screens
 - [ ] 21. Resolve VERIFY-flagged frontmatter in Voice-Ready AI Experience (`has_demo_video`, `duration`, `project_year`, `short_description`)
-- [ ] 22. Develop Fault IQ and Executive Dashboard case studies (both thin drafts)
-- [ ] 23. Update Executive Dashboard Desktop screens to reflect approved voice-first states
+- [ ] 22. Confirm Telecom AI Chat, Telecom AI Dashboard, and DirecTV DIVA, case studies are fully developed and ready to promote. 
+- [x] 23. Update AI Dashboard Desktop screens to reflect approved voice-first states
 - [ ] 24. Pull concrete strategic direction-setting examples from work history to back that claim in case study copy
 
 ## Section 4 — Compliance / permissions
