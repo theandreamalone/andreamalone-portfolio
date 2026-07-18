@@ -4,7 +4,7 @@
 chat memory. Update this file as items complete; future sessions defer to it.
 **Guiding star:** `ai-orchestration-purpose.md` — all scope and design
 decisions are evaluated against that document.
-**Last updated:** 2026-07-12
+**Last updated:** 2026-07-16
 **Context:** Contract ending soon → shipping urgency. Goal state: portfolio
 live and ready to promote for Lead/Principal AI Product Designer positioning.
 
@@ -15,10 +15,10 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 | # | Decision | Choice |
 |---|----------|--------|
 | D1 | Claude router runtime | **Supabase Edge Function** (uses `service_role` internally; nothing added to publishable-key registry) |
-| D2 | Prose architecture | **Option A — prose never enters DB.** Router returns `{view, record_ids, emphasis}`; frontend resolves IDs to MDX blocks it already has bundled. Supabase holds selection metadata only. |
+| D2 | Prose architecture | **Option A — prose never enters DB.** Router returns `{sections, confidence, intent_tag?}`; each `SectionSpec` carries `record_ids`. Frontend resolves IDs to MDX blocks it already has bundled. Supabase holds selection metadata only. |
 | D3 | Free-text question path | **Core, not deferred.** It is the product; chips are training wheels. |
 | D4 | v1 personalization ceiling | **Levels 0–2** (ordering, selection/progressive disclosure, layout/emphasis). Level 3 deferred. |
-| D5 | v1 view count | **4 of 8:** Landing/default, AI/agentic work, Case deep-dive, Conversational fallback. Views 5–8 deferred. |
+| D5 | v1 composition scope | **Sections model (v2, 2026-07-13).** Views retired as layouts. 11 section kinds in `view-schema-contract.md`; router composes `SectionSpec[]`. The 8 tags in `tags` survive as *intent labels for scoring*, not layouts. |
 | D6 | Build sequence discipline | Hardcoded routing first (plan step: view components with hardcoded payloads, validate the feel, then wire Claude). Adaptive demo must be shippable on hardcoded routing alone if the clock runs out. |
 | D7 | Metadata source of truth | **Supabase is the live source of truth** for structured metadata (tags, skills, view assignments, status). MDX frontmatter carries baseline/default values that seed the DB on sync and serve as a fallback if DB values are missing. Tag/skill updates happen in Supabase, not MDX; frontmatter changes only on new content or file renames — same "static baseline as safety net" pattern as the UI fallback. |
 | D8 | Composition ambition and tagging density | **Option A stays** — the AI does not generate prose — but answers must be specific to what was asked, not "adjacent but approved." Tagging must be dense enough to support intersection queries (AI × team, leadership × complex-systems, etc.), not just single-dimension filters. Anecdote-level blocks become the composition layer's main ammunition; router prompt design must decompose questions into multiple filter dimensions. |
@@ -35,34 +35,36 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 ## Section 1 — Dynamic AI-Orchestrated UI (core proof-of-concept, highest priority)
 
 ### 1A. Remaining decisions
-- [x ] 1. Audit whether existing `AdaptiveBlock` (in `react-portfolio-3`) survives as-is or is superseded by the view-component architecture — do not port code the new design obsoletes
+- [x] 1. Audit AdaptiveBlock — COMPLETE. Confirmed superseded by blockRegistry.ts; one live consumer remains (SectionIntro.tsx, via two <AdaptiveBlock> instances querying content_blocks directly, bypassing viewContract.ts's block: namespace). DECISION: leave as-is — will be replaced (not migrated) when Section 1B step 6 rebuilds Hero/SectionIntro as a proper view component. No standalone fix needed. (Verified 2026-07-16.)
 
 ### 1B. Build (each step shippable, in order)
-- [x] 2. Lock view schema as a strict JSON contract (4 v1 views: name + required data shape)
+- [x] 2. Lock section schema as a strict JSON contract — COMPLETE as v2 sections model (`docs/view-schema-contract.md`, locked 2026-07-13). Superseded the v1 views-as-templates wording originally here.
 - [x] 3. Define MDX block structure: chunk prose into blocks with stable IDs + a registry mapping IDs → blocks (Option A requirement)
 - [x] 4. DB readiness audit against 5-point checklist — COMPLETE. Tagging already exists via join tables (case_study_tags: 15 rows, case_study_skills: 27 rows). No new columns needed on case_studies; router queries through join tables. (Verified 2026-07-16.)
-- [x] 5. ~~Tag records to views and competencies~~ DONE 2026-07-13 (case-study level per D9 X→Y sequencing): 8 view tags + 15 case_study_tags rows; 35 skills in reference; 27 case_study_skills rows across 4 case studies. Content_blocks skill tagging and anecdote-level tagging deferred to Y phase, driven by events log data.
-- [ ] 6. Build 4 view components with hardcoded payloads; validate the feel before AI wiring
-- [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{view, record_ids, emphasis}` only
-- [ ] 8. Free-text question input path (core per D3): question → router → composition. pgvector semantic matching if needed for quality; evaluate after step 7
-- [ ] 9. Connect loop: question → JSON → Supabase metadata fetch → frontend resolves record_ids to MDX blocks → render view → Framer Motion transition
-- [ ] 10. Static baseline confirmed working (non-negotiable fallback)
+- [ ] 5. Tag records to intent tags and competencies — **the intelligence substrate; matters more than the section components**
+- [x] 6. Build hardcoded `SectionSpec[]` compositions rendering via `SectionRouter` — COMPLETE. STATIC_BASELINE (9 sections) + hardcodedRouter.ts (7 intent rules + empty-state fallback), all dispatched through SectionRouter. (Verified 2026-07-16.)
+- [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{sections, confidence, intent_tag?}` only
+- [x] 8. Free-text question input path — COMPLETE. AdaptiveHome.tsx: real text input submits to hardcodedRouter's route(question); chips (SUGGESTED_QUESTIONS) are secondary, matching D3. (Verified 2026-07-16.)
+- [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7, (b) GSAP transition on section change — plan text says "Framer Motion transition," but Framer Motion isn't installed; GSAP is (per codebase-ground-truth.md). Update this item's wording.
+- [x] 10. Static baseline confirmed working — COMPLETE. STATIC_BASELINE in src/lib/staticBaseline.ts. (Verified 2026-07-16.)
 - [ ] 11. Events table logging question + chosen view (cheap; interview gold)
 
 ### 1C. Trust surface
 - [ ] 12. Persistent "full case study" path that ignores audience — deprioritize, never hide
-- [ ] 13. Visible "Tailored for X — switch view" chip
+- [x] 13. Visible "Tailored for X — switch view" chip — COMPLETE. AdaptiveHome renders "Composed for: {intent_tag}" + Reset button. (Verified 2026-07-16.)
 - [x] 14. "How this site works" page — the boundary-as-product articulation (draws directly from `ai-orchestration-purpose.md`)
 
 ### 1D. Deferred (explicit, so they don't creep)
 - Level 3 alternate pre-authored framings (compatible with Option A — paired MDX blocks with stable IDs, router picks the ID; deferred for deadline only)
-- Views 5–8 (Enterprise scale, Leadership, Design systems, Competency/skills map)
+- Intent tags beyond v1 scope (enterprise_scale, leadership, design_systems, competency_map) — these are scoring labels, not views to build. Deferred means unscored/untagged, not unbuilt.
 - Anecdote-level MDX blocks tagged with specific evidence they carry (unblocks intersection composition)
 - Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
 - Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
 - ai-portfolio-orchestrator case study row + prose — post-ship. Blocked on the events log (item 11) producing real composition data; writing it before launch would make speculative claims about a system with no outcomes yet. Item 14 ("How this site works") carries the boundary story in v1. The three grandfathered Level 3 MDX variants already exist and stay as-is.
 
 Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
+
+**Item 5 note:** real tagging already exists (case_study_tags: 15 rows, case_study_skills: 27 rows — see item 4). hardcodedRouter.ts currently hand-duplicates an AI_CASE_STUDIES array instead of querying tags; this is intentional per the file's own comments, to be replaced when the Edge Function reads real tags directly. Not a new gap — just don't mistake the hardcoded array for the tagging step being incomplete.
 
 ---
 
@@ -92,7 +94,7 @@ Move to active tasks when events log shows real questions the current tagging ca
 
 - [x] 27. n8n YAML inline-comment frontmatter bug — FIXED. Root cause: blind `indexOf('#')` treated any '#' as a comment start, truncating unquoted values containing '#' (e.g. URL fragments). Fixed with whitespace-aware comment detection (# only starts a comment at string start or after whitespace). Verified via live n8n test — fragment preserved intact. (Fixed & verified 2026-07-16.)
 - [x] 28. Duplicate Supabase client files — NOT A BUG. Verified via `grep -r "createClient" src` — only src/lib/supabaseClient.ts exists. No duplicate found. (Verified 2026-07-16.)
-- [ ] 29. Leading-space filename bug in `templateGlossary.ts`
+- [x] 29. Leading-space filename bug in `templateGlossary.ts` — NOT A BUG. Verified via `ls -la src/lib/` — single clean file, 22,861 bytes, no duplicate/leading-space variant present. (Verified 2026-07-16.)
 
 ---
 

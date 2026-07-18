@@ -6,11 +6,20 @@ section: solution
 component: CaseStudySection
 content_type: prose
 audience: [recruiter, hiring-manager, collaborator]
-skill: []
+skill: [ai-response-and-output-architecture, dashboard-and-data-visualization-design, operational-prioritization-and-alert-design, explainability]
 proof_type: scoped-visible
-status: published
-order: 1
+status: draft
+order: 3
 ---
 
-[Replace: how the AI-driven content works — what decisions you made about
-what to surface, when, and how to keep it trustworthy at executive stakes.]
+## From summary to evidence
+
+Each role saw a small, AI-supported summary first — a situation brief for leadership, deeper operational detail for engineers — with a single click or tap into the full incident brief behind it. The classification step that decided what was surfacing (an active incident, a trend, a routine check-in) determined which summary type and evidence set populated the view. [NEED: how the AI summary displays its sources or confidence level to the user.]
+
+## Alerts versus quiet updates
+
+Not every update interrupted the user. Alerting was handled through a separate, manually configured notification layer rather than an AI decision — only priority-flagged items surfaced as an alert, while lower-priority changes updated quietly in the background. Keeping that distinction rule-based, rather than AI-triggered, kept escalation predictable for users under incident pressure.
+
+## Voice-first parity, in progress
+
+Voice-first interaction states were already approved and shipped in the chat experience. Those same patterns are being extended to desktop chat, with the update scheduled to ship shortly after this writing — not yet live at time of this case study.
