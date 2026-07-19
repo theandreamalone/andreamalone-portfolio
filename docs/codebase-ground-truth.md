@@ -112,8 +112,13 @@ early orchestrator prompt draft that was superseded. Ignore them.
 |---|---|---|
 | `voice-ready-ai-experience` | published | the differentiator; multi-modal (voice + dictation + text), voice-first framing |
 | `nethive-iq` | published | program-level; the only one with real outcomes |
-| `fault-iq` | **draft** | fault detection/monitoring, **not AI** |
-| `executive-dashboard` | **draft** | LLM-summarized and ML-driven |
+| `fault-iq` | published | fault detection/monitoring, **not AI** (flipped per 2026-07-15 publishing rule) |
+| `ai-ops-dashboard` | published | renamed from `executive-dashboard`; display title "AI Role-Adaptive Operations Dashboard"; LLM-summarized and ML-driven; has `short_description` |
+| `ai-assistant-2025` | **draft** | added 2026-07-19; "Conversational AI Assistant" |
+
+(File verified 2026-07-19. Older references to an `executive-dashboard` slug
+elsewhere in this doc describe DB rows synced before the rename — re-verify
+tag/skill rows against the live DB before trusting them.)
 
 RLS on `case_studies` is `(status = 'published')`. **Draft case studies are
 invisible to the site** — they resolve to nothing and get logged as dropped.
@@ -409,6 +414,32 @@ Supabase. Option A at the type level.
   query. Everything is bundled at build time; a DB round trip only earns its
   keep when order or selection is dynamic.
 
+## Cover image render slots (verified 2026-07-19)
+
+One cover (`case_studies.cover_media_id` → `media_assets.file_url`) feeds five
+slots, each cropping differently:
+
+| Slot | File | Behavior |
+|---|---|---|
+| CaseStudyFeature | `sections/home/Section9.tsx` | CSS background, cover, center — heavy edge crop; bottom-left caption overlay |
+| Bento large | `cards/ArticleCard2.tsx` | 684×524 (~4:3), object-fit cover |
+| Bento small | `cards/ArticleCard3.tsx` | 225×250, cover crop, very small |
+| Grid card | `cards/ArticleCard7.tsx` | 310×206 (3:2), cover crop |
+| Detail hero | `pages/CaseStudyDetail.tsx` | no fixed height — renders native ratio, uncropped |
+
+Testimonial photos are a separate slot (`photo_media_id`,
+`cards/AuthorCard.tsx`): 280×370 portrait.
+
+Export spec derived from this: covers 1600×1200 (4:3), subject in central
+~60%, no small text as content, must look composed uncropped (detail hero
+shows the raw file). Testimonials ~560×740. No resize pipeline exists in
+Supabase — don't upload raw 5000px exports.
+
+In-body case study images: **no rendering path exists yet** — the detail page
+body is a Phase 3 stub. No MDX file contains an image. When body rendering
+ships, body images render native ratio in a `col-lg-8` (~840px) column; export
+~1700px wide.
+
 ## Deprecated / dead
 
 - `AdaptiveBlock.tsx` — superseded; its resolution mechanism became
@@ -442,6 +473,14 @@ advance state independently.
 ---
 
 # PART 6 — Known gaps
+
+**Agreed but NOT built (2026-07-19) — do not assume these exist:**
+- `content_blocks.body_text` read-only mirror column + guard trigger
+  (`content_blocks_body_mirror_guard`) + `sync_block` patch + n8n body payload
+- `content_inventory` and `content_gaps` reporting views
+- `scripts/process-images.mjs` image pipeline (`npm run images`)
+Plan of record: "Current build phases" in `portfolio-master-plan.md`. Update
+this doc when each ships.
 
 **Content (blocks review):**
 - `short_description` NULL on all four case studies — cards render title + badge only

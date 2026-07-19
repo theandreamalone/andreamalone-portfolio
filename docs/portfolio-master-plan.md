@@ -4,7 +4,7 @@
 chat memory. Update this file as items complete; future sessions defer to it.
 **Guiding star:** `ai-orchestration-purpose.md` — all scope and design
 decisions are evaluated against that document.
-**Last updated:** 2026-07-16
+**Last updated:** 2026-07-19
 **Context:** Contract ending soon → shipping urgency. Goal state: portfolio
 live and ready to promote for Lead/Principal AI Product Designer positioning.
 
@@ -32,6 +32,38 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 
 ---
 
+## Current build phases (agreed 2026-07-19)
+
+Near-term execution order. Phases 1–2 are new work; Phase 3 maps to existing
+items 7 and 9 in Section 1B.
+
+**Phase 1 — Body mirror + views** (scope: `content_blocks` only; files always win)
+1. Add `body_text text` column to `content_blocks` (manual SQL — schema not version-controlled; record here and in ground truth)
+2. Guard trigger `content_blocks_body_mirror_guard` / function `guard_body_text_mirror()` — rejects any `body_text` write unless transaction-local flag `app.allow_body_write` is set; error: "body_text is a read-only mirror. Edit the MDX file and re-sync."
+3. Pull `sync_block` RPC source (`pg_proc`) and verify before editing — known silent-drop failure mode
+4. Patch `sync_block`: accept `body_text`, set the flag via `set_config('app.allow_body_write','on',true)`
+5. n8n Code node: stop discarding the MDX body; add to payload
+6. Test round trip: sync one file → `body_text` populates → table-editor edit rejected by guard
+7. Build two views: `content_inventory` (slug, status, audience, skills, order, ~100-char body preview — no prose) and `content_gaps` (blocks with no skills, case studies missing `short_description`, drafts)
+8. Document in `codebase-ground-truth.md`
+
+**Phase 2 — Image pipeline**
+9. Presets: covers 1600×1200 center-crop · body images max 1700px wide · testimonials 560×740 · all WebP
+10. `scripts/process-images.mjs` (sharp) + `npm run images`
+11. Folder convention: `media/source/{slug}/` in → `public/media/{slug}/` out
+12. End-to-end test with one real Figma export
+
+**Phase 3 — Real AI router (horizon; = items 7 + 9 remainder)**
+Swap `hardcodedRouter.ts` for the Claude Supabase Edge Function. Returns
+`{sections, confidence, intent_tag?}` with `record_ids` — IDs and enums only,
+never prose. Nothing downstream changes on swap. Site ships fine on hardcoded.
+
+**Note on D2/Option A:** the body mirror does not amend the boundary. Prose
+still only *originates* in MDX; `body_text` is a one-way, trigger-guarded copy
+for management visibility. Website and router never read it.
+
+---
+
 ## Section 1 — Dynamic AI-Orchestrated UI (core proof-of-concept, highest priority)
 
 ### 1A. Remaining decisions
@@ -45,7 +77,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 - [x] 6. Build hardcoded `SectionSpec[]` compositions rendering via `SectionRouter` — COMPLETE. STATIC_BASELINE (9 sections) + hardcodedRouter.ts (7 intent rules + empty-state fallback), all dispatched through SectionRouter. (Verified 2026-07-16.)
 - [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{sections, confidence, intent_tag?}` only
 - [x] 8. Free-text question input path — COMPLETE. AdaptiveHome.tsx: real text input submits to hardcodedRouter's route(question); chips (SUGGESTED_QUESTIONS) are secondary, matching D3. (Verified 2026-07-16.)
-- [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7, (b) GSAP transition on section change — plan text says "Framer Motion transition," but Framer Motion isn't installed; GSAP is (per codebase-ground-truth.md). Update this item's wording.
+- [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7 (= Phase 3), (b) GSAP transition on section change (GSAP is installed; Framer Motion is not — wording corrected 2026-07-19).
 - [x] 10. Static baseline confirmed working — COMPLETE. STATIC_BASELINE in src/lib/staticBaseline.ts. (Verified 2026-07-16.)
 - [ ] 11. Events table logging question + chosen view (cheap; interview gold)
 
@@ -102,9 +134,11 @@ Move to active tasks when events log shows real questions the current tagging ca
 ## Interactions & watch items
 
 - Item 16 ↔ Section 1B: RESOLVED 2026-07-16 — not superseded, both coexist. Archive1 is a flat published-only grid (no tag/skill matching); Section 1B's view components are a separate tag-driven system. No decision needed at step 6.
-- Item 18 ↔ Item 3: n8n sync scope stays frontmatter-only under Option A. Prose block registry is a frontend artifact, not a sync target.
+- Item 18 ↔ Item 3: AMENDED 2026-07-19 — n8n sync carries frontmatter *plus* the MDX body as a read-only `body_text` mirror (Phase 1). The mirror is display-only; the prose block registry remains the only render/composition source. Option A intact.
 - Contract deadline: if time runs out, the shippable line is end of 1B step 6 (hardcoded routing) + Sections 2, 3 (items 19–21 minimum), 4, 5.
 
 ## Immediate next step
 
-Ground-truth repo audit of `andreamalone-portfolio` (git log, file tree, AdaptiveBlock presence, content folder state) — strike out anything Claude Code has already completed before executing this plan.
+Execute Phase 1 (body mirror + views) per "Current build phases" above. Before
+touching `sync_block` or the n8n node: pull latest and confirm no parallel
+session has advanced state.
