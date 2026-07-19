@@ -15,3 +15,22 @@ order: 3
 Before launch, I identified and corrected a failure in the intent-classification self-correction flow, preventing the assistant from reinforcing an incorrect interpretation of a user's request. I treated this as a system-behavior issue rather than a copy problem, because the correction logic shaped every response that followed.
 
 The response architecture shipped as designed, including structured schemas, defined human-review triggers, and a "driver not confirmed" state that prevented the assistant from presenting an unverified cause as fact. These safeguards made uncertainty visible and gave responders a clear point to review or escalate rather than relying on fabricated certainty. Accessibility improvements remain in progress, with the current work focused on identifying and addressing gaps rather than claiming completed compliance.
+
+## How success would be measured
+
+I would distinguish experimentation from adoption. Initial chat volume may
+reflect curiosity; repeat use across incidents, successful follow-up,
+task completion, and appropriate human escalation indicate durable value.
+In a high-stakes workflow the goal is not to eliminate review — it is to
+make review more focused and informed.
+
+I would evaluate the AI's responses as decision interfaces: can users
+quickly understand the situation, separate evidence from interpretation,
+identify the next action, and recognize when the system requires human
+judgment? That standard is stronger and more testable than "users trusted
+the AI."
+
+For voice specifically, activation is not adoption. The meaningful
+question is whether voice makes a task faster, easier, or more accessible —
+comparing completion rates, correction rates, repeat usage, and movement
+between voice and text against the typed experience.
