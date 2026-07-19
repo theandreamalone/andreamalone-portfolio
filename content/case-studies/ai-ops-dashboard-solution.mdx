@@ -8,13 +8,37 @@ content_type: prose
 audience: [recruiter, hiring-manager, collaborator]
 skill: [ai-response-and-output-architecture, dashboard-and-data-visualization-design, operational-prioritization-and-alert-design, explainability]
 proof_type: scoped-visible
-status: draft
+status: published
 order: 3
 ---
 
 ## From summary to evidence
 
-Each role saw a small, AI-supported summary first — a situation brief for leadership, deeper operational detail for engineers — with a single click or tap into the full incident brief behind it. The classification step that decided what was surfacing (an active incident, a trend, a routine check-in) determined which summary type and evidence set populated the view. [NEED: how the AI summary displays its sources or confidence level to the user.]
+Each role saw a small, AI-supported summary first — a situation brief for leadership, deeper operational detail for engineers — with a single click or tap into the full incident brief behind it. The classification step that decided what was surfacing (an active incident, a trend, a routine check-in) determined which summary type and evidence - displayed by an expansion component with further explanation- set populated the view. 
+
+## Letting users configure their own view
+
+A role-based default is still a default. **I proposed letting users choose
+which data categories drive their content and insights**, and toggle or
+reorder dashboard modules by drag-and-drop, rather than shipping one fixed
+layout per role. Leadership and operational users don't just need different
+information — they need different amounts of it visible at once, and that
+shifts over time as priorities change. Making the settings screen a real
+configuration surface, rather than a one-time onboarding step, let people
+revisit and adjust their own view whenever they needed to.
+
+## Reusing the response-trust pattern already established
+
+Rather than designing a second, unrelated chat pattern for the dashboard's
+embedded assistant, **I proposed carrying over the same response-trust
+pattern** already established for NetHive IQ's standalone AI assistant:
+affordances that let a user see how an answer was derived, instead of a flat,
+black-box reply, plus follow-up prompts that keep exploration inside the
+thread. This reflects the platform's shared AI reasoning engine — one
+underlying response architecture, surfaced consistently wherever AI shows up.
+It also meant the dashboard's chat inherited a pattern users had already
+learned elsewhere, rather than asking them to relearn a second AI interaction
+model.
 
 ## Alerts versus quiet updates
 

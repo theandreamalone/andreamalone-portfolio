@@ -14,29 +14,64 @@ order: 2
 
 ## The voice interaction system
 
-The voice experience is built as a full conversational state cycle, not a single
-"tap to talk" gesture: listening, stopped listening, a transition state, AI
-working, AI speaking, stopped speaking, and back to listening. Each state is a
-distinct, designed screen — not a generic spinner standing in for "processing."
-This matters in an incident-response context, where a user needs to know whether
-the system heard them correctly before it commits to an action.
+**I proposed splitting the experience into two first-class modes** — Immersive
+(voice-led) and Traditional (text-led) — rather than shipping voice as a
+secondary feature bolted onto a chat window. Users bring different comfort
+levels to AI, and defaulting everyone into one mode punishes whichever group
+didn't get it. Traditional mode keeps a persistent thread history in the
+sidebar, so people can return to prior answers — important in a telecom
+support context where users frequently revisit account or troubleshooting
+detail. Immersive mode leads with the voice interface itself: a full
+conversational state cycle, not a single "tap to talk" gesture, spanning
+listening, stopped listening, a transition state, AI working, AI speaking,
+stopped speaking, and back to listening. Each state is a distinct, designed
+screen — not a generic spinner standing in for "processing." That distinction
+matters in an incident-response context, where a user needs to know the
+system heard them correctly before it commits to anything. An audio-reactive
+glow reinforces that feedback in real time, removing the "did it hear me?"
+uncertainty that undermines trust in voice UX generally.
 
-Input mode is a deliberate, reversible choice, not a fork in the road. The mic
-and keyboard exist as toggled states within the same input bar — a user can
-start speaking, see a live "Start speaking" prompt, and drop back to typing
-mid-conversation without losing context.
+Input mode stays a deliberate, reversible choice within either mode, not a
+fork a user gets locked into. The mic and keyboard exist as toggled states
+within the same input bar — someone can start speaking, see a live "Start
+speaking" prompt, and drop back to typing mid-conversation without losing
+context.
+
+## Holding both modes to parity on mobile
+
+**I proposed carrying both modes through to mobile at full parity**, rather
+than letting mobile default to whichever mode compressed more easily onto a
+smaller screen. Traditional mode keeps a single-column, thumb-reachable
+layout on mobile, prioritizing message legibility. Immersive becomes the
+primary mobile interaction — a deliberate choice, since voice suits
+on-the-go, hands-busy use better than typing does. The listening state reuses
+the same amplitude-reactive glow language as desktop, so the system-status
+metaphor doesn't change from one breakpoint to the next. This moved the
+mobile build from "a desktop design squeezed onto a phone" to a systematic
+responsive approach applied to both modes.
 
 ## The response architecture behind it
 
-The assistant's responses aren't generated freeform — they're assembled through
-a defined pipeline: a question is classified by intent, mapped to a required
-response schema, and built from required "core" content plus additional content
-that only appears when specific conditions are met (uncertainty, conflicting
-signals, regulatory exposure, and similar named triggers). A human review gate
-sits in that pipeline, keyed to a specific, named list of conditions — high
-impact, supporting signals below a set threshold, conflicting signals present,
-regulatory or safety exposure, budget or personnel impact — not a general
-"escalate if unsure" rule.
+The assistant's responses aren't generated freeform — they're assembled
+through a defined pipeline: a question is classified by intent, mapped to a
+required response schema, and built from required "core" content plus
+additional content that only appears when specific conditions are met
+(uncertainty, conflicting signals, regulatory exposure, and similar named
+triggers). A human review gate sits in that pipeline, keyed to a specific,
+named list of conditions — high impact, supporting signals below a set
+threshold, conflicting signals present, regulatory or safety exposure,
+budget or personnel impact — not a general "escalate if unsure" rule.
+
+When that gate flags a response, the signal currently reaches the user through
+an expansion component — an inline, expandable explanation attached to the
+response, so a user can pull up the reasoning behind a review flag without
+leaving the thread. I scoped several other places that same signal could live,
+since not every review case belongs in front of the end user: a visual badge
+directly on the response ("[X] review recommended"), an internal log entry
+visible to supervisors but hidden from the end user, a flag in a review queue
+checked after the fact, a metadata tag for audit and compliance tracking, or a
+note in the system's own trace. Only the expansion component has shipped; the
+rest are scoped, not built.
 
 ## Catching a classification error before it shipped
 

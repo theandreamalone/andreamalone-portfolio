@@ -1,0 +1,68 @@
+---
+type: block
+slug: voice-ready-ai-experience-solution
+page: case-study
+section: solution
+component: CaseStudySection
+content_type: prose
+audience: [recruiter, hiring-manager, collaborator]
+skill: []
+proof_type: scoped-visible
+status: published
+order: 2
+---
+
+## The voice interaction system
+
+The voice experience is built as a full conversational state cycle, not a single
+"tap to talk" gesture: listening, stopped listening, a transition state, AI
+working, AI speaking, stopped speaking, and back to listening. Each state is a
+distinct, designed screen — not a generic spinner standing in for "processing."
+This matters in an incident-response context, where a user needs to know whether
+the system heard them correctly before it commits to an action.
+
+Input mode is a deliberate, reversible choice, not a fork in the road. The mic
+and keyboard exist as toggled states within the same input bar — a user can
+start speaking, see a live "Start speaking" prompt, and drop back to typing
+mid-conversation without losing context.
+
+## The response architecture behind it
+
+The assistant's responses aren't generated freeform — they're assembled through
+a defined pipeline: a question is classified by intent, mapped to a required
+response schema, and built from required "core" content plus additional content
+that only appears when specific conditions are met (uncertainty, conflicting
+signals, regulatory exposure, and similar named triggers). A human review gate
+sits in that pipeline, keyed to a specific, named list of conditions — high
+impact, supporting signals below a set threshold, conflicting signals present,
+regulatory or safety exposure, budget or personnel impact — not a general
+"escalate if unsure" rule.
+
+## Catching a classification error before it shipped
+
+Early intent classification worked off question *form* — matching who/what/when
+phrasing directly to a response type. Review surfaced that this was the wrong
+unit: the same phrasing (a "what" question, for example) could legitimately need
+different response types depending on what was actually being asked. The
+classification approach was corrected to route on intent rather than surface
+wording — a change that avoided misrouting responses in production.
+
+## Two decisions that changed the core chat experience
+
+Designing the voice-first experience surfaced two structural changes that were
+carried back into the standard chat experience, not just the voice surface:
+
+- Chat was separated from the dashboard entirely, so it now behaves as its own
+  standalone destination — the same treatment given to notifications.
+- The history panel was redesigned to span the full width of the screen with a
+  text link instead of an icon, making past sessions easier to scan and re-enter.
+
+## Accessibility
+
+An accessibility review is in progress, covering landmark structure, heading
+hierarchy, reading and focus order, touch target sizing, and color-blindness
+simulation across the core voice states. It has already caught one real
+issue — a touch target sized at 32×32px, below the 44×44px recommendation —
+now queued for a fix.
+{/* Update this section once accessibility review is approved: swap "in progress"
+    framing for confirmed/completed language. See tracking doc. */}
