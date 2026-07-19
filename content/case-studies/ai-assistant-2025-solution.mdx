@@ -1,0 +1,17 @@
+---
+type: block
+slug: ai-assistant-2025-solution
+page: case-study
+section: solution
+component: CaseStudySection
+content_type: prose
+audience: [recruiter, hiring-manager, ai-reviewer]
+skill: [ai-response-architecture, human-ai-collaboration, engineering-handoff]
+proof_type: scoped-visible
+status: draft
+order: 0
+---
+
+**I proposed attaching response-inspection controls to each AI response** so users could see how an answer was derived, rather than presenting a flat text reply. The response format itself invites scrutiny instead of asking for blind acceptance — a direct trust affordance for a data-driven answer. Follow-up chips reduce re-typing and context loss between turns, and related prompts beneath the answer keep exploration inside the thread instead of dropping the user back at an empty input. What changed: the inherited chat transcript moved from "here's an answer" to "here's an answer, and here's how to check it."
+
+That decision propagated through the shipped surface. I made the Thread the primary interaction surface, with the Home composer initiating a conversation and each response preserving the evidence required for human judgment through View Sources, View Table, and View Response Time controls, reinforced by a visible Thinking state that communicated system activity without implying certainty; the assistant returned and contextualized information directly, while users remained responsible for judging whether its evidence supported a business decision, making verifiability the trust layer rather than adding an invented escalation workflow; Admin and Tools surfaces supported scope, configuration, and usage oversight without competing with the core exchange, and I delivered the shipped product at specification fidelity across Mobile, 1056, and 1312 breakpoints with responsive rules, states, tokens, redlines, and QA handoff documentation.
