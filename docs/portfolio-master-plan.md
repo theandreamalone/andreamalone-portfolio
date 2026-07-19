@@ -37,7 +37,7 @@ live and ready to promote for Lead/Principal AI Product Designer positioning.
 Near-term execution order. Phases 1–2 are new work; Phase 3 maps to existing
 items 7 and 9 in Section 1B.
 
-**Phase 1 — Body mirror + views** (scope: `content_blocks` only; files always win)
+**Phase 1 — Body mirror + views** — ✅ SHIPPED 2026-07-19 (scope: `content_blocks` only; files always win). Column + guard trigger + `sync_block` patch + n8n body payload live; 34 blocks mirrored; guard verified rejecting hand edits; `content_inventory` and `content_gaps` views created. Recorded in `codebase-ground-truth.md`.
 1. Add `body_text text` column to `content_blocks` (manual SQL — schema not version-controlled; record here and in ground truth)
 2. Guard trigger `content_blocks_body_mirror_guard` / function `guard_body_text_mirror()` — rejects any `body_text` write unless transaction-local flag `app.allow_body_write` is set; error: "body_text is a read-only mirror. Edit the MDX file and re-sync."
 3. Pull `sync_block` RPC source (`pg_proc`) and verify before editing — known silent-drop failure mode

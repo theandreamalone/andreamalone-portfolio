@@ -1,7 +1,7 @@
 # Codebase Ground Truth
 
 **Status:** Reference. Describes what the code and database **actually are**,
-verified against the live system 2026-07-16. Where this file and any other
+verified against the live system 2026-07-16; body-mirror and view additions verified live 2026-07-19. Where this file and any other
 document disagree about *what exists*, this file wins.
 
 **Read this before proposing anything.** Companion docs:
@@ -18,8 +18,10 @@ entry here is worse than no entry — it will be trusted.
 
 ## The one rule
 
-**Prose lives only in MDX. Never in the database.** Frontmatter syncs to
-Supabase; the body never does. Supabase holds selection metadata only. This is
+**Prose only ever *originates* in MDX. The database is never a source of
+prose.** Supabase holds selection metadata, plus (since 2026-07-19) a
+read-only, trigger-guarded `body_text` mirror of block bodies for management
+visibility — a copy, not a source; the site and router never read it. This is
 locked decision D2 (Option A) and it is the site's whole positioning argument —
 not a preference.
 
@@ -203,10 +205,34 @@ Project ref: `yscpjfbaisvdpqjdsymh`
 `id` · `block_slug` · `component_id` · `content_type` · `audience[]` ·
 `skill[]` · `proof_type` · `status` · `sort_order` · `source_path` ·
 `synced_at` · `created_at` · `updated_at` · `layout_variant` ·
-**`page`** · **`section`** · **`component`**
+**`page`** · **`section`** · **`component`** · **`body_text`**
 
-The last three were added 2026-07-14. The parser had been sending them for
-weeks; the RPC dropped them silently because the columns didn't exist.
+The page/section/component trio was added 2026-07-14. The parser had been
+sending them for weeks; the RPC dropped them silently because the columns
+didn't exist.
+
+**`body_text` (added 2026-07-19) is a one-way, read-only mirror of the MDX
+body.** Display/management only — the website and router never read it; the
+blockRegistry remains the only render source. Option A intact: prose still
+only *originates* in MDX. Guarded by trigger
+`content_blocks_body_mirror_guard` (function `guard_body_text_mirror()`):
+any `body_text` change is rejected unless transaction-local flag
+`app.allow_body_write = 'on'` is set, which only the patched `sync_block` RPC
+does (first line: `set_config('app.allow_body_write','on',true)`). Hand edits
+in the table editor bounce with "body_text is a read-only mirror. Edit the
+MDX file and re-sync." Escape hatch: drop trigger → edit → recreate.
+Caveat: a sync payload without `body_text` nulls the mirror on update — the
+n8n Code node sends it for blocks only, by design.
+
+## Reporting views (added 2026-07-19)
+
+Both `security_invoker = true`, dashboard use only — not for the site or API:
+
+- **`content_inventory`** — bird's-eye of all blocks: `block_slug`, `status`,
+  `audience`, `skill`, `page`, `section`, `sort_order`, plus a 100-char
+  `body_preview`. No full prose.
+- **`content_gaps`** — problems only: blocks with empty `skill`, blocks still
+  draft, case studies missing `short_description` or `cover_media_id`.
 
 ## case_studies
 
@@ -328,12 +354,13 @@ misconfiguration. `VITE_SUPABASE_URL` is correct.
 # PART 3 — Sync pipeline
 
 ```
-author MDX ──▶ frontmatter ──n8n──▶ Supabase (metadata)
-         └──▶ prose body ──vite build──▶ blockRegistry (frontend only)
+author MDX ──▶ frontmatter + body ──n8n──▶ Supabase (metadata + body_text mirror)
+         └──▶ prose body ──vite build──▶ blockRegistry (frontend only — the render source)
 ```
 
-Two permanently separate paths. That separation **is** the boundary story,
-mechanically.
+Two permanently separate *render* paths. The mirror rides the sync path but is
+read-only and display-only — nothing renders from it. The separation **is**
+the boundary story, mechanically.
 
 - **n8n** runs locally via npm — alive only while its terminal is open.
 - Pipeline: GitHub API tree fetch → filter MDX → decode base64 → parse
@@ -474,13 +501,14 @@ advance state independently.
 
 # PART 6 — Known gaps
 
-**Agreed but NOT built (2026-07-19) — do not assume these exist:**
-- `content_blocks.body_text` read-only mirror column + guard trigger
-  (`content_blocks_body_mirror_guard`) + `sync_block` patch + n8n body payload
-- `content_inventory` and `content_gaps` reporting views
-- `scripts/process-images.mjs` image pipeline (`npm run images`)
-Plan of record: "Current build phases" in `portfolio-master-plan.md`. Update
-this doc when each ships.
+**Shipped 2026-07-19 (formerly listed here as not built):**
+- `content_blocks.body_text` mirror + guard trigger + patched `sync_block` +
+  n8n body payload — live, verified (34 blocks mirrored; guard rejects hand
+  edits). Details in Parts 2–3.
+- `content_inventory` and `content_gaps` views — live (`security_invoker`).
+- `scripts/process-images.mjs` (`npm run images`) — committed and tested with
+  synthetic images. First run against real Figma exports still pending, as is
+  wiring the first `cover_media_id` (runbook Steps 10–11).
 
 **Content (blocks review):**
 - `short_description` NULL on all four case studies — cards render title + badge only
