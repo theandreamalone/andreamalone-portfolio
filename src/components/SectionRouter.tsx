@@ -12,7 +12,6 @@
 import type { SectionSpec } from '@/lib/viewContract';
 
 import SectionIntro from '@/components/sections/home/SectionIntro';
-import QuestionHero from '@/components/sections/home/QuestionHero';
 import Section2 from '@/components/sections/home/Section2';
 import Section3 from '@/components/sections/home/Section3';
 import Section4Client from '@/components/sections/home-4/Section4Client';
@@ -31,6 +30,10 @@ function renderSection(spec: SectionSpec) {
   switch (spec.kind) {
     case 'Hero':
       // NOT YET REFACTORED — renders its own adaptive block via AdaptiveBlock.
+      // QuestionHero (the new voice-enabled hero) is wired directly into
+      // Home.tsx instead of here — every hardcodedRouter intent also opens
+      // with a Hero section, and AdaptiveHome already has its own ask box,
+      // so making this case QuestionHero would double up the ask UI there.
       return <SectionIntro />;
 
     case 'SkillTicker':

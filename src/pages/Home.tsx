@@ -11,15 +11,21 @@
 
 import Layout from '@/components/layout/Layout';
 import SectionRouter from '@/components/SectionRouter';
+import QuestionHero from '@/components/sections/home/QuestionHero';
 import { STATIC_BASELINE } from '@/lib/staticBaseline';
 
 export default function Home() {
-  const orderedSections = [...STATIC_BASELINE.sections].sort(
-    (a, b) => a.order - b.order
-  );
+  // QuestionHero replaces the Hero section here directly — it isn't routed
+  // through SectionRouter's 'Hero' case because that case is shared with
+  // every hardcodedRouter response, which would double up the ask UI on
+  // AdaptiveHome (it already renders its own ask box).
+  const orderedSections = [...STATIC_BASELINE.sections]
+    .filter((spec) => spec.kind !== 'Hero')
+    .sort((a, b) => a.order - b.order);
 
   return (
     <Layout>
+      <QuestionHero />
       {orderedSections.map((spec, idx) => (
         <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
       ))}
