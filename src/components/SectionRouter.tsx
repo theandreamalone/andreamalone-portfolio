@@ -12,6 +12,7 @@
 import type { SectionSpec } from '@/lib/viewContract';
 
 import SectionIntro from '@/components/sections/home/SectionIntro';
+import QuestionHero from '@/components/sections/home/QuestionHero';
 import Section2 from '@/components/sections/home/Section2';
 import Section3 from '@/components/sections/home/Section3';
 import Section4Client from '@/components/sections/home-4/Section4Client';
