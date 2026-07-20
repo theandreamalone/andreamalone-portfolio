@@ -15,7 +15,13 @@
 
 import { blockFrontmatter, resolveBlock } from '@/lib/blockRegistry';
 import type { BlockId } from '@/lib/viewContract';
+import type { ComponentType } from 'react';
+import ImageBento from '@/components/ImageBento';
 import './case-study-body.css';
+
+/** Components available inside section MDX without imports. */
+const MDX_COMPONENTS = { ImageBento };
+type MdxBlock = ComponentType<{ components?: Record<string, ComponentType<never>> }>;
 
 interface SectionEntry {
   mdx_slug?: string;
@@ -38,7 +44,7 @@ export default function CaseStudyBody({ slug }: CaseStudyBodyProps) {
     .flatMap((s) => {
       if (!s.mdx_slug) return [];
       const id = `block:${s.mdx_slug}` as BlockId;
-      const Component = resolveBlock(id);
+      const Component = resolveBlock(id) as MdxBlock | null;
       if (!Component) return []; // resolveBlock already warned
       const fm = blockFrontmatter(id);
       if (fm?.status === 'draft') return [];
@@ -51,7 +57,7 @@ export default function CaseStudyBody({ slug }: CaseStudyBodyProps) {
     <div className="case-study-body">
       {blocks.map(({ id, Component }) => (
         <section key={id} className="case-study-body-section">
-          <Component />
+          <Component components={MDX_COMPONENTS} />
         </section>
       ))}
     </div>

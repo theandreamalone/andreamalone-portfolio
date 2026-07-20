@@ -1,9 +1,26 @@
-/* CaseStudyBody — images + figures only.
-   Typography (h2, h3, p, li, blockquote) is intentionally NOT overridden:
-   the Magzin template's global styles brand the prose. */
+/* CaseStudyBody — prose scale + images, matched to portfolio-details.
+   Typeface comes from the template (Geist, global). These rules align
+   MDX output to the template's article scale: section titles at h4 size,
+   body copy at fs-6 (18px), dark text like the template's text-dark. */
 
 .case-study-body-section {
-  margin-bottom: 48px;
+  margin-bottom: 40px;
+}
+
+.case-study-body h2 {
+  font-size: 31px;          /* h4 scale — MDX keeps h2 semantics for a11y */
+  margin-bottom: 16px;
+}
+
+.case-study-body h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.case-study-body p,
+.case-study-body li {
+  font-size: 18px;          /* fs-6 */
+  line-height: 1.6;
 }
 
 .case-study-body img {
@@ -11,11 +28,16 @@
   height: auto;
   display: block;
   border-radius: 16px;
-  margin: 32px 0;
+  margin: 24px 0;
+}
+
+.case-study-body .block-image img {
+  border-radius: 0;         /* rounding lives on the bento wrapper */
+  margin: 0;
 }
 
 .case-study-body figure {
-  margin: 32px 0;
+  margin: 24px 0;
 }
 
 .case-study-body figure img {
@@ -24,6 +46,6 @@
 
 .case-study-body figcaption {
   font-size: 14px;
-  color: var(--tc-neutral-600, #626568);
+  color: #626568;
   margin-top: 12px;
 }

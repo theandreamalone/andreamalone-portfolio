@@ -85,11 +85,11 @@ export default function CaseStudyDetail() {
 
   return (
     <Layout headerStyle={2} footerStyle={4}>
-    <section className="sec-1-single-1 pb-70">
+    <section className="sec-1-portfolio-archive pb-100">
+      {/* Breadcrumb */}
       <div className="container">
         <div className="row">
-          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
-            {/* Breadcrumb — template single-1 pattern */}
+          <div className="col-12">
             <nav aria-label="breadcrumb">
               <ul className="breadcrumb list-unstyled d-flex flex-row gap-2 align-items-center m-0 ps-0 py-4">
                 <li className="breadcrumb-item">
@@ -117,62 +117,74 @@ export default function CaseStudyDetail() {
                 </li>
               </ul>
             </nav>
-
-            {/* Badges + title — template card-info pattern */}
-            <div className="article card-info d-flex flex-wrap align-items-center gap-2 mt-4">
-              {cs.industry && <span className="badge bg-1 fs-8">{cs.industry}</span>}
-              {cs.client && <span className="badge bg-2 fs-8">{cs.client}</span>}
-              {cs.when && (
-                <ul className="d-flex align-items-center text-600 m-0 ps-3">
-                  <li><p className="fs-8 m-0">{cs.when}</p></li>
-                </ul>
-              )}
-              <h1 className="ds-4 mb-0 w-100">{cs.title}</h1>
-              {cs.short_description && (
-                <p className="fs-6 text-600 mt-2 mb-0">{cs.short_description}</p>
-              )}
-            </div>
           </div>
         </div>
 
-        <div className="border-top mt-4" />
-
-        {/* Meta row — role + year */}
-        <div className="row">
-          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
-            <div className="bottom mt-auto d-flex flex-wrap align-items-center gap-2 pt-4">
-              {cs.role_title && <span className="fs-7 text-dark fw-regular">{cs.role_title}</span>}
-              {cs.skills.length > 0 && (
-                <div className="ms-md-auto d-flex flex-wrap align-items-center gap-2">
-                  {cs.skills.map((sk) => (
-                    <span key={sk.slug} className="bg-200 fs-8 rounded-8 py-2 px-3">
-                      {sk.name}
-                    </span>
-                  ))}
-                </div>
-              )}
+        {/* Title */}
+        <div className="row align-items-end">
+          <div className="col-lg-7 col-12">
+            <div className="title">
+              <h1 className="mb-0 ds-4 text-uppercase">{cs.title}</h1>
+              {cs.short_description && <p className="fs-7 mb-0">{cs.short_description}</p>}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Cover — full-bleed, template treatment */}
+      {/* Banner */}
       {cs.thumbnail_url && (
-        <div className="custom-container-2 py-5">
-          <img
-            src={cs.thumbnail_url}
-            alt={cs.cover_alt_text}
-            className="rounded-16 cover-image"
-          />
+        <div className="custom-container-3 mt-5">
+          <div className="d-flex justify-content-center">
+            <div className="block-banner rounded-16 overflow-hidden">
+              <img src={cs.thumbnail_url} alt={cs.cover_alt_text} className="w-100 h-auto d-block" />
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Body */}
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
+      {/* Brief + body */}
+      <div className="container pt-100">
+        <div className="row g-lg-5 g-4">
+          <div className="col-lg-4 pe-lg-5">
+            <div className="block-brief rounded-16 p-4 border-200 bg-white">
+              <div className="title border-bottom-200 pb-2 mb-4 m-2">
+                <h5 className="mb-0">Project brief</h5>
+              </div>
+              <div className="content">
+                <ul className="text-secondary ps-3 fs-18 m-2">
+                  {cs.client && (
+                    <li>Client: <span className="text-dark">{cs.client}</span></li>
+                  )}
+                  {cs.industry && (
+                    <li>Industry: <span className="text-dark">{cs.industry}</span></li>
+                  )}
+                  {cs.role_title && (
+                    <li>Role: <span className="text-dark">{cs.role_title}</span></li>
+                  )}
+                  {cs.when && (
+                    <li>Timeline: <span className="text-dark">{cs.when}</span></li>
+                  )}
+                </ul>
+                {cs.skills.length > 0 && (
+                  <div className="d-flex flex-wrap gap-2 m-2 pt-2">
+                    {cs.skills.map((sk) => (
+                      <span key={sk.slug} className="bg-200 fs-8 rounded-8 py-2 px-3">
+                        {sk.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {cs.showClientDisclosureNote && (
+                  <div className="m-2">
+                    <ClientDisclosureNote />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-8">
             <CaseStudyBody slug={slug!} />
-            {cs.showClientDisclosureNote && <ClientDisclosureNote />}
           </div>
         </div>
       </div>
