@@ -409,7 +409,19 @@ Hosting: GitHub Pages via Actions.
 | `src/lib/staticBaseline.ts` | The hardcoded fallback composition |
 | `src/lib/hardcodedRouter.ts` | Keyword router — stand-in for the Edge Function |
 | `src/components/SectionRouter.tsx` | Dispatches `SectionSpec` → component |
+| `src/components/CaseStudyBody.tsx` | Detail-page body (shipped 2026-07-19): renders a case study's section blocks in authored order from the program file's bundled `sections:` frontmatter, via blockRegistry. Skips drafts; drops unknown slugs with a warning. Styling: `case-study-body.css`. |
 | `src/lib/queries/` | `caseStudies` · `caseStudyBySlug` · `careerHighlights` · `testimonials` · `outcomes` · `ctas` |
+
+**Frontmatter export fix (2026-07-19):** `remark-frontmatter` alone strips
+frontmatter but never exports it — `blockFrontmatter()` returned null for
+every module since day one (latent; nothing consumed it until CaseStudyBody).
+Fixed by adding `remark-mdx-frontmatter` to the MDX plugin chain in
+`vite.config.ts`. Every MDX module now exports `frontmatter`.
+
+**Program-file `sections:` arrays are load-bearing** — CaseStudyBody reads
+them for body order. `voice-ready-ai-experience.mdx` was missing its array
+(added 2026-07-19); the other four program files had them. A case study
+without a `sections:` array renders an empty body, silently.
 
 ## Section vocabulary (11)
 
@@ -432,7 +444,7 @@ Supabase. Option A at the type level.
 ## Patterns worth copying
 
 - **Resolving block IDs → rendering prose:** `FallbackAnswer.tsx`.
-  *Not* `CaseStudySection.tsx` — that's a dumb wrapper that fetches nothing.
+  *Not* `CaseStudySection.tsx` — that is a dumb wrapper that fetches nothing. For ordered full-body rendering, the pattern is `CaseStudyBody.tsx`.
 - **Fetching by record_ids:** `Section3.tsx` — filter prefix, warn on drops,
   fetch, map through glossary, render null when empty.
 - **Order preservation:** `fetchCaseStudiesBySlugs` re-sorts after `.in()`,
@@ -462,10 +474,11 @@ Export spec derived from this: covers 1600×1200 (4:3), subject in central
 shows the raw file). Testimonials ~560×740. No resize pipeline exists in
 Supabase — don't upload raw 5000px exports.
 
-In-body case study images: **no rendering path exists yet** — the detail page
-body is a Phase 3 stub. No MDX file contains an image. When body rendering
-ships, body images render native ratio in a `col-lg-8` (~840px) column; export
-~1700px wide.
+In-body case study images: **rendering shipped 2026-07-19.** Section MDX may
+embed `![alt](/media/{slug}/{name}.webp)`; images render native ratio, full
+column width (`col-lg-8`, ~840px) via `case-study-body.css`. Export ~1700px
+wide (2× column) through the body preset. Root-relative `/media/...` URLs are
+correct — custom domain (CNAME), no Vite `base` subpath.
 
 ## Deprecated / dead
 
