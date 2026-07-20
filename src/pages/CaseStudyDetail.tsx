@@ -6,7 +6,7 @@
 // templateGlossary's mapCaseStudyToDetail — this component only renders
 // the resulting CaseStudyDetailData, it doesn't decide anything itself
 // (see templateGlossary.ts file header).
-// Body is stubbed — block rendering with layout variants comes in Phase 3.
+// Body renders section blocks in authored order via CaseStudyBody (shipped 2026-07-19).
 // ============================================================================
 
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchCaseStudyBySlug } from '@/lib/queries/caseStudyBySlug';
 import { mapCaseStudyToDetail, type CaseStudyDetailData } from '@/lib/templateGlossary';
 import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
+import CaseStudyBody from '@/components/CaseStudyBody';
 
 type FetchState =
   | { status: 'loading' }
@@ -105,15 +106,9 @@ export default function CaseStudyDetail() {
 
       {/* Body + Sidebar */}
       <div className="row">
-        {/* Body — stubbed for Task 3 */}
+        {/* Body — section blocks in authored order, resolved via blockRegistry */}
         <div className="col-lg-8 mb-5">
-          <div className="p-4 rounded-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <p className="fs-7 mb-0">
-              <strong>Body rendering coming in Phase 3.</strong> This is where the
-              block-level content (with per-block layout variants from MDX
-              frontmatter) will render.
-            </p>
-          </div>
+          <CaseStudyBody slug={slug!} />
         </div>
 
         {/* Sidebar: project brief */}
