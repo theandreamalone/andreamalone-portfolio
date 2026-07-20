@@ -170,6 +170,12 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
         </div>
         {/* eslint-disable-next-line react/no-unknown-property */}
         <style>{`
+          /* Scrim: keeps white caption text legible over light cover images */
+          .sec-9-home-1 .gallery-left .article .card-body {
+            background: linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.42) 26%, rgba(10,10,11,0.68) 100%);
+            border-radius: 16px;
+            padding: 24px;
+          }
           .swiper-pagination-bullet {
             width: 12px !important;
             height: 12px !important;
