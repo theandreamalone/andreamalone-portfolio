@@ -77,92 +77,96 @@ export default function CaseStudyDetail() {
   const cs = state.data;
 
   return (
-    <section className="container py-5">
-      {/* Breadcrumb */}
-      <nav className="mb-4 fs-8">
-        <Link to="/">Home</Link> / <Link to="/case-studies">Case Studies</Link> / {cs.title}
-      </nav>
+    <section className="sec-1-single-1 pb-70">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
+            {/* Breadcrumb — template single-1 pattern */}
+            <nav aria-label="breadcrumb">
+              <ul className="breadcrumb list-unstyled d-flex flex-row gap-2 align-items-center m-0 ps-0 py-4">
+                <li className="breadcrumb-item">
+                  <Link to="/" className="text-600 fs-7 hover-dark">Home</Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <span className="icon-shape icon-xxs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={15} height={15} viewBox="0 0 15 15" fill="none">
+                      <path d="M6.125 4.5625L9.5625 7.84375L6.125 11.125" stroke="#626568" strokeWidth="0.9375" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </li>
+                <li className="breadcrumb-item">
+                  <Link to="/case-studies" className="text-600 fs-7 hover-dark">Case Studies</Link>
+                </li>
+                <li className="breadcrumb-item">
+                  <span className="icon-shape icon-xxs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={15} height={15} viewBox="0 0 15 15" fill="none">
+                      <path d="M6.125 4.5625L9.5625 7.84375L6.125 11.125" stroke="#626568" strokeWidth="0.9375" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </li>
+                <li className="breadcrumb-item active text-dark fs-7" aria-current="page">
+                  {cs.title}
+                </li>
+              </ul>
+            </nav>
 
-      {/* Header */}
-      <div className="row mb-5">
-        <div className="col-lg-8">
-          <h1 className="ds-3 mb-3">{cs.title}</h1>
-          {cs.short_description && <p className="fs-5">{cs.short_description}</p>}
+            {/* Badges + title — template card-info pattern */}
+            <div className="article card-info d-flex flex-wrap align-items-center gap-2 mt-4">
+              {cs.industry && <span className="badge bg-1 fs-8">{cs.industry}</span>}
+              {cs.client && <span className="badge bg-2 fs-8">{cs.client}</span>}
+              {cs.when && (
+                <ul className="d-flex align-items-center text-600 m-0 ps-3">
+                  <li><p className="fs-8 m-0">{cs.when}</p></li>
+                </ul>
+              )}
+              <h1 className="ds-4 mb-0 w-100">{cs.title}</h1>
+              {cs.short_description && (
+                <p className="fs-6 text-600 mt-2 mb-0">{cs.short_description}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="border-top mt-4" />
+
+        {/* Meta row — role + year */}
+        <div className="row">
+          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
+            <div className="bottom mt-auto d-flex flex-wrap align-items-center gap-2 pt-4">
+              {cs.role_title && <span className="fs-7 text-dark fw-regular">{cs.role_title}</span>}
+              {cs.skills.length > 0 && (
+                <div className="ms-md-auto d-flex flex-wrap align-items-center gap-2">
+                  {cs.skills.map((sk) => (
+                    <span key={sk.slug} className="bg-200 fs-8 rounded-8 py-2 px-3">
+                      {sk.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Cover image */}
+      {/* Cover — full-bleed, template treatment */}
       {cs.thumbnail_url && (
-        <div className="row mb-5">
-          <div className="col-12">
-            <img
-              src={cs.thumbnail_url}
-              alt={cs.cover_alt_text}
-              className="w-100 rounded-4"
-            />
-          </div>
+        <div className="custom-container-2 py-5">
+          <img
+            src={cs.thumbnail_url}
+            alt={cs.cover_alt_text}
+            className="rounded-16 cover-image"
+          />
         </div>
       )}
 
-      {/* Body + Sidebar */}
-      <div className="row">
-        {/* Body — section blocks in authored order, resolved via blockRegistry */}
-        <div className="col-lg-8 mb-5">
-          <CaseStudyBody slug={slug!} />
-        </div>
-
-        {/* Sidebar: project brief */}
-        <aside className="col-lg-4">
-          <div className="p-4 rounded-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <h5 className="mb-3">Project Brief</h5>
-            <dl className="fs-7">
-              {cs.client && (
-                <>
-                  <dt className="text-600">Client</dt>
-                  <dd className="mb-2">{cs.client}</dd>
-                </>
-              )}
-              {cs.industry && (
-                <>
-                  <dt className="text-600">Industry</dt>
-                  <dd className="mb-2">{cs.industry}</dd>
-                </>
-              )}
-              {cs.role_title && (
-                <>
-                  <dt className="text-600">Role</dt>
-                  <dd className="mb-2">{cs.role_title}</dd>
-                </>
-              )}
-              {cs.when && (
-                <>
-                  <dt className="text-600">When</dt>
-                  <dd className="mb-2">{cs.when}</dd>
-                </>
-              )}
-            </dl>
-            {cs.showClientDisclosureNote && (
-              <ClientDisclosureNote />
-            )}
-            {/* Skills chips */}
-            {cs.skills.length > 0 && (
-              <>
-                <h6 className="mt-4 mb-2">Skills used</h6>
-                <div className="d-flex flex-wrap gap-2">
-                  {cs.skills.map((s) => (
-                    <Link
-                      key={s.slug}
-                      to={s.linkHref}
-                      className="badge bg-1 fs-8 text-decoration-none"
-                    >
-                      {s.name}
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
+      {/* Body */}
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-9 col-md-10 offset-lg-1 offset-md-1">
+            <CaseStudyBody slug={slug!} />
+            {cs.showClientDisclosureNote && <ClientDisclosureNote />}
           </div>
-        </aside>
+        </div>
       </div>
     </section>
   );
