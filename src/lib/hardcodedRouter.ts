@@ -30,8 +30,8 @@ import { STATIC_BASELINE } from '@/lib/staticBaseline';
 /** Every published case study, in default display order. */
 const ALL_CASE_STUDIES: RecordId[] = [
   'cs:voice-ready-ai-experience',
-  'cs:nethive-iq',
-  'cs:fault-iq',
+  'cs:enterprise-network-operations',
+  'cs:network-fault-investigation',
   'cs:executive-dashboard',
 ];
 
@@ -64,7 +64,7 @@ const RULES: Rule[] = [
   {
     // Deep dive — a named project beats every broader intent.
     intent: 'case_deep_dive',
-    test: /\b(voice[- ]ready|nethive|fault iq|executive dashboard|tell me about)\b/i,
+    test: /\b(voice[- ]ready|enterprise network operations|network fault investigation|executive dashboard|tell me about)\b/i,
     compose: () => {
       const subject = 'cs:voice-ready-ai-experience' as RecordId;
       return {
@@ -108,7 +108,7 @@ const RULES: Rule[] = [
           emphasis: 'human_in_loop',
         }),
         section('CaseStudyBento', 2, AI_CASE_STUDIES, { emphasis: 'depth' }),
-        section('Outcomes', 3, ['cs:nethive-iq']),
+        section('Outcomes', 3, ['cs:enterprise-network-operations']),
         section('CTABar', 4, [], { variant: 'contact' }),
         section('Contact', 5),
       ],
@@ -125,7 +125,7 @@ const RULES: Rule[] = [
         section('CaseStudyBento', 1, ALL_CASE_STUDIES.slice(0, 3), {
           emphasis: 'breadth',
         }),
-        section('Outcomes', 2, ['cs:nethive-iq'], { emphasis: 'scale' }),
+        section('Outcomes', 2, ['cs:enterprise-network-operations'], { emphasis: 'scale' }),
         section('CareerHighlights', 3),
         section('CTABar', 4, [], { variant: 'contact' }),
         section('Contact', 5),

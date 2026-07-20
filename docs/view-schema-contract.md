@@ -22,7 +22,7 @@ IDs and enums only, never text.
   "sections": [
     { "kind": "Hero", "order": 0, "record_ids": ["block:home-hero"] },
     { "kind": "CaseStudyFeature", "order": 1, "record_ids": ["cs:voice-ready-ai-experience"], "emphasis": "ai_focus" },
-    { "kind": "CaseStudyBento", "order": 2, "record_ids": ["cs:nethive-iq", "cs:fault-iq", "cs:executive-dashboard"] },
+    { "kind": "CaseStudyBento", "order": 2, "record_ids": ["cs:enterprise-network-operations", "cs:network-fault-investigation", "cs:executive-dashboard"] },
     { "kind": "CTABar", "order": 3, "record_ids": ["cta:contact-primary"] }
   ],
   "confidence": "high",

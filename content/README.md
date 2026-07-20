@@ -37,8 +37,8 @@ body text.
 ## Files in this batch
 - `pages/home.mdx` — type: page
 - `blocks/home-hero.mdx`, `home-intro-recruiter.mdx`, `home-intro-hiring-manager.mdx` — type: block
-- `case-studies/nethive-iq.mdx` — type: case_study (sections/outcomes nested inline)
-- `case-study-sections/nethive-iq-problem.mdx`, `nethive-iq-solution.mdx` — NOT synced, frontend-only
+- `case-studies/enterprise-network-operations.mdx` — type: case_study (sections/outcomes nested inline)
+- `case-study-sections/enterprise-network-operations-problem.mdx`, `enterprise-network-operations-solution.mdx` — NOT synced, frontend-only
 - `testimonials/nethive-lead.mdx` — type: testimonial
 
 Placeholder copy (`[Replace with...]`, `TBD`) needs real content before syncing.

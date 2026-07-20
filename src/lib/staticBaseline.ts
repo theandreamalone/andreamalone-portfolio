@@ -35,15 +35,15 @@ export const STATIC_BASELINE: RouterResponse = {
       kind: 'CaseStudyBento',
       order: 3,
       record_ids: [
-        'cs:nethive-iq',
-        'cs:fault-iq',
+        'cs:enterprise-network-operations',
+        'cs:network-fault-investigation',
         'cs:executive-dashboard',
       ],
     },
     {
       kind: 'Outcomes',
       order: 4,
-      record_ids: ['cs:nethive-iq'],
+      record_ids: ['cs:enterprise-network-operations'],
     },
     {
       kind: 'Testimonials',

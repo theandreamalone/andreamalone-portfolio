@@ -53,13 +53,13 @@ Across all projects, the strongest recurring evidence is in:
 
 ## Project → skills mapping
 
-### NetHive IQ AI Executive Dashboard
+### Enterprise Network Operations Platform AI Executive Dashboard
 AI experience and product design; AI problem framing; AI output architecture; dashboard and data visualization; context and input design; human-AI collaboration; responsive product design; operational prioritization; stakeholder alignment; rapid iteration.
 
-### NetHive IQ AI Chat / Voice-Ready AI Experience
+### Enterprise Network Operations Platform AI Chat / Voice-Ready AI Experience
 AI interaction design; conversational and voice UX; AI response architecture; context-aware guidance; trust and transparency; human handoffs; retries and recovery; accessibility; responsive design; scalable interaction patterns.
 
-### Fault IQ
+### Network Fault Investigation Dashboard
 AI-assisted enterprise workflow design; incident analysis; prioritization and alert design; complex information architecture; data visualization; human-AI decision support; workflow optimization; technical feasibility; cross-functional product leadership.
 
 ### Network Aware

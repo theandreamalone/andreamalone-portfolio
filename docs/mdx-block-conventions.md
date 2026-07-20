@@ -32,7 +32,7 @@ subject case study's slug.
 | Kind | Pattern | Examples |
 |------|---------|----------|
 | Site-level block | `{page}-{purpose}` | `home-hero`, `home-intro-recruiter` |
-| Case-study section | `{cs-slug}-{section}` | `voice-ready-ai-problem`, `fault-iq-solution` |
+| Case-study section | `{cs-slug}-{section}` | `voice-ready-ai-problem`, `network-fault-investigation-solution` |
 | Case-study anecdote | `{cs-slug}-{topic}-anecdote` | `voice-ready-ai-hitl-anecdote` |
 | Fallback answer | `fallback-{topic}` | `fallback-empty-state`, `fallback-contact` |
 | Level 3 framing (deferred) | `{owner}-{purpose}--{framing}` | `voice-ready-ai-outcome--business`, `--systems` |

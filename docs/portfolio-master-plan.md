@@ -131,7 +131,7 @@ for management visibility. Website and router never read it.
 - Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
 - Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
 - ai-portfolio-orchestrator case study row + prose — post-ship. Blocked on the events log (item 11) producing real composition data; writing it before launch would make speculative claims about a system with no outcomes yet. Item 14 ("How this site works") carries the boundary story in v1. The three grandfathered Level 3 MDX variants already exist and stay as-is.
-- Fault IQ case study (both thin drafts)
+- Network Fault Investigation Dashboard case study (both thin drafts)
 
 Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
 
@@ -143,9 +143,9 @@ Move to active tasks when events log shows real questions the current tagging ca
 
 - [x] 15. Wire up routing in `App.tsx`; connect `CaseStudyDetail.tsx` as reachable route (routing actually lives in `router.tsx`, not `App.tsx`)
 - [x] 16. Wire `PortfolioArchive1` to Supabase via `mapCaseStudyToArchive1Card` — COMPLETE, not absorbed by Section 1B. Archive1 is a flat published-only grid (no tag/skill matching); Section 1B's view components are a separate, tag-driven system. Both coexist. (Verified 2026-07-16.)
-- [x] 17. Create `/case-studies` grid route — COMPLETE, already implemented via Section1.tsx / PortfolioArchive1. Renders all 4 published case studies (fault-iq and executive-dashboard now published per 2026-07-15 publishing rule). (Verified 2026-07-16.)
+- [x] 17. Create `/case-studies` grid route — COMPLETE, already implemented via Section1.tsx / PortfolioArchive1. Renders all 4 published case studies (network-fault-investigation and executive-dashboard now published per 2026-07-15 publishing rule). (Verified 2026-07-16.)
 - [x] 18. Port n8n pipeline from `react-portfolio-3`; repoint source URL to `andreamalone-portfolio` once content folder exists
-- [ ] 18c. Case study program-level MDX files (executive-dashboard.mdx, fault-iq.mdx, nethive-iq.mdx, voice-ready-ai-experience.mdx) — verify frontmatter matches the case_studies parser branch and that sync_case_study RPC accepts current payload.
+- [ ] 18c. Case study program-level MDX files (executive-dashboard.mdx, network-fault-investigation.mdx, enterprise-network-operations.mdx, voice-ready-ai-experience.mdx) — verify frontmatter matches the case_studies parser branch and that sync_case_study RPC accepts current payload.
 
 ## Section 3 — Content gaps (case studies won't hold up to review)
 
@@ -158,7 +158,7 @@ Move to active tasks when events log shows real questions the current tagging ca
 
 ## Section 4 — Compliance / permissions
 
-- [ ] 25. Send T-Mobile/Amdocs disclosure permission email (drafted; all three NetHive IQ studies anonymized in the meantime)
+- [ ] 25. Send T-Mobile/Amdocs disclosure permission email (drafted; all three Enterprise Network Operations Platform studies anonymized in the meantime)
 - [ ] 26. Update Figma status chips to "Client Approved"
 
 ## Section 5 — Known bugs (fix before promotion)
