@@ -1,9 +1,6 @@
 /**
  * ImageBento — the portfolio-details image grid, reusable anywhere in a
- * case study body (repeatable; use as many per section as needed).
- *
- * Markup mirrors the template's block-image pattern exactly:
- * row g-4 → col-md-6 halves, col-12 full-width, each rounded-16.
+ * case study body. Every tile expands into the shared Lightbox.
  *
  * MDX usage (no import needed — supplied via CaseStudyBody's components map):
  *
@@ -13,13 +10,13 @@
  *     { src: "/media/{slug}/c.webp", alt: "...", wide: true },
  *   ]} />
  *
- * Rule: `wide: true` → full row; otherwise half (stacks on mobile).
- * Two halves sit side by side in source order.
+ * Rule: `wide: true` -> full row; otherwise half (stacks on mobile).
  */
 
-interface BentoImage {
-  src: string;
-  alt: string;
+import { useState } from 'react';
+import Lightbox, { type LightboxImage } from './Lightbox';
+
+interface BentoImage extends LightboxImage {
   wide?: boolean;
 }
 
@@ -28,18 +25,29 @@ interface ImageBentoProps {
 }
 
 export default function ImageBento({ images }: ImageBentoProps) {
+  const [open, setOpen] = useState<number | null>(null);
+
   if (!images?.length) return null;
+
   return (
     <div className="block-image my-4">
       <div className="row g-4">
-        {images.map((img) => (
+        {images.map((img, i) => (
           <div key={img.src} className={img.wide ? 'col-12' : 'col-md-6'}>
-            <div className="rounded-16 overflow-hidden">
+            <button
+              type="button"
+              className="cs-media-expand rounded-16 overflow-hidden"
+              aria-label={`Expand image: ${img.alt}`}
+              onClick={() => setOpen(i)}
+            >
               <img src={img.src} alt={img.alt} className="w-100 h-auto d-block" />
-            </div>
+            </button>
           </div>
         ))}
       </div>
+      {open !== null && (
+        <Lightbox images={images} index={open} onClose={() => setOpen(null)} onNavigate={setOpen} />
+      )}
     </div>
   );
 }

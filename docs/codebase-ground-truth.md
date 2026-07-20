@@ -409,7 +409,8 @@ Hosting: GitHub Pages via Actions.
 | `src/lib/staticBaseline.ts` | The hardcoded fallback composition |
 | `src/lib/hardcodedRouter.ts` | Keyword router — stand-in for the Edge Function |
 | `src/components/SectionRouter.tsx` | Dispatches `SectionSpec` → component |
-| `src/components/CaseStudyBody.tsx` | Detail-page body (shipped 2026-07-19): renders a case study's section blocks in authored order from the program file's bundled `sections:` frontmatter, via blockRegistry. Skips drafts; drops unknown slugs with a warning. Styling: `case-study-body.css`. |
+| `src/components/CaseStudyBody.tsx` | Detail-page body (shipped 2026-07-19): renders a case study's section blocks in authored order from the program file's bundled `sections:` frontmatter, via blockRegistry. Skips drafts; drops unknown slugs with a warning. Supplies MDX components map: `ImageBento`, `ImageCarousel`, and `img` → `MdxImage`. Styling: `case-study-body.css`. |
+| `src/components/media/` | `Lightbox` (shared overlay: Esc/arrows/counter) · `ImageBento` (template block-image grid; `wide` → col-12) · `ImageCarousel` (Swiper + pagination, `perView` prop) · `MdxImage` (plain markdown images). All lightbox-integrated; usable in section MDX with no imports. |
 | `src/lib/queries/` | `caseStudies` · `caseStudyBySlug` · `careerHighlights` · `testimonials` · `outcomes` · `ctas` |
 
 **Frontmatter export fix (2026-07-19):** `remark-frontmatter` alone strips
@@ -417,6 +418,13 @@ frontmatter but never exports it — `blockFrontmatter()` returned null for
 every module since day one (latent; nothing consumed it until CaseStudyBody).
 Fixed by adding `remark-mdx-frontmatter` to the MDX plugin chain in
 `vite.config.ts`. Every MDX module now exports `frontmatter`.
+
+**Detail page anatomy (2026-07-20):** `CaseStudyDetail.tsx` uses the
+template's portfolio-details pattern — breadcrumb, uppercase `ds-4` title,
+`block-banner rounded-16` cover, left `block-brief` card (client / industry /
+role / timeline / skill chips / disclosure note), body in `col-lg-8`. All
+four render states wrap in `<Layout headerStyle={2} footerStyle={4}>` —
+the page previously had NO Layout (no header/footer/theme).
 
 **Program-file `sections:` arrays are load-bearing** — CaseStudyBody reads
 them for body order. `voice-ready-ai-experience.mdx` was missing its array

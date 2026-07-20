@@ -16,6 +16,9 @@ import { mapCaseStudyToDetail, type CaseStudyDetailData } from '@/lib/templateGl
 import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
 import Layout from '@/components/layout/Layout';
 import CaseStudyBody from '@/components/CaseStudyBody';
+import CaseStudyBodyScrolly from '@/components/CaseStudyBodyScrolly';
+import { blockFrontmatter } from '@/lib/blockRegistry';
+import type { BlockId } from '@/lib/viewContract';
 
 type FetchState =
   | { status: 'loading' }
@@ -83,6 +86,8 @@ export default function CaseStudyDetail() {
 
   const cs = state.data;
 
+  const scrolly = blockFrontmatter(`block:${slug}` as BlockId)?.layout === 'scrolly';
+
   return (
     <Layout headerStyle={2} footerStyle={4}>
     <section className="sec-1-portfolio-archive pb-100">
@@ -144,8 +149,8 @@ export default function CaseStudyDetail() {
 
       {/* Brief + body */}
       <div className="container pt-100">
-        <div className="row g-lg-5 g-4">
-          <div className="col-lg-4 pe-lg-5">
+        <div className={scrolly ? 'row' : 'row g-lg-5 g-4'}>
+          <div className={scrolly ? 'col-12 mb-5' : 'col-lg-4 pe-lg-5'}>
             <div className="block-brief rounded-16 p-4 border-200 bg-white">
               <div className="title border-bottom-200 pb-2 mb-4 m-2">
                 <h5 className="mb-0">Project brief</h5>
@@ -183,8 +188,8 @@ export default function CaseStudyDetail() {
             </div>
           </div>
 
-          <div className="col-lg-8">
-            <CaseStudyBody slug={slug!} />
+          <div className={scrolly ? 'col-12' : 'col-lg-8'}>
+            {scrolly ? <CaseStudyBodyScrolly slug={slug!} /> : <CaseStudyBody slug={slug!} />}
           </div>
         </div>
       </div>

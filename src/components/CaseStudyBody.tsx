@@ -16,11 +16,13 @@
 import { blockFrontmatter, resolveBlock } from '@/lib/blockRegistry';
 import type { BlockId } from '@/lib/viewContract';
 import type { ComponentType } from 'react';
-import ImageBento from '@/components/ImageBento';
+import ImageBento from '@/components/media/ImageBento';
+import ImageCarousel from '@/components/media/ImageCarousel';
+import MdxImage from '@/components/media/MdxImage';
 import './case-study-body.css';
 
 /** Components available inside section MDX without imports. */
-const MDX_COMPONENTS = { ImageBento };
+const MDX_COMPONENTS = { ImageBento, ImageCarousel, img: MdxImage };
 type MdxBlock = ComponentType<{ components?: Record<string, ComponentType<never>> }>;
 
 interface SectionEntry {

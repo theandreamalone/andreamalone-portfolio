@@ -49,3 +49,119 @@
   color: #626568;
   margin-top: 12px;
 }
+
+/* ---- Media expand + lightbox ---- */
+
+.cs-media-expand {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.cs-media-expand-full {
+  margin: 24px 0;
+}
+
+.cs-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1080;
+  background: rgba(10, 10, 11, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-lightbox-figure {
+  margin: 0;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-lightbox-figure img {
+  max-width: 92vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+}
+
+.cs-lightbox-figure figcaption {
+  color: #d7d8d9;
+  font-size: 14px;
+  text-align: center;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.cs-lightbox-counter {
+  opacity: 0.7;
+}
+
+.cs-lightbox-close,
+.cs-lightbox-nav {
+  position: fixed;
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-lightbox-close { top: 24px; right: 24px; }
+.cs-lightbox-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+.cs-lightbox-next { right: 24px; top: 50%; transform: translateY(-50%); }
+
+.cs-lightbox-close:hover,
+.cs-lightbox-nav:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Swiper pagination visibility on dark theme */
+.cs-carousel .swiper-pagination-bullet { background: #9a9ca0; opacity: 0.6; }
+.cs-carousel .swiper-pagination-bullet-active { background: #fff; opacity: 1; }
+.cs-carousel .swiper { padding-bottom: 32px; }
+
+/* ---- Scrollytelling (Phase 4) ---- */
+
+.cs-scrolly-pane {
+  position: sticky;
+  top: 96px;                 /* clears the fixed header */
+  min-height: 40vh;
+}
+
+.cs-scrolly-pane-media {
+  animation: cs-scrolly-fade 0.4s ease;
+}
+
+@keyframes cs-scrolly-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-scrolly-pane-media { animation: none; }
+}
+
+/* Generous spacing so each block owns real scroll distance */
+.cs-scrolly-block {
+  min-height: 40vh;
+  margin-bottom: 30vh;
+}
+
+.cs-scrolly-block:last-child {
+  margin-bottom: 10vh;
+}

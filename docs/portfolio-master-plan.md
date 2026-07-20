@@ -53,6 +53,44 @@ items 7 and 9 in Section 1B.
 11. Folder convention: `media/source/{slug}/` in → `public/media/{slug}/` out
 12. End-to-end test with one real Figma export
 
+**Phase 2.5 — Case study body & media (SHIPPED 2026-07-19/20, same day as Phase 1)**
+Body rendering shipped: `CaseStudyBody` renders section blocks in authored
+order from program-file `sections:` frontmatter (required `remark-mdx-frontmatter`
+fix — see ground truth). Detail page rebuilt on the template's
+portfolio-details anatomy (breadcrumb, ds-4 title, block-banner cover, brief
+card w/ skills + disclosure, col-lg-8 body). Media system: `ImageBento`
+(template bento grid), `ImageCarousel` (Swiper + pagination), `MdxImage`
+(plain `![...]`), all opening a shared `Lightbox` (Esc/arrows/counter). All
+available in section MDX with no imports. `voice-ready-ai-experience-process`
+stub created (draft, [NEED] bracket) for decision-rationale progression.
+
+**Phase 4 — Scrollytelling case study layout (NEXT session — spec below)**
+Two-column case study body: sticky LEFT media pane, RIGHT prose blocks; the
+media pane swaps to the active block's media as it scrolls into view (GSAP
+ScrollTrigger — installed). Mobile: media renders inline above its block.
+
+Frontmatter contract — add per section block (optional; absent = no pane
+entry, prose spans full width for that block):
+```yaml
+media:
+  - kind: bento | carousel | single
+    images:
+      - src: /media/{cs-slug}/{name}.webp
+        alt: "..."
+        wide: true        # bento tiles only
+```
+Build steps:
+1. Extend block frontmatter parse (frontend only — `media:` does NOT sync to
+   Supabase; it's a render concern, not selection metadata. n8n untouched.)
+2. `CaseStudyBodyScrolly` variant: left sticky pane renders the active
+   block's media via the existing ImageBento/ImageCarousel/MdxImage +
+   Lightbox; right column renders prose blocks
+3. GSAP ScrollTrigger sync: block enters viewport → pane crossfades
+4. Reduced-motion + mobile fallback: inline media, no pinning
+   (prefers-reduced-motion respected per accessibility checklist)
+5. Feature-flag per case study (frontmatter `layout: scrolly`) so studies
+   can adopt it one at a time
+
 **Phase 3 — Real AI router (horizon; = items 7 + 9 remainder)**
 Swap `hardcodedRouter.ts` for the Claude Supabase Edge Function. Returns
 `{sections, confidence, intent_tag?}` with `record_ids` — IDs and enums only,
