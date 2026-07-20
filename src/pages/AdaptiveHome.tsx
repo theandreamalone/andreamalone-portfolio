@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import SectionRouter from "@/components/SectionRouter";
 import { VoiceGlow, type VoiceMode } from "@/components/VoiceGlow";
@@ -34,6 +34,14 @@ const SPOKEN_CONFIRMATIONS: Record<string, string> = {
   // ai_agentic_work: "Here's Andrea's AI product work.",
 };
 
+/**
+ * Endpointing pause between a final voice transcript and auto-submit.
+ * Standard speech-UI debounce window so a mid-thought breath doesn't
+ * submit half a question. Purely a timing buffer — recognition itself
+ * has already ended by the time this fires (continuous: false).
+ */
+const VOICE_SUBMIT_DEBOUNCE_MS = 900;
+
 export default function AdaptiveHome() {
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState<RouterResponse>(STATIC_BASELINE);
@@ -41,35 +49,54 @@ export default function AdaptiveHome() {
 
   const mic = useMicLevel();
   const tts = useSpeechOutput();
+  const voiceSubmitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function ask(q: string, spoken = false) {
+  /** The one submit path — form, chips, and voice all funnel through this. */
+  function ask(q: string): RouterResponse {
     setQuestion(q);
     setAsked(q.trim() || null);
     const res = route(q);
     setResponse(res);
-    // Speak only when the question arrived by voice — matches modality.
-    if (spoken) {
+    return res;
+  }
+
+  function stopVoice() {
+    if (voiceSubmitTimer.current) {
+      clearTimeout(voiceSubmitTimer.current);
+      voiceSubmitTimer.current = null;
+    }
+    voice.stop();
+    mic.stop();
+  }
+
+  const voice = useVoiceInput((finalText) => {
+    // Show the transcript immediately; submission itself waits out the
+    // debounce below, same as the form's own submit path — voice never
+    // calls route()/setResponse() directly.
+    setQuestion(finalText);
+    if (voiceSubmitTimer.current) clearTimeout(voiceSubmitTimer.current);
+    voiceSubmitTimer.current = setTimeout(() => {
+      voiceSubmitTimer.current = null;
+      stopVoice(); // recognition already ended; guarantees mic/level UI
+                   // doesn't linger or re-trigger before the next mic press.
+      const res = ask(finalText);
       const line =
         SPOKEN_CONFIRMATIONS[res.intent_tag ?? "default"] ??
         SPOKEN_CONFIRMATIONS.default;
       tts.speak(line);
-    }
-  }
-
-  const voice = useVoiceInput((finalText) => {
-    mic.stop();
-    ask(finalText, true);
+    }, VOICE_SUBMIT_DEBOUNCE_MS);
   });
+
+  useEffect(() => {
+    return () => {
+      if (voiceSubmitTimer.current) clearTimeout(voiceSubmitTimer.current);
+    };
+  }, []);
 
   function startVoice() {
     tts.cancel(); // interrupting the AI is always allowed
     voice.start();
     mic.start();
-  }
-
-  function stopVoice() {
-    voice.stop();
-    mic.stop();
   }
 
   function reset() {
