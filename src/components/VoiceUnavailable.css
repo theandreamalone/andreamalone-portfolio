@@ -1,0 +1,58 @@
+/* VoiceUnavailable — muted mic with slash + tooltip */
+
+.voice-unavailable {
+  position: relative;
+  display: inline-flex;
+}
+
+.voice-unavailable__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0.4;
+  cursor: help;
+}
+
+.voice-unavailable__btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  opacity: 0.7;
+}
+
+.voice-unavailable__icon {
+  filter: grayscale(1);
+  font-size: 18px;
+}
+
+/* Diagonal slash over the mic — state not conveyed by dimming alone */
+.voice-unavailable__slash {
+  position: absolute;
+  width: 26px;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  border-radius: 1px;
+}
+
+.voice-unavailable__tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 240px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  background: rgba(20, 20, 24, 0.95);
+  color: #fff;
+  z-index: 10;
+  pointer-events: none;
+}
