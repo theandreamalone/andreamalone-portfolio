@@ -14,6 +14,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchCaseStudyBySlug } from '@/lib/queries/caseStudyBySlug';
 import { mapCaseStudyToDetail, type CaseStudyDetailData } from '@/lib/templateGlossary';
 import ClientDisclosureNote from '@/components/elements/ClientDisclosureNote';
+import Layout from '@/components/layout/Layout';
 import CaseStudyBody from '@/components/CaseStudyBody';
 
 type FetchState =
@@ -49,34 +50,41 @@ export default function CaseStudyDetail() {
 
   if (state.status === 'loading') {
     return (
-      <section className="container py-5">
-        <p>Loading…</p>
-      </section>
+      <Layout headerStyle={2} footerStyle={4}>
+        <section className="container py-5">
+          <p>Loading…</p>
+        </section>
+      </Layout>
     );
   }
 
   if (state.status === 'not-found') {
     return (
+      <Layout headerStyle={2} footerStyle={4}>
       <section className="container py-5">
         <h1 className="ds-6">Case study not found</h1>
         <p>The case study <code>{slug}</code> doesn’t exist or isn’t published.</p>
         <Link to="/case-studies">← Back to all case studies</Link>
       </section>
+      </Layout>
     );
   }
 
   if (state.status === 'error') {
     return (
-      <section className="container py-5">
-        <h1 className="ds-6">Something went wrong</h1>
-        <p>{state.message}</p>
-      </section>
+      <Layout headerStyle={2} footerStyle={4}>
+        <section className="container py-5">
+          <h1 className="ds-6">Something went wrong</h1>
+          <p>{state.message}</p>
+        </section>
+      </Layout>
     );
   }
 
   const cs = state.data;
 
   return (
+    <Layout headerStyle={2} footerStyle={4}>
     <section className="sec-1-single-1 pb-70">
       <div className="container">
         <div className="row">
@@ -169,5 +177,6 @@ export default function CaseStudyDetail() {
         </div>
       </div>
     </section>
+    </Layout>
   );
 }
