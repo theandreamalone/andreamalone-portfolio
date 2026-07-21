@@ -101,29 +101,23 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
               </svg>
             </div>
           </div>
-          <div className="block-card-swiper">
-            <div className="container">
-              <div className="row align-items-stretch g-5">
+          <div className="block-card-swiper cs-feature-frame">
+            {/* Container image, not a CSS background — width:100%/height:auto
+                so the frame's height follows the image; nothing is cropped. */}
+            <img
+              key={slides[currentSlideIndex]?.bg}
+              src={slides[currentSlideIndex]?.bg}
+              alt=""
+              className="cs-feature-img w-100 h-auto d-block"
+              // The frame's height comes from this image loading (async) —
+              // Swiper measures its slide width on mount, before that
+              // happens, and caches it. Force a recalc once the real
+              // layout is known, or the overlay card renders at ~0 width.
+              onLoad={() => swiperRef.current?.update()}
+            />
+            <div className="container cs-feature-overlay">
+              <div className="row g-5">
                 <div className="col-lg-6">
-                  <div
-                    id="gallery-background"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      // `contain`, not `cover` — these are case-study screenshots,
-                      // not ambient photography, so cropping edges loses content.
-                      backgroundSize: "contain",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center",
-                      backgroundColor: "var(--tc-bg-2, #17181a)",
-                      zIndex: 0,
-                      transition: "background-image 0.8s ease-in-out",
-                      backgroundImage: `url(${slides[currentSlideIndex]?.bg})`,
-                    }}
-                  />
                   <SwiperDynamic
                     className="gallery-left position-relative"
                     spaceBetween={10}
@@ -148,7 +142,7 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
                             <p className="card-text text-white mb-0 fs-7 mt-3 changeless">
                               {slide.description}
                             </p>
-                            <div className="bottom mt-auto d-flex flex-wrap align-items-center gap-2 pt-5">
+                            <div className="bottom d-flex flex-wrap align-items-center gap-2 pt-4">
                               {slide.client && (
                                 <span className="fs-7 text-white fw-regular changeless">
                                   {slide.client}
@@ -174,6 +168,35 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
         </div>
         {/* eslint-disable-next-line react/no-unknown-property */}
         <style>{`
+          /* Image dictates height now (2026-07-21) — the template's fixed
+             vertical padding was sized for a full-bleed CSS background and
+             would otherwise add dead space above/below the real image. */
+          .sec-9-home-1 .cs-feature-frame {
+            padding: 0;
+          }
+          .cs-feature-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 32px 0;
+          }
+          /* Bootstrap's .row relies on being a normal block child (100% width
+             by default); as a flex item of .cs-feature-overlay it shrinks to
+             fit its content instead, collapsing the whole grid. Restore it. */
+          .cs-feature-overlay > .row {
+            width: 100%;
+          }
+          /* Below lg, .col-lg-6 goes full width, so the card's natural
+             height (badge + title + description + meta) usually exceeds the
+             image's height. Overlaying it (absolute + flex-end) would clip
+             the top of the card against the frame. Stack it below instead. */
+          @media (max-width: 991.98px) {
+            .cs-feature-overlay {
+              position: static;
+              padding: 20px 0 0;
+            }
+          }
           /* Solid container (2026-07-20): the gradient scrim read as a smear
              over light cover images. Solid template grey instead — same grey
              as the hero input (--tc-bg-2). */
