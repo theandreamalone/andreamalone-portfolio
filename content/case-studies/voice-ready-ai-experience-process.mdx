@@ -5,10 +5,10 @@ page: case-study
 section: process
 component: CaseStudySection
 content_type: prose
-audience: [recruiter, hiring-manager, collaborator]
-skill: []
+audience: [hiring-manager, design-leader]
+skill: [ai-interaction-design, conversational-voice-ux, voice-design, human-ai-collaboration, explainability, accessibility]
 proof_type: scoped-visible
-status: draft
+status: published
 order: 2
 ---
 
@@ -20,10 +20,12 @@ order: 2
     { src: '/media/voice-ready-ai-experience/process-4.webp', alt: "Accessibility annotation pass overlaying ARIA landmark labels (header, nav, main, form) on the desktop and mobile chat layouts" }
   ]}
 />
-[NEED: decision rationale progression — how the design moved from text-first
-constraint through the split-mode proposal to the approved voice-state cycle.
-Candidates from Figma: Current vs. Future logic frames, Alterations & Fixes
-reasoning, the 7-state cycle evolution. Author via brief → ChatGPT → Claude
-review pipeline.]
+I framed the experience as two parallel, switchable interaction modes rather than treating voice as an enhancement layered onto a conventional chat interface. Immersive mode supports contexts where users may be moving, monitoring work, or unable to focus on a screen, while Traditional mode supports desk-based tasks that benefit from scanning, editing, and reviewing text; designing both as first-class experiences kept the choice grounded in user context rather than novelty.
+
+Within the voice experience, I explicitly designed conversational states such as User Speaking and AI Listening, supported by an audio-reactive indicator that communicates who currently has the floor. This feedback was not decorative polish: it reduced ambiguity in a system without the familiar visual cues of text chat and helped users understand whether the AI was listening, processing, or responding.
+
+I mapped the interaction logic through dedicated flows for the History Panel, Speaker Transition, and Experience Transition. The most difficult design problem was not entering either mode, but moving between them mid-conversation without making the user restart, repeat information, or lose their place; the flows documented how conversation history, controls, and system feedback should persist as the interaction shifted between voice and text.
+
+For the mobile AI interaction screens, I also created a layered accessibility annotation system covering headings, reading order, focus order, contrast, landmarks, and color-blindness considerations. Applying these annotations directly to dynamic AI states made accessibility part of the interaction model itself, rather than a compliance review added after the experience had already been defined — a direct expression of the accessibility, trust-and-transparency, and human-handoff practices that run through my broader AI product design work.
 
 ![Four mobile voice-state screens — AI Listening, AI Listening Prompt, and two User Speaking states — used to review the conversational states for accessibility](/media/voice-ready-ai-experience/accessibility.webp)
