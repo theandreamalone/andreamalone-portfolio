@@ -140,7 +140,7 @@ export default function CaseStudyDetail() {
       {cs.thumbnail_url && (
         <div className="custom-container-3 mt-5">
           <div className="d-flex justify-content-center">
-            <div className="block-banner rounded-16 overflow-hidden">
+            <div className="block-banner">
               <img src={cs.thumbnail_url} alt={cs.cover_alt_text} className="w-100 h-auto d-block" />
             </div>
           </div>

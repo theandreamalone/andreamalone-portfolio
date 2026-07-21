@@ -1,9 +1,13 @@
 // process-images.mjs — normalize raw Figma exports for the portfolio.
 //
 // Convention:
-//   media/source/{slug}/cover.(png|jpg|...)  -> public/media/{slug}/cover.webp   1600x1200 center-crop
-//   media/source/{slug}/anything-else.*      -> public/media/{slug}/*.webp       max 1700px wide, no upscale
+//   media/source/{slug}/*.(png|jpg|...)      -> public/media/{slug}/*.webp       max 1600px wide, no upscale
 //   media/source/testimonials/*.*            -> public/media/testimonials/*.webp 560x740 center-crop
+//
+// No cropping of case-study screenshots, including cover — they're read for
+// content, not composed as photography, and a center-crop silently loses
+// whatever fell outside the crop box. Fixed dimensions stay only for
+// testimonial photos, which are genuinely headshot-composed.
 //
 // Run: npm run images
 // Idempotent: re-running overwrites outputs. Sources are never modified.
@@ -29,12 +33,9 @@ async function processFile(slug, file) {
   if (slug === 'testimonials') {
     img = img.resize(560, 740, { fit: 'cover', position: 'centre' });
     preset = 'testimonial 560x740';
-  } else if (base === 'cover') {
-    img = img.resize(1600, 1200, { fit: 'cover', position: 'centre' });
-    preset = 'cover 1600x1200';
   } else {
-    img = img.resize({ width: 1700, withoutEnlargement: true });
-    preset = 'body max-1700w';
+    img = img.resize({ width: 1600, withoutEnlargement: true });
+    preset = 'screenshot max-1600w';
   }
 
   await img.webp({ quality: QUALITY }).toFile(outPath);
