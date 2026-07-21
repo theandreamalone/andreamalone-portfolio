@@ -29,6 +29,7 @@
   display: block;
   border-radius: 16px;
   margin: 24px 0;
+  object-fit: contain;
 }
 
 .case-study-body .block-image img {
@@ -91,6 +92,7 @@
   width: auto;
   height: auto;
   border-radius: 12px;
+  object-fit: contain;
 }
 
 .cs-lightbox-figure figcaption {
@@ -177,6 +179,7 @@
   width: auto;
   max-width: 100%;
   margin-inline: auto;
+  object-fit: contain;
 }
 
 /* Carousel slides */
@@ -185,6 +188,7 @@
   width: auto;
   max-width: 100%;
   margin: 0 auto;
+  object-fit: contain;
 }
 .cs-carousel .cs-media-expand { display: flex; justify-content: center; }
 
@@ -195,4 +199,5 @@
   width: auto;
   max-width: 100%;
   margin-inline: auto;
+  object-fit: contain;
 }
