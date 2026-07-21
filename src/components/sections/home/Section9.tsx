@@ -113,8 +113,12 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      backgroundSize: "cover",
+                      // `contain`, not `cover` — these are case-study screenshots,
+                      // not ambient photography, so cropping edges loses content.
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
                       backgroundPosition: "center",
+                      backgroundColor: "var(--tc-bg-2, #17181a)",
                       zIndex: 0,
                       transition: "background-image 0.8s ease-in-out",
                       backgroundImage: `url(${slides[currentSlideIndex]?.bg})`,
