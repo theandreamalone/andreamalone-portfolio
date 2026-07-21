@@ -37,6 +37,15 @@ function normalize(row: any): TestimonialRow {
 }
 
 /** All testimonials, featured first. */
+
+// Placeholder rows (person_name TBD/empty) must never render publicly — they
+// leak template avatars and, worse, un-anonymized client names (nethive-lead
+// carries "T-Mobile" pending a real attributed quote).
+function isRenderable(row: TestimonialRow): boolean {
+  const name = (row.person_name ?? "").trim();
+  return name.length > 0 && name.toUpperCase() !== "TBD";
+}
+
 export async function fetchTestimonials(): Promise<TestimonialRow[]> {
   const { data, error } = await supabase
     .from("testimonials")
@@ -47,7 +56,7 @@ export async function fetchTestimonials(): Promise<TestimonialRow[]> {
     console.warn("[fetchTestimonials] query failed", error);
     return [];
   }
-  return data.map(normalize);
+  return data.map(normalize).filter(isRenderable);
 }
 
 /**
@@ -68,7 +77,7 @@ export async function fetchTestimonialsBySlugs(slugs: string[]): Promise<Testimo
     return [];
   }
 
-  const rows = data.map(normalize);
+  const rows = data.map(normalize).filter(isRenderable);
   const bySlug = new Map(rows.map((r) => [r.quote_slug, r]));
   const ordered: TestimonialRow[] = [];
   for (const slug of slugs) {

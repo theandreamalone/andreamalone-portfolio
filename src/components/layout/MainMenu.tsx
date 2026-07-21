@@ -8,135 +8,20 @@ export default function MainMenu() {
 
     return (
         <ul className="navbar-nav">
-            <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle link-effect-1 data-link-alt" href="#">
-                    <span>Home</span>
-                </a>
-                <ul className="dropdown-menu">
-                    <li>
-                        <Link className="dropdown-item" href="/">
-                            Home 1 - Magazine
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/index-2">
-                            Home 2 - Publisher
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/index-3">
-                            Home 3 - Blog
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/index-4">
-                            Home 4 - Personal
-                        </Link>
-                    </li>
-                </ul>
+            <li className="nav-item">
+                <Link className="nav-link link-effect-1 data-link-alt" href="/">
+                    <span>Welcome</span>
+                </Link>
             </li>
-            <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle link-effect-1 data-link-alt" href="#">
-                    <span>Features</span>
-                </a>
-                <ul className="dropdown-menu">
-                    <li className="nav-item-has-child">
-                        <Link className="dropdown-item has-child" href="#">
-                            Archive layout
-                        </Link>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link className="dropdown-item" href="/archive-1">
-                                    Archive 1
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/archive-2">
-                                    Archive 2
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/archive-3">
-                                    Archive 3
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/archive-4">
-                                    Archive 4
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/archive-5">
-                                    Archive 5
-                                </Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="nav-item-has-child">
-                        <Link className="dropdown-item has-child" href="#">
-                            Post layouts
-                        </Link>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link className="dropdown-item" href="/single-1">
-                                    Single 1
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/single-2">
-                                    Single 2
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/single-3">
-                                    Single 3
-                                </Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="nav-item-has-child">
-                        <Link className="dropdown-item has-child" href="#">
-                            Portfolio layouts
-                        </Link>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link className="dropdown-item" href="/case-studies">
-                                    Portfolio Archive
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="dropdown-item" href="/portfolio-details">
-                                    Portfolio Details
-                                </Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/page-about">
-                            About us
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/page-author">
-                            Author posts
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/page-search-results">
-                            Search results
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/page-contact">
-                            Contact
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="dropdown-item" href="/page-404">
-                            404
-                        </Link>
-                    </li>
-                </ul>
+            <li className="nav-item">
+                <Link className="nav-link link-effect-1 data-link-alt" href="/case-studies">
+                    <span>What I Do</span>
+                </Link>
+            </li>
+            <li className="nav-item">
+                <Link className="nav-link link-effect-1 data-link-alt" href="/page-about">
+                    <span>Who I Am</span>
+                </Link>
             </li>
             <li className="nav-item mega-menu-item">
                 <a className="nav-link dropdown-toggle dropdown-mega-menu link-effect-1 data-link-alt" href="#">
@@ -162,16 +47,6 @@ export default function MainMenu() {
                 </span>
                 <Link className="nav-link link-effect-1 data-link-alt" href="/archive-2">
                     <span>Trending</span>
-                </Link>
-            </li>
-            <li className="nav-item">
-                <Link className="nav-link link-effect-1 data-link-alt" href="/archive-3">
-                    <span>Latest</span>
-                </Link>
-            </li>
-            <li className="nav-item">
-                <Link className="nav-link link-effect-1 data-link-alt" href="/page-contact">
-                    <span>Contact</span>
                 </Link>
             </li>
 
