@@ -36,7 +36,7 @@ export default function ImageBento({ images }: ImageBentoProps) {
           <div key={img.src} className={img.wide ? 'col-12' : 'col-md-6'}>
             <button
               type="button"
-              className="cs-media-expand rounded-16 overflow-hidden"
+              className="cs-media-expand"
               aria-label={`Expand image: ${img.alt}`}
               onClick={() => setOpen(i)}
             >

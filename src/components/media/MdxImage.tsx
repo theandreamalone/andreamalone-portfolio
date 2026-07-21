@@ -16,7 +16,7 @@ export default function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement
     <>
       <button
         type="button"
-        className="cs-media-expand cs-media-expand-full rounded-16 overflow-hidden"
+        className="cs-media-expand cs-media-expand-full"
         aria-label={`Expand image: ${alt}`}
         onClick={() => setOpen(true)}
       >

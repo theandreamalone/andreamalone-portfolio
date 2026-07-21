@@ -24,7 +24,7 @@ interface ImageCarouselProps {
   perView?: number;
 }
 
-export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProps) {
+export default function ImageCarousel({ images, perView = 1 }: ImageCarouselProps) {
   const [open, setOpen] = useState<number | null>(null);
   const [failed, setFailed] = useState<Set<string>>(new Set());
 
@@ -52,7 +52,7 @@ export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProp
           <SwiperSlide key={img.src}>
             <button
               type="button"
-              className="cs-media-expand rounded-16 overflow-hidden"
+              className="cs-media-expand"
               aria-label={`Expand image: ${img.alt}`}
               onClick={() => setOpen(i)}
             >
