@@ -223,6 +223,17 @@ export default function QuestionHero({
           --qh-glow-a: rgba(226,0,116,0.35);
           --qh-glow-b: rgba(255,176,32,0.28);
         }
+        [data-bs-theme="light"] .question-hero {
+          --qh-line: rgba(14,14,15,0.35);
+          --qh-chip: rgba(14,14,15,0.04);
+        }
+        [data-bs-theme="light"] .qh-chip {
+          color: #3a3a3e;
+        }
+        [data-bs-theme="light"] .qh-chip:hover {
+          color: #0e0e0f;
+          border-color: rgba(14,14,15,0.6);
+        }
         .qh-eyebrow {
           font-size: 14px;
           letter-spacing: 0.08em;

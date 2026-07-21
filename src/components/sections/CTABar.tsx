@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import TitleDark from "@/components/elements/TitleDark";
+import TitleWhite from "@/components/elements/TitleWhite";
 import { fetchCTAByType, fetchCTAs } from "@/lib/queries/ctas";
 import { mapCTAToBar, type CTABarData } from "@/lib/templateGlossary";
 import type { RecordId } from "@/lib/viewContract";
@@ -69,7 +69,7 @@ export default function CTABar({ record_ids = [], variant, classList = "" }: CTA
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <TitleDark
+            <TitleWhite
               title={bar.title}
               description={bar.description}
               classList={classList}

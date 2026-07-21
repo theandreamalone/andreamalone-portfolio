@@ -185,6 +185,16 @@
   margin-inline: auto;
 }
 
+/* Images escape the prose measure — full body width, edge to edge */
+.case-study-body p:has(> img) {
+  max-width: 100%;
+}
+.case-study-body p > img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
 /* Inline MDX images + single media — full width, height-capped */
 .case-study-body img {
   max-height: 78vh;

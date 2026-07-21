@@ -1,0 +1,356 @@
+diff --git a/content/testimonials/kerrie-malone-amdocs.mdx b/content/testimonials/kerrie-malone-amdocs.mdx
+index 748482d..9472d38 100644
+--- a/content/testimonials/kerrie-malone-amdocs.mdx
++++ b/content/testimonials/kerrie-malone-amdocs.mdx
+@@ -1,7 +1,7 @@
+ ---
+ type: testimonial
+ slug: kerrie-malone-amdocs
+-person_name: "Kerrie Malone"
++person_name: "Kerrie Malone (no relation)"
+ title: "Principal Designer"
+ company: "Amdocs Studios"
+ client: "Amdocs Studios"
+diff --git a/public/media/testimonials/kerrie-malone-no-relation.webp b/public/media/testimonials/kerrie-malone-no-relation.webp
+new file mode 100644
+index 0000000..44cf2cb
+Binary files /dev/null and b/public/media/testimonials/kerrie-malone-no-relation.webp differ
+diff --git a/src/components/case-study-body.css b/src/components/case-study-body.css
+index 2646ef4..9111317 100644
+--- a/src/components/case-study-body.css
++++ b/src/components/case-study-body.css
+@@ -185,6 +185,16 @@
+   margin-inline: auto;
+ }
+ 
++/* Images escape the prose measure — full body width, edge to edge */
++.case-study-body p:has(> img) {
++  max-width: 100%;
++}
++.case-study-body p > img {
++  width: 100%;
++  height: auto;
++  max-height: none;
++}
++
+ /* Inline MDX images + single media — full width, height-capped */
+ .case-study-body img {
+   max-height: 78vh;
+diff --git a/src/components/layout/MainMenu2.tsx b/src/components/layout/MainMenu2.tsx
+index 433fbe6..3fa84f8 100644
+--- a/src/components/layout/MainMenu2.tsx
++++ b/src/components/layout/MainMenu2.tsx
+@@ -8,135 +8,20 @@ export default function MainMenu2() {
+ 
+     return (
+         <ul className="navbar-nav">
+-            <li className="nav-item dropdown">
+-                <a className="nav-link dropdown-toggle link-effect-1 data-link-alt" href="#">
+-                    <span>Home</span>
+-                </a>
+-                <ul className="dropdown-menu">
+-                    <li>
+-                        <Link className="dropdown-item" href="/">
+-                            Home 1 - Magazine
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/index-2">
+-                            Home 2 - Publisher
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/index-3">
+-                            Home 3 - Blog
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/index-4">
+-                            Home 4 - Personal
+-                        </Link>
+-                    </li>
+-                </ul>
++            <li className="nav-item">
++                <Link className="nav-link link-effect-1 data-link-alt" href="/">
++                    <span>Welcome</span>
++                </Link>
+             </li>
+-            <li className="nav-item dropdown">
+-                <a className="nav-link dropdown-toggle link-effect-1 data-link-alt" href="#">
+-                    <span>Features</span>
+-                </a>
+-                <ul className="dropdown-menu">
+-                    <li className="nav-item-has-child">
+-                        <Link className="dropdown-item has-child" href="#">
+-                            Archive layout
+-                        </Link>
+-                        <ul className="sub-menu">
+-                            <li>
+-                                <Link className="dropdown-item" href="/archive-1">
+-                                    Archive 1
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/archive-2">
+-                                    Archive 2
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/archive-3">
+-                                    Archive 3
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/archive-4">
+-                                    Archive 4
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/archive-5">
+-                                    Archive 5
+-                                </Link>
+-                            </li>
+-                        </ul>
+-                    </li>
+-                    <li className="nav-item-has-child">
+-                        <Link className="dropdown-item has-child" href="#">
+-                            Post layouts
+-                        </Link>
+-                        <ul className="sub-menu">
+-                            <li>
+-                                <Link className="dropdown-item" href="/single-1">
+-                                    Single 1
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/single-2">
+-                                    Single 2
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/single-3">
+-                                    Single 3
+-                                </Link>
+-                            </li>
+-                        </ul>
+-                    </li>
+-                    <li className="nav-item-has-child">
+-                        <Link className="dropdown-item has-child" href="#">
+-                            Portfolio layouts
+-                        </Link>
+-                        <ul className="sub-menu">
+-                            <li>
+-                                <Link className="dropdown-item" href="/case-studies">
+-                                    Portfolio Archive
+-                                </Link>
+-                            </li>
+-                            <li>
+-                                <Link className="dropdown-item" href="/portfolio-details">
+-                                    Portfolio Details
+-                                </Link>
+-                            </li>
+-                        </ul>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/page-about">
+-                            About us
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/page-author">
+-                            Author posts
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/page-search-results">
+-                            Search results
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/page-contact">
+-                            Contact
+-                        </Link>
+-                    </li>
+-                    <li>
+-                        <Link className="dropdown-item" href="/page-404">
+-                            404
+-                        </Link>
+-                    </li>
+-                </ul>
++            <li className="nav-item">
++                <Link className="nav-link link-effect-1 data-link-alt" href="/case-studies">
++                    <span>What I Do</span>
++                </Link>
++            </li>
++            <li className="nav-item">
++                <Link className="nav-link link-effect-1 data-link-alt" href="/page-about">
++                    <span>Who I Am</span>
++                </Link>
+             </li>
+             <li className="nav-item mega-menu-item">
+                 <a className="nav-link dropdown-toggle dropdown-mega-menu link-effect-1 data-link-alt" href="#">
+diff --git a/src/components/layout/header/Header2.tsx b/src/components/layout/header/Header2.tsx
+index fc59ae3..4275768 100644
+--- a/src/components/layout/header/Header2.tsx
++++ b/src/components/layout/header/Header2.tsx
+@@ -2,7 +2,6 @@ import Image from "@/components/common/Image";
+ import Link from "@/components/common/Link";
+ import MainMenu2 from "@/components/layout/MainMenu2";
+ import ThemeSwitcher from "@/util/ThemeSwitcher2";
+-import SideBar from "@/components/layout/SideBar";
+ import Header2Client from "./Header2Client";
+ 
+ export default function Header2() {
+@@ -18,28 +17,22 @@ export default function Header2() {
+                     </Link>
+                     <div className="d-flex align-items-center ms-auto gap-4">
+                         <div className="pe-4 d-none d-lg-block">
+-                            <a href="/page-login" className="text-decoration-underline">
++                            <span
++                                className="text-decoration-underline"
++                                role="link"
++                                aria-disabled="true"
++                                title="Coming soon"
++                                style={{ cursor: 'default', opacity: 0.6 }}
++                            >
+                                 Subscribe
+-                            </a>
++                            </span>
+                         </div>
+-                        <a href="#" className="search-btn fs-7 d-none d-md-flex link-effect-2" aria-label="Open search">
+-                            <svg className="dark-mode-invert" xmlns="http://www.w3.org/2000/svg" width={32} height={32} viewBox="0 0 32 32" fill="none">
+-                                <path d="M25.6667 25.6667L20.6667 20.6667M6.33337 14.6667C6.33337 10.0643 10.0643 6.33337 14.6667 6.33337C19.2691 6.33337 23 10.0643 23 14.6667C23 19.2691 19.2691 23 14.6667 23C10.0643 23 6.33337 19.2691 6.33337 14.6667Z" stroke="#0E0E0F" strokeWidth="1.74463" strokeLinecap="round" strokeLinejoin="round" />
+-                            </svg>
+-                            Search
+-                        </a>
+                         <div className="group-btn-right d-flex align-items-center">
+                             <ThemeSwitcher />
+-                            <a href="#" className="navbar-toggler">
+-                                <svg className="dark-mode-invert" xmlns="http://www.w3.org/2000/svg" width={26} height={26} viewBox="0 0 26 26" fill="none">
+-                                    <path d="M6.5 5.19999C6.5 4.48205 7.08206 3.89999 7.8 3.89999H24.7C25.4179 3.89999 26 4.48205 26 5.19999C26 5.91794 25.4179 6.49999 24.7 6.49999H7.8C7.08206 6.49999 6.5 5.91789 6.5 5.19999ZM24.7 11.7H1.3C0.582055 11.7 0 12.2821 0 13C0 13.7179 0.582055 14.3 1.3 14.3H24.7C25.4179 14.3 26 13.7179 26 13C26 12.2821 25.4179 11.7 24.7 11.7ZM24.7 19.5H13C12.2821 19.5 11.7 20.082 11.7 20.8C11.7 21.5179 12.2821 22.1 13 22.1H24.7C25.4179 22.1 26 21.5179 26 20.8C26 20.082 25.4179 19.5 24.7 19.5Z" fill="#0E0E0F" />
+-                                </svg>
+-                            </a>
+                         </div>
+                     </div>
+                 </nav>
+             </header>
+-            <SideBar />
+ 
+             {/* Client component for interactive logic */}
+             <Header2Client />
+diff --git a/src/components/sections/CTABar.tsx b/src/components/sections/CTABar.tsx
+index 578e648..22eeb1c 100644
+--- a/src/components/sections/CTABar.tsx
++++ b/src/components/sections/CTABar.tsx
+@@ -1,5 +1,5 @@
+ import { useEffect, useMemo, useState } from "react";
+-import TitleDark from "@/components/elements/TitleDark";
++import TitleWhite from "@/components/elements/TitleWhite";
+ import { fetchCTAByType, fetchCTAs } from "@/lib/queries/ctas";
+ import { mapCTAToBar, type CTABarData } from "@/lib/templateGlossary";
+ import type { RecordId } from "@/lib/viewContract";
+@@ -69,7 +69,7 @@ export default function CTABar({ record_ids = [], variant, classList = "" }: CTA
+       <div className="container">
+         <div className="row">
+           <div className="col-12">
+-            <TitleDark
++            <TitleWhite
+               title={bar.title}
+               description={bar.description}
+               classList={classList}
+diff --git a/src/components/sections/home/QuestionHero.tsx b/src/components/sections/home/QuestionHero.tsx
+index 9396735..28a8f6a 100644
+--- a/src/components/sections/home/QuestionHero.tsx
++++ b/src/components/sections/home/QuestionHero.tsx
+@@ -223,6 +223,17 @@ export default function QuestionHero({
+           --qh-glow-a: rgba(226,0,116,0.35);
+           --qh-glow-b: rgba(255,176,32,0.28);
+         }
++        [data-bs-theme="light"] .question-hero {
++          --qh-line: rgba(14,14,15,0.35);
++          --qh-chip: rgba(14,14,15,0.04);
++        }
++        [data-bs-theme="light"] .qh-chip {
++          color: #3a3a3e;
++        }
++        [data-bs-theme="light"] .qh-chip:hover {
++          color: #0e0e0f;
++          border-color: rgba(14,14,15,0.6);
++        }
+         .qh-eyebrow {
+           font-size: 14px;
+           letter-spacing: 0.08em;
+diff --git a/src/components/sections/home/Section9.tsx b/src/components/sections/home/Section9.tsx
+index a105304..d9b7b32 100644
+--- a/src/components/sections/home/Section9.tsx
++++ b/src/components/sections/home/Section9.tsx
+@@ -86,6 +86,13 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
+     <>
+       {/* Home 1 Section 9 — CaseStudyFeature */}
+       <section className="sec-9-home-1">
++      <style>{`
++        [data-bs-theme="light"] .sec-9-home-1 .text-white.changeless,
++        [data-bs-theme="light"] .sec-9-home-1 .text-white.changeless a {
++          color: #0e0e0f !important;
++        }
++      `}</style>
++
+         <div className="custom-container position-relative">
+           <div className={`swiper-btn ${displayBtn} align-items-center justify-content-between`}>
+             <div className="swiper-btn-next">
+diff --git a/src/pages/CaseStudyDetail.tsx b/src/pages/CaseStudyDetail.tsx
+index 76bcf11..44b4eef 100644
+--- a/src/pages/CaseStudyDetail.tsx
++++ b/src/pages/CaseStudyDetail.tsx
+@@ -156,7 +156,34 @@ export default function CaseStudyDetail() {
+                 <h5 className="mb-0">Project brief</h5>
+               </div>
+               <div className="content">
+-                {/* ...keep everything currently inside .content unchanged... */}
++                <ul className="text-secondary ps-3 fs-18 m-2">
++                  {cs.client && (
++                    <li>Client: <span className="text-dark">{cs.client}</span></li>
++                  )}
++                  {cs.industry && (
++                    <li>Industry: <span className="text-dark">{cs.industry}</span></li>
++                  )}
++                  {cs.role_title && (
++                    <li>Role: <span className="text-dark">{cs.role_title}</span></li>
++                  )}
++                  {cs.when && (
++                    <li>Timeline: <span className="text-dark">{cs.when}</span></li>
++                  )}
++                </ul>
++                {cs.skills.length > 0 && (
++                  <div className="d-flex flex-wrap gap-2 m-2 pt-2">
++                    {cs.skills.map((sk) => (
++                      <span key={sk.slug} className="bg-200 fs-8 rounded-8 py-2 px-3">
++                        {sk.name}
++                      </span>
++                    ))}
++                  </div>
++                )}
++                {cs.showClientDisclosureNote && (
++                  <div className="m-2">
++                    <ClientDisclosureNote />
++                  </div>
++                )}
+               </div>
+             </div>
+           </div>
+diff --git a/src/util/useTheme.ts b/src/util/useTheme.ts
+index 894cd65..aefd8d4 100644
+--- a/src/util/useTheme.ts
++++ b/src/util/useTheme.ts
+@@ -20,9 +20,8 @@ export const useTheme = () => {
+                     return storedTheme;
+                 }
+ 
+-                // Use system preference as fallback
+-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+-                return prefersDark ? 'dark' : 'light';
++                // Site default is light; the toggle still lets visitors choose dark
++                return 'light';
+             } catch (error) {
+                 // Fallback to light theme if there's any error
+                 console.warn('Error reading theme preference:', error);

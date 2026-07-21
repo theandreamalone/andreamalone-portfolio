@@ -20,9 +20,8 @@ export const useTheme = () => {
                     return storedTheme;
                 }
 
-                // Use system preference as fallback
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                return prefersDark ? 'dark' : 'light';
+              // Site default is light; the toggle still lets visitors choose dark
+                return 'light';
             } catch (error) {
                 // Fallback to light theme if there's any error
                 console.warn('Error reading theme preference:', error);

@@ -86,6 +86,13 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
     <>
       {/* Home 1 Section 9 — CaseStudyFeature */}
       <section className="sec-9-home-1">
+      <style>{`
+        [data-bs-theme="light"] .sec-9-home-1 .text-white.changeless,
+        [data-bs-theme="light"] .sec-9-home-1 .text-white.changeless a {
+          color: #0e0e0f !important;
+        }
+      `}</style>
+
         <div className="custom-container position-relative">
           <div className={`swiper-btn ${displayBtn} align-items-center justify-content-between`}>
             <div className="swiper-btn-next">
