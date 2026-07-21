@@ -5,6 +5,8 @@ const CaseStudyDetail = dynamic(() => import("@/pages/CaseStudyDetail"));
 const NotFound = dynamic(() => import("@/pages/NotFound"));
 const Home = dynamic(() => import("@/pages/Home"));
 const AdaptiveHome = dynamic(() => import("@/pages/AdaptiveHome"));
+const WhatIDo = dynamic(() => import("@/pages/WhatIDo"));
+const WhoIAm = dynamic(() => import("@/pages/WhoIAm"));
 const HowItWorks = dynamic(() => import("@/pages/HowItWorks"));
 const Archive1 = dynamic(() => import("@/pages/Archive1"));
 const Archive2 = dynamic(() => import("@/pages/Archive2"));
@@ -14,12 +16,10 @@ const Archive5 = dynamic(() => import("@/pages/Archive5"));
 const Index2 = dynamic(() => import("@/pages/Index2"));
 const Index3 = dynamic(() => import("@/pages/Index3"));
 const Index4 = dynamic(() => import("@/pages/Index4"));
-const PageAbout = dynamic(() => import("@/pages/PageAbout"));
 const PageAuthor = dynamic(() => import("@/pages/PageAuthor"));
 const PageContact = dynamic(() => import("@/pages/PageContact"));
 const PageLogin = dynamic(() => import("@/pages/PageLogin"));
 const PageSearchResults = dynamic(() => import("@/pages/PageSearchResults"));
-const PortfolioArchive1 = dynamic(() => import("@/pages/PortfolioArchive1"));
 const PortfolioDetails = dynamic(() => import("@/pages/PortfolioDetails"));
 const Single1 = dynamic(() => import("@/pages/Single1"));
 const Single2 = dynamic(() => import("@/pages/Single2"));
@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
     { path: "/", element: <Home /> },
     { path: "/adaptive", element: <AdaptiveHome /> },
     { path: "/how-it-works", element: <HowItWorks /> },
-    { path: "/case-studies", element: <PortfolioArchive1 /> },
+    { path: "/case-studies", element: <WhatIDo /> },
     { path: "/case-studies/:slug", element: <CaseStudyDetail /> },
     { path: "/archive-1", element: <Archive1 /> },
     { path: "/archive-2", element: <Archive2 /> },
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
     { path: "/index-2", element: <Index2 /> },
     { path: "/index-3", element: <Index3 /> },
     { path: "/index-4", element: <Index4 /> },
-    { path: "/page-about", element: <PageAbout /> },
+    { path: "/page-about", element: <WhoIAm /> },
     { path: "/page-author", element: <PageAuthor /> },
     { path: "/page-contact", element: <PageContact /> },
     { path: "/page-login", element: <PageLogin /> },
