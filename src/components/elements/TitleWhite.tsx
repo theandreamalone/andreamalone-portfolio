@@ -1,7 +1,15 @@
 import Link from "@/components/common/Link";
 
 
-export default function TitleWhite({ title, description }: { title: string; description: string }) {
+type TitleWhiteProps = {
+  title: string;
+  description: string;
+  classList?: string;
+  linkHref?: string;
+  linkLabel?: string;
+};
+
+export default function TitleWhite({ title, description }: TitleWhiteProps) {
   return (
     <>
       <div className="section-title d-flex align-items-center justify-content-between gap-3">
