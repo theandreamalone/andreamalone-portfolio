@@ -5,9 +5,12 @@
  * the page composes its answer (D3: free-text path is core; the static home
  * stays the D6 baseline — this hero is static, only the link is adaptive).
  *
- * Signature element: the focus glow on the input reuses the magenta/amber
- * audio-reactive glow from the Voice-Ready composer — the site signals
- * "I'm listening" in Andrea's own product vocabulary.
+ * Voice: the mic button feeds the same ask() path as typing (pattern copied
+ * from AdaptiveHome — useVoiceInput + useMicLevel). While listening, the
+ * magenta/amber glow is forced on and audio-reactive via --qh-level, so the
+ * glow genuinely signals "I'm listening" instead of being a focus style only.
+ * Unsupported browsers get VoiceUnavailable (visible degraded state, not a
+ * hidden feature).
  *
  * Headshot: drop the real image at public/media/site/headshot.webp
  * (4:5 — process via the testimonials preset, 560×740) and it replaces
@@ -16,6 +19,9 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { VoiceUnavailable } from '@/components/VoiceUnavailable';
+import { useMicLevel } from '@/lib/voice/useMicLevel';
+import { useVoiceInput } from '@/lib/voice/useVoiceInput';
 
 const CHIPS = [
   'Show me voice UX',
@@ -24,14 +30,35 @@ const CHIPS = [
   'Just show me everything',
 ];
 
+/** Endpointing pause between a final voice transcript and auto-submit. */
+const VOICE_SUBMIT_DEBOUNCE_MS = 900;
+
 export default function QuestionHero() {
   const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [imgOk, setImgOk] = useState(true);
 
+  const mic = useMicLevel();
+
   const ask = (question: string) => {
     const query = question.trim();
     navigate(query ? `/adaptive?q=${encodeURIComponent(query)}` : '/adaptive');
+  };
+
+  const voice = useVoiceInput((finalText) => {
+    setQ(finalText);
+    mic.stop();
+    window.setTimeout(() => ask(finalText), VOICE_SUBMIT_DEBOUNCE_MS);
+  });
+
+  const startVoice = () => {
+    voice.start();
+    mic.start();
+  };
+
+  const stopVoice = () => {
+    voice.stop();
+    mic.stop();
   };
 
   return (
@@ -58,18 +85,41 @@ export default function QuestionHero() {
                 ask(q);
               }}
             >
-              <label htmlFor="qh-q" className="visually-hidden">
+              <label htmlFor="qh-q" className="qh-label">
                 Ask this site a question
               </label>
-              <input
-                id="qh-q"
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Has she designed human-in-the-loop AI?"
-                autoComplete="off"
-              />
-              <button type="submit">Ask</button>
+              <div
+                className={`qh-field${voice.listening ? ' is-listening' : ''}`}
+                style={{ '--qh-level': mic.level } as React.CSSProperties}
+              >
+                <input
+                  id="qh-q"
+                  type="text"
+                  value={voice.interim || q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Has she designed human-in-the-loop AI?"
+                  autoComplete="off"
+                />
+                {voice.supported ? (
+                  <button
+                    type="button"
+                    className="qh-mic"
+                    onClick={voice.listening ? stopVoice : startVoice}
+                    aria-pressed={voice.listening}
+                    aria-label={voice.listening ? 'Stop listening' : 'Ask by voice'}
+                  >
+                    {voice.listening ? '◼' : '🎤'}
+                  </button>
+                ) : (
+                  <span className="qh-mic qh-mic-unavailable">
+                    <VoiceUnavailable />
+                  </span>
+                )}
+                <button type="submit" className="qh-submit">Ask</button>
+              </div>
+              <span className="qh-sr" role="status" aria-live="polite">
+                {voice.listening ? 'Listening' : ''}
+              </span>
             </form>
 
             <div className="qh-chips" aria-label="Example questions">
@@ -138,26 +188,35 @@ export default function QuestionHero() {
           max-width: 46ch;
           margin-bottom: 36px;
         }
-        .qh-ask { position: relative; margin-bottom: 16px; max-width: 620px; }
-        .qh-ask input {
+        .qh-ask { margin-bottom: 16px; max-width: 620px; }
+        .qh-label {
+          display: block;
+          font-size: 14px;
+          color: var(--tc-neutral-600, #9a9ca0);
+          margin-bottom: 12px;
+        }
+        .qh-field { position: relative; }
+        .qh-field input {
           width: 100%;
           background: var(--tc-bg-2, #17181a);
           border: 1px solid var(--qh-line);
           border-radius: 999px;
-          padding: 18px 120px 18px 24px;
+          padding: 18px 168px 18px 24px;
           font: inherit;
           font-size: 17px;
           color: inherit;
           outline: none;
           transition: border-color .2s ease, box-shadow .3s ease;
         }
-        .qh-ask input:focus {
+        .qh-field input:focus,
+        .qh-field.is-listening input {
           border-color: rgba(255,255,255,0.25);
           box-shadow: 0 0 0 4px rgba(255,255,255,0.04),
-                      0 0 44px var(--qh-glow-a),
-                      0 8px 60px var(--qh-glow-b);
+                      0 0 calc(32px + 40px * var(--qh-level, 0)) var(--qh-glow-a),
+                      0 8px calc(48px + 48px * var(--qh-level, 0)) var(--qh-glow-b);
         }
-        .qh-ask button {
+        .qh-field { --qh-level: 0; }
+        .qh-submit {
           position: absolute;
           right: 8px;
           top: 50%;
@@ -171,6 +230,37 @@ export default function QuestionHero() {
           background: var(--tc-neutral-0, #fff);
           color: var(--tc-neutral-1000, #0f1011);
           cursor: pointer;
+        }
+        .qh-mic {
+          position: absolute;
+          right: 100px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 40px;
+          height: 40px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--qh-line);
+          border-radius: 999px;
+          background: transparent;
+          color: inherit;
+          font-size: 16px;
+          cursor: pointer;
+          transition: border-color .15s ease;
+        }
+        .qh-mic:hover { border-color: rgba(255,255,255,0.3); }
+        .qh-mic[aria-pressed="true"] {
+          border-color: var(--qh-glow-a);
+          background: rgba(226,0,116,0.12);
+        }
+        .qh-mic-unavailable { border: 0; background: transparent; }
+        .qh-sr {
+          position: absolute;
+          width: 1px; height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          white-space: nowrap;
         }
         .qh-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
         .qh-chip {
@@ -221,7 +311,12 @@ export default function QuestionHero() {
           line-height: 1.5;
         }
         @media (prefers-reduced-motion: reduce) {
-          .qh-ask input { transition: none; }
+          .qh-field input { transition: none; }
+          .qh-field.is-listening input {
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.04),
+                        0 0 44px var(--qh-glow-a),
+                        0 8px 60px var(--qh-glow-b);
+          }
         }
       `}</style>
     </section>

@@ -170,9 +170,11 @@ export default function Section9({ displayBtn = "d-none", record_ids = [] }: Sec
         </div>
         {/* eslint-disable-next-line react/no-unknown-property */}
         <style>{`
-          /* Scrim: keeps white caption text legible over light cover images */
+          /* Solid container (2026-07-20): the gradient scrim read as a smear
+             over light cover images. Solid template grey instead — same grey
+             as the hero input (--tc-bg-2). */
           .sec-9-home-1 .gallery-left .article .card-body {
-            background: linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.42) 26%, rgba(10,10,11,0.68) 100%);
+            background: var(--tc-bg-2, #17181a);
             border-radius: 16px;
             padding: 24px;
           }

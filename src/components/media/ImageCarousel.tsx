@@ -26,8 +26,17 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProps) {
   const [open, setOpen] = useState<number | null>(null);
+  const [failed, setFailed] = useState<Set<string>>(new Set());
 
-  if (!images?.length) return null;
+  // A slide whose file 404s renders as a broken-image icon — worse than
+  // absent. Drop failed sources; if none survive, drop the carousel.
+  const live = (images ?? []).filter((img) => !failed.has(img.src));
+  if (!live.length) return null;
+
+  const markFailed = (src: string) => {
+    console.warn(`[ImageCarousel] image failed to load, dropped: ${src}`);
+    setFailed((prev) => new Set(prev).add(src));
+  };
 
   return (
     <div className="cs-carousel my-4">
@@ -39,7 +48,7 @@ export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProp
         slidesPerView={1}
         breakpoints={{ 768: { slidesPerView: perView } }}
       >
-        {images.map((img, i) => (
+        {live.map((img, i) => (
           <SwiperSlide key={img.src}>
             <button
               type="button"
@@ -47,13 +56,18 @@ export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProp
               aria-label={`Expand image: ${img.alt}`}
               onClick={() => setOpen(i)}
             >
-              <img src={img.src} alt={img.alt} className="w-100 h-auto d-block" />
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-100 h-auto d-block"
+                onError={() => markFailed(img.src)}
+              />
             </button>
           </SwiperSlide>
         ))}
       </Swiper>
       {open !== null && (
-        <Lightbox images={images} index={open} onClose={() => setOpen(null)} onNavigate={setOpen} />
+        <Lightbox images={live} index={open} onClose={() => setOpen(null)} onNavigate={setOpen} />
       )}
     </div>
   );

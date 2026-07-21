@@ -41,6 +41,14 @@ export default function AuthorCard({ card, idx }: CardProps) {
             className="author-image-avator w-100 h-100"
             width={280}
             height={370}
+            onError={(e) => {
+              // Derived local photo path can 404 for a new person without a
+              // file in /media/testimonials — degrade to the template avatar
+              // instead of a broken image.
+              const el = e.currentTarget;
+              const fallback = "/assets/imgs/template/author/author-5.png";
+              if (!el.src.endsWith(fallback)) el.src = fallback;
+            }}
           />
         </Link>
         <div className="author-sticky-block-left-bottom">

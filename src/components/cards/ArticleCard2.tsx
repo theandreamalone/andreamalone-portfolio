@@ -48,26 +48,39 @@ export default function ArticleCard2({ card, idx }: CardProps) {
             <div className="curve-two" />
           </div>
           <div className="card-body">
-            <Link href={card.linkBadge} className={`badge ${card.bgBadge} fs-8 mb-2`}>
-              {card.badge}
-            </Link>
+            {/* Empty template slots render as ghost pills/dots — hide them.
+                Case study mapping leaves author/img empty by design
+                (templateGlossary decision #2). */}
+            {card.badge && (
+              <Link href={card.linkBadge} className={`badge ${card.bgBadge} fs-8 mb-2`}>
+                {card.badge}
+              </Link>
+            )}
             <Link href={card.linkPost}>
               <h4 className="card-title mb-0">{card.title}</h4>
             </Link>
-            <div className="card-info d-flex flex-wrap gap-2 align-items-center mt-2">
-              <Link href={card.linkAuthor} className="author d-flex align-items-center gap-2">
-                <Image className="avatar avatar-sm rounded-circle" src={card.imgAuthor} alt={card.author} width={500} height={500} />
-                <span className="fs-7 text-500 fw-semibold">{card.author}</span>
-              </Link>
-              <ul className="d-flex align-items-center gap-4 text-600 m-0 ps-4">
-                <li>
-                  <p className="fs-8 m-0">{card.date}</p>
-                </li>
-                <li>
-                  <p className="fs-8 m-0">{card.readTime}</p>
-                </li>
-              </ul>
-            </div>
+            {(card.author || card.date || card.readTime) && (
+              <div className="card-info d-flex flex-wrap gap-2 align-items-center mt-2">
+                {card.author && (
+                  <Link href={card.linkAuthor} className="author d-flex align-items-center gap-2">
+                    <Image className="avatar avatar-sm rounded-circle" src={card.imgAuthor} alt={card.author} width={500} height={500} />
+                    <span className="fs-7 text-500 fw-semibold">{card.author}</span>
+                  </Link>
+                )}
+                <ul className={`d-flex align-items-center gap-4 text-600 m-0 ${card.author ? "ps-4" : "ps-0 list-unstyled"}`}>
+                  {card.date && (
+                    <li>
+                      <p className="fs-8 m-0">{card.date}</p>
+                    </li>
+                  )}
+                  {card.readTime && (
+                    <li>
+                      <p className="fs-8 m-0">{card.readTime}</p>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

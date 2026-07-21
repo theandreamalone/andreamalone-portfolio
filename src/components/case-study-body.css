@@ -165,3 +165,34 @@
 .cs-scrolly-block:last-child {
   margin-bottom: 10vh;
 }
+
+/* ---- Media sizing caps (2026-07-20 bug pass) ----
+   Tall portrait screenshots (phone frames) were rendering at full column
+   width → taller than the viewport, pushing carousel pagination off-screen
+   and dwarfing prose. Cap heights; let width follow. */
+
+/* Inline MDX images + single media */
+.case-study-body img {
+  max-height: 72vh;
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* Carousel slides */
+.cs-carousel img {
+  max-height: 60vh;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.cs-carousel .cs-media-expand { display: flex; justify-content: center; }
+
+/* Sticky scrolly pane: media must fit the viewport beside the prose,
+   pagination included */
+.cs-scrolly-pane img {
+  max-height: calc(100vh - 200px);
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}

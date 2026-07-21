@@ -336,9 +336,32 @@ function composeRoleAndCompany(title: string | null, company: string | null): st
   return title ?? company ?? "";
 }
 
+/**
+ * Photo resolution order (2026-07-20 bug pass — DB photo_media_id rows are
+ * mostly NULL/placeholder, so every card showed the template stock avatar):
+ *   1. photo_url from media_assets — unless it's a seeded placeholder row
+ *      (literal "YOUR-PROJECT.supabase.co", known ground-truth quirk)
+ *   2. local /media/testimonials/{kebab-name}.webp — files exist for all
+ *      current testimonial people; naming convention = kebab-cased name
+ *   3. template avatar
+ * Proper long-term fix is media_assets rows + photo_media_id links; this
+ * keeps cards honest in the meantime.
+ */
+function resolveTestimonialPhoto(t: TestimonialRow): string {
+  if (t.photo_url && !t.photo_url.includes("YOUR-PROJECT")) return t.photo_url;
+  if (t.person_name) {
+    const kebab = t.person_name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    if (kebab) return `/media/testimonials/${kebab}.webp`;
+  }
+  return TESTIMONIAL_FALLBACK_AVATAR;
+}
+
 export function mapTestimonialToCard(t: TestimonialRow): TestimonialCardData {
   return {
-    img: t.photo_url ?? TESTIMONIAL_FALLBACK_AVATAR,
+    img: resolveTestimonialPhoto(t),
     linkPost: "#",
     name: t.person_name,
     position: composeRoleAndCompany(t.title, t.company),

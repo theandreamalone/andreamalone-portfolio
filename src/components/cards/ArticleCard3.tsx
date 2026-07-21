@@ -45,18 +45,23 @@ export default function ArticleCard3({ card, idx }: CardProps) {
           </div>
           <div className="d-flex flex-column">
             <div className="card-info d-flex align-items-center mb-3">
-              <Link href={card.linkBadge} className={`badge ${card.bgBadge} fs-8`}>
-                {card.badge}
-              </Link>
-              <ul className="d-flex align-items-center text-600 m-0 ps-4">
-                <li>
-                  <p className="fs-8 m-0">{card.readTime}</p>
-                </li>
-              </ul>
+              {card.badge && (
+                <Link href={card.linkBadge} className={`badge ${card.bgBadge} fs-8`}>
+                  {card.badge}
+                </Link>
+              )}
+              {card.readTime && (
+                <ul className={`d-flex align-items-center text-600 m-0 ${card.badge ? "ps-4" : "ps-0 list-unstyled"}`}>
+                  <li>
+                    <p className="fs-8 m-0">{card.readTime}</p>
+                  </li>
+                </ul>
+              )}
             </div>
             <Link href={card.linkPost}>
               <h6 className="card-title mb-0">{card.title}</h6>
             </Link>
+            {(card.comment || card.readNum) && (
             <div className="bottom mt-auto">
               <Link href={card.linkComment} className="comment fs-8">
                 <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 20 20" fill="none">
@@ -71,6 +76,7 @@ export default function ArticleCard3({ card, idx }: CardProps) {
                 <span>{card.readNum}</span>
               </Link>
             </div>
+            )}
           </div>
         </div>
       </div>

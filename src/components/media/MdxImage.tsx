@@ -9,8 +9,9 @@ import Lightbox from './Lightbox';
 
 export default function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [open, setOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
   const { src = '', alt = '' } = props;
-  if (!src) return null;
+  if (!src || failed) return null;
   return (
     <>
       <button
@@ -19,7 +20,14 @@ export default function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement
         aria-label={`Expand image: ${alt}`}
         onClick={() => setOpen(true)}
       >
-        <img {...props} className="w-100 h-auto d-block" />
+        <img
+          {...props}
+          className="w-100 h-auto d-block"
+          onError={() => {
+            console.warn(`[MdxImage] image failed to load, hidden: ${src}`);
+            setFailed(true);
+          }}
+        />
       </button>
       {open && (
         <Lightbox
