@@ -2,6 +2,7 @@ import Link from "@/components/common/Link";
 import Image from "@/components/common/Image";
 import { resolveBlock } from "@/lib/blockRegistry";
 import type { BlockId } from "@/lib/viewContract";
+import "./AuthorCard.css";
 
 /**
  * AuthorCard — repurposed as TestimonialCard per templateGlossary decision #10.
@@ -61,9 +62,13 @@ export default function AuthorCard({ card, idx }: CardProps) {
               <Quote />
             </div>
           )}
+          {/* Corners live INSIDE the block (moved 2026-07-20) so the wavy
+              cutouts anchor to the block's real edges. As siblings they were
+              pinned to the template's fixed 136×52 size and detached the
+              moment a name or title wrapped. */}
+          <div className="author-sticky-corner-left-top" />
+          <div className="author-sticky-corner-right-bottom" />
         </div>
-        <div className="author-sticky-corner-left-top" />
-        <div className="author-sticky-corner-right-bottom" />
       </div>
     </>
   );

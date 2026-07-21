@@ -1,0 +1,31 @@
+/* AuthorCard (testimonial) caption block — content-sized (2026-07-20).
+   Template rules in main.css fix the block at 136×52px with the wavy
+   corner cutouts pinned at bottom:52px / left:136px. Anything longer than
+   one short name overflowed onto the photo and the corners detached.
+
+   These overrides (higher specificity, no !important):
+   - block sizes to its content, with a min matching the template look
+   - corners are now children of the block (see AuthorCard.tsx) and anchor
+     to its edges — bottom:100% hugs the top edge, left:100% the right edge
+   - max-width keeps long titles wrapping instead of spanning the photo */
+
+.author-grid-wrap .author-sticky-block-left-bottom {
+  width: auto;
+  min-width: 136px;
+  max-width: 82%;
+  height: auto;
+  min-height: 52px;
+  padding-top: 12px;
+  padding-right: 24px;
+  padding-bottom: 14px;
+}
+
+.author-grid-wrap .author-sticky-block-left-bottom .author-sticky-corner-left-top {
+  bottom: 100%;
+  left: 0;
+}
+
+.author-grid-wrap .author-sticky-block-left-bottom .author-sticky-corner-right-bottom {
+  bottom: 0;
+  left: 100%;
+}
