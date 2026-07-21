@@ -11,15 +11,14 @@ proof_type: scoped-visible
 status: published
 order: 3
 media:
-  - kind: bento
+  - kind: single
     images:
-      - src: /media/voice-ready-ai-experience/idle.webp
-        alt: "Idle state"
-      - src: /media/voice-ready-ai-experience/listening.webp
-        alt: "AI Listening state"
-      - src: /media/voice-ready-ai-experience/flow.webp
-        alt: "Full flow"
-        wide: true
+      - src: /media/voice-ready-ai-experience/outcome.webp
+        alt: "Composite of the shipped experience across desktop, tablet, and mobile, including an incident summary thread and an active-listening state"
+  - kind: single
+    images:
+      - src: /media/voice-ready-ai-experience/states.webp
+        alt: "Full state inventory for the input bar — informational, object, and transient interaction states, including idle, working, listening, error, and confirmation variants"
 ---
 
 Before launch, I identified and corrected a failure in the intent-classification self-correction flow, preventing the assistant from reinforcing an incorrect interpretation of a user's request. I treated this as a system-behavior issue rather than a copy problem, because the correction logic shaped every response that followed.
@@ -39,8 +38,6 @@ quickly understand the situation, separate evidence from interpretation,
 identify the next action, and recognize when the system requires human
 judgment? That standard is stronger and more testable than "users trusted
 the AI."
-
-![Immersive Voice Chat AI Mobile](/media/voice-ready-ai-experience/user-speaking.webp)
 
 For voice specifically, activation is not adoption. The meaningful
 question is whether voice makes a task faster, easier, or more accessible —

@@ -13,12 +13,20 @@ order: 2
 media:
   - kind: carousel
     images:
-      - src: /media/voice-ready-ai-experience/state-1.webp
-        alt: "AI Listening"
-      - src: /media/voice-ready-ai-experience/state-2.webp
-        alt: "User Speaking"
-      - src: /media/voice-ready-ai-experience/state-3.webp
-        alt: "AI Working"
+      - src: /media/voice-ready-ai-experience/solution-voice-cycle-1.webp
+        alt: "Voice state cycle, part 1: AI Listening, AI Listening Prompt, and two User Speaking states on mobile"
+      - src: /media/voice-ready-ai-experience/solution-voice-cycle-2.webp
+        alt: "Voice state cycle, part 2: User Stopped Speaking, Speaker Transition, AI Working, and AI Speaking states on mobile"
+      - src: /media/voice-ready-ai-experience/solution-voice-cycle-3.webp
+        alt: "Voice state cycle, part 3: AI Stopped Speaking returning to AI Listening, completing the loop"
+  - kind: single
+    images:
+      - src: /media/voice-ready-ai-experience/solution-multi-modal-input.webp
+        alt: "Desktop chat showing typed input, a voice waveform indicator, and a confirmation chip together in one active conversation"
+  - kind: single
+    images:
+      - src: /media/voice-ready-ai-experience/solution-handoff-error.webp
+        alt: "Desktop chat with three stacked error states — message failed to load, AI unavailable, and no connection"
 ---
 
 ## The voice interaction system
@@ -39,6 +47,8 @@ matters in an incident-response context, where a user needs to know the
 system heard them correctly before it commits to anything. An audio-reactive
 glow reinforces that feedback in real time, removing the "did it hear me?"
 uncertainty that undermines trust in voice UX generally.
+
+![Side-by-side comparison of Immersive (voice-led) and Traditional (text-led) chat modes, including exit and waveform-pressed states](/media/voice-ready-ai-experience/solution-mode-switching.webp)
 
 Input mode stays a deliberate, reversible choice within either mode, not a
 fork a user gets locked into. The mic and keyboard exist as toggled states
