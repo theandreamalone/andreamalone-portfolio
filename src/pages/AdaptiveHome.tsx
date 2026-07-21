@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import SectionRouter from "@/components/SectionRouter";
-import { VoiceGlow, type VoiceMode } from "@/components/VoiceGlow";
-import { VoiceUnavailable } from "@/components/VoiceUnavailable";
-import WaveformIcon from "@/components/icons/WaveformIcon";
+import type { VoiceMode } from "@/components/VoiceGlow";
+import QuestionHero from "@/components/sections/home/QuestionHero";
 import { route, SUGGESTED_QUESTIONS } from "@/lib/hardcodedRouter";
 import { STATIC_BASELINE } from "@/lib/staticBaseline";
 import { useMicLevel } from "@/lib/voice/useMicLevel";
@@ -44,6 +44,7 @@ const SPOKEN_CONFIRMATIONS: Record<string, string> = {
 const VOICE_SUBMIT_DEBOUNCE_MS = 900;
 
 export default function AdaptiveHome() {
+  const [searchParams] = useSearchParams();
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState<RouterResponse>(STATIC_BASELINE);
   const [asked, setAsked] = useState<string | null>(null);
@@ -94,6 +95,14 @@ export default function AdaptiveHome() {
     };
   }, []);
 
+  // Honor a `?q=` handed off from QuestionHero on the home page — arriving
+  // here should compose the answer immediately, not drop the question.
+  useEffect(() => {
+    const initial = searchParams.get("q");
+    if (initial && initial.trim()) ask(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function startVoice() {
     tts.cancel(); // interrupting the AI is always allowed
     voice.start();
@@ -119,87 +128,33 @@ export default function AdaptiveHome() {
 
   return (
     <Layout>
-      <section className="sec-ask sec-padding-sm">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8 col-12 mx-auto">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  ask(question);
-                }}
-              >
-                <label className="form-label fs-8" htmlFor="ask-input">
-                  Ask what you actually came to find out
-                </label>
-                <VoiceGlow mode={mode} level={level}>
-                  <div className="d-flex gap-2">
-                    <input
-                      id="ask-input"
-                      className="form-control"
-                      type="text"
-                      value={voice.interim || question}
-                      onChange={(e) => setQuestion(e.target.value)}
-                      placeholder="Has she led teams at scale?"
-                      autoComplete="off"
-                    />
-                    {voice.supported ? (
-                      <button
-                        type="button"
-                        className="btn btn-outline-dark"
-                        onClick={voice.listening ? stopVoice : startVoice}
-                        aria-pressed={voice.listening}
-                        aria-label={
-                          voice.listening ? "Stop listening" : "Ask by voice"
-                        }
-                      >
-                        {voice.listening ? "◼" : <WaveformIcon />}
-                      </button>
-                    ) : (
-                      <VoiceUnavailable />
-                    )}
-                    <button type="submit" className="btn btn-dark hover-up">
-                      Ask
-                    </button>
-                  </div>
-                </VoiceGlow>
-              </form>
-
-              <div className="d-flex flex-wrap gap-2 mt-3">
-                {SUGGESTED_QUESTIONS.map((q) => (
-                  <button
-                    key={q}
-                    type="button"
-                    className="badge bg-1 fs-8 border-0"
-                    onClick={() => ask(q)}
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-
-              {asked && (
-                <div
-                  className="d-flex flex-wrap align-items-center gap-2 mt-3"
-                  role="status"
-                >
-                  <span className="fs-8 m-0">
-                    Composed for: {response.intent_tag ?? "default"}
-                    {response.confidence === "low" && " (no close match)"}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-dark"
-                    onClick={reset}
-                  >
-                    Reset
-                  </button>
-                </div>
-              )}
+      <QuestionHero
+        value={question}
+        onChange={setQuestion}
+        onAsk={ask}
+        chips={SUGGESTED_QUESTIONS}
+        voiceControl={{
+          supported: voice.supported,
+          listening: voice.listening,
+          glowActive: mode !== "idle",
+          interim: voice.interim,
+          level,
+          onToggle: voice.listening ? stopVoice : startVoice,
+        }}
+        belowForm={
+          asked && (
+            <div className="qh-status" role="status">
+              <span>
+                Composed for: {response.intent_tag ?? "default"}
+                {response.confidence === "low" && " (no close match)"}
+              </span>
+              <button type="button" className="qh-status-reset" onClick={reset}>
+                Reset
+              </button>
             </div>
-          </div>
-        </div>
-      </section>
+          )
+        }
+      />
 
       {orderedSections.map((spec, idx) => (
         <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />

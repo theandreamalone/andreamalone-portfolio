@@ -1,12 +1,19 @@
 /**
- * QuestionHero — the home hero (approved template 2026-07-20).
+ * QuestionHero — the shared question hero (approved template 2026-07-20).
  *
- * The question field IS the hero: submitting routes to /adaptive?q=... where
- * the page composes its answer (D3: free-text path is core; the static home
- * stays the D6 baseline — this hero is static, only the link is adaptive).
+ * Used two ways:
+ *  - Home (`/`): no props — the question field is static, and submitting
+ *    navigates to /adaptive?q=... where the page composes its answer (D3:
+ *    free-text path is core; the static home stays the D6 baseline).
+ *  - AdaptiveHome (`/adaptive`): fully controlled — `value`/`onChange` and
+ *    `onAsk` route through the page's own ask()/route() pipeline instead of
+ *    navigating, and `voiceControl` hands rendering off to the page's own
+ *    useVoiceInput/useMicLevel instance so there's exactly one live
+ *    recognizer, not two.
  *
- * Voice: the mic button feeds the same ask() path as typing (pattern copied
- * from AdaptiveHome — useVoiceInput + useMicLevel). While listening, the
+ * Voice (uncontrolled/default case): the mic button feeds the same ask()
+ * path as typing (useVoiceInput + useMicLevel, instantiated here but left
+ * idle whenever `voiceControl` is supplied). While listening, the
  * magenta/amber glow is forced on and audio-reactive via --qh-level, so the
  * glow genuinely signals "I'm listening" instead of being a focus style only.
  * Unsupported browsers get VoiceUnavailable (visible degraded state, not a
@@ -17,7 +24,7 @@
  * the placeholder automatically via onError fallback.
  */
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VoiceUnavailable } from '@/components/VoiceUnavailable';
 import WaveformIcon from '@/components/icons/WaveformIcon';
@@ -34,33 +41,79 @@ const CHIPS = [
 /** Endpointing pause between a final voice transcript and auto-submit. */
 const VOICE_SUBMIT_DEBOUNCE_MS = 900;
 
-export default function QuestionHero() {
+export interface QuestionHeroVoiceControl {
+  supported: boolean;
+  listening: boolean;
+  /** Drives the reactive glow — true whenever the field should visibly react (listening, or a caller-defined "active" state like AI speaking). */
+  glowActive: boolean;
+  interim: string;
+  level: number;
+  onToggle: () => void;
+}
+
+export interface QuestionHeroProps {
+  /** Controlled input value. Omit to let the component manage its own state (Home). */
+  value?: string;
+  onChange?: (value: string) => void;
+  /** Called with the trimmed question on submit. Omit to navigate to /adaptive?q=... (Home). */
+  onAsk?: (question: string) => void;
+  /** Overrides the default example chips. */
+  chips?: readonly string[];
+  /** Externally-driven voice state/handlers. Omit to use this component's own useVoiceInput/useMicLevel instance. */
+  voiceControl?: QuestionHeroVoiceControl;
+  /** Optional content rendered under the chips, e.g. an "asked" status row. */
+  belowForm?: ReactNode;
+}
+
+export default function QuestionHero({
+  value,
+  onChange,
+  onAsk,
+  chips = CHIPS,
+  voiceControl,
+  belowForm,
+}: QuestionHeroProps) {
   const navigate = useNavigate();
-  const [q, setQ] = useState('');
+  const [internalQ, setInternalQ] = useState('');
   const [imgOk, setImgOk] = useState(true);
+
+  const q = value !== undefined ? value : internalQ;
+  const setQ = onChange ?? setInternalQ;
 
   const mic = useMicLevel();
 
   const ask = (question: string) => {
     const query = question.trim();
+    if (onAsk) {
+      onAsk(query);
+      return;
+    }
     navigate(query ? `/adaptive?q=${encodeURIComponent(query)}` : '/adaptive');
   };
 
-  const voice = useVoiceInput((finalText) => {
+  const internalVoice = useVoiceInput((finalText) => {
     setQ(finalText);
     mic.stop();
     window.setTimeout(() => ask(finalText), VOICE_SUBMIT_DEBOUNCE_MS);
   });
 
-  const startVoice = () => {
-    voice.start();
-    mic.start();
-  };
-
-  const stopVoice = () => {
-    voice.stop();
-    mic.stop();
-  };
+  const voiceState: QuestionHeroVoiceControl =
+    voiceControl ?? {
+      supported: internalVoice.supported,
+      listening: internalVoice.listening,
+      glowActive: internalVoice.listening,
+      interim: internalVoice.interim,
+      level: mic.level,
+      onToggle: () => {
+        if (internalVoice.listening) {
+          internalVoice.stop();
+          mic.stop();
+        } else {
+          internalVoice.start();
+          mic.start();
+        }
+      },
+    };
 
   return (
     <section className="question-hero sec-padding">
@@ -90,26 +143,26 @@ export default function QuestionHero() {
                 Ask this site a question
               </label>
               <div
-                className={`qh-field${voice.listening ? ' is-listening' : ''}`}
-                style={{ '--qh-level': mic.level } as React.CSSProperties}
+                className={`qh-field${voiceState.glowActive ? ' is-listening' : ''}`}
+                style={{ '--qh-level': voiceState.level } as React.CSSProperties}
               >
                 <input
                   id="qh-q"
                   type="text"
-                  value={voice.interim || q}
+                  value={voiceState.interim || q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Has she designed human-in-the-loop AI?"
                   autoComplete="off"
                 />
-                {voice.supported ? (
+                {voiceState.supported ? (
                   <button
                     type="button"
                     className="qh-mic"
-                    onClick={voice.listening ? stopVoice : startVoice}
-                    aria-pressed={voice.listening}
-                    aria-label={voice.listening ? 'Stop listening' : 'Ask by voice'}
+                    onClick={voiceState.onToggle}
+                    aria-pressed={voiceState.listening}
+                    aria-label={voiceState.listening ? 'Stop listening' : 'Ask by voice'}
                   >
-                    {voice.listening ? '◼' : <WaveformIcon />}
+                    {voiceState.listening ? '◼' : <WaveformIcon />}
                   </button>
                 ) : (
                   <span className="qh-mic qh-mic-unavailable">
@@ -119,12 +172,12 @@ export default function QuestionHero() {
                 <button type="submit" className="qh-submit">Ask</button>
               </div>
               <span className="qh-sr" role="status" aria-live="polite">
-                {voice.listening ? 'Listening' : ''}
+                {voiceState.listening ? 'Listening' : ''}
               </span>
             </form>
 
             <div className="qh-chips" aria-label="Example questions">
-              {CHIPS.map((chip) => (
+              {chips.map((chip) => (
                 <button
                   key={chip}
                   type="button"
@@ -135,6 +188,8 @@ export default function QuestionHero() {
                 </button>
               ))}
             </div>
+
+            {belowForm}
 
             <p className="qh-boundary">
               The AI selects from written evidence — it never writes a word.
@@ -276,6 +331,27 @@ export default function QuestionHero() {
           transition: color .15s ease, border-color .15s ease;
         }
         .qh-chip:hover { color: inherit; border-color: rgba(255,255,255,0.3); }
+        .qh-status {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 12px;
+          font-size: 14px;
+          color: var(--tc-neutral-600, #9a9ca0);
+          margin-bottom: 28px;
+        }
+        .qh-status-reset {
+          border: 1px solid var(--qh-line);
+          background: transparent;
+          color: inherit;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font: inherit;
+          font-size: 13px;
+          cursor: pointer;
+          transition: border-color .15s ease;
+        }
+        .qh-status-reset:hover { border-color: rgba(255,255,255,0.3); }
         .qh-boundary {
           font-size: 14px;
           color: var(--tc-neutral-600, #9a9ca0);

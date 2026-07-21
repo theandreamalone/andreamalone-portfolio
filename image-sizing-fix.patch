@@ -1,0 +1,92 @@
+diff --git a/src/components/case-study-body.css b/src/components/case-study-body.css
+index 4e3f738..9edb63f 100644
+--- a/src/components/case-study-body.css
++++ b/src/components/case-study-body.css
+@@ -168,27 +168,32 @@
+   margin-bottom: 10vh;
+ }
+ 
+-/* ---- Media sizing caps (2026-07-20 bug pass) ----
+-   Tall portrait screenshots (phone frames) were rendering at full column
+-   width → taller than the viewport, pushing carousel pagination off-screen
+-   and dwarfing prose. Cap heights; let width follow. */
++/* ---- Media sizing caps (2026-07-20 bug pass; revised 2026-07-21) ----
++   Images are MIXED aspect ratios: wide desktop screenshots AND tall phone
++   frames in the same carousels. Capping by height alone let tall frames
++   dominate and left wide shots floating tiny in the column. Cap BOTH height
++   and width, center, and let each image keep its own shape ("natural, capped").
++   Screenshots render square-cornered — rounding a screenshot-of-a-screen clips
++   real UI corners. */
+ 
+ /* Inline MDX images + single media */
+ .case-study-body img {
+   max-height: 72vh;
+   width: auto;
+-  max-width: 100%;
++  max-width: min(100%, 900px);
+   margin-inline: auto;
+   object-fit: contain;
++  border-radius: 0;
+ }
+ 
+ /* Carousel slides */
+ .cs-carousel img {
+-  max-height: 60vh;
++  max-height: 68vh;
+   width: auto;
+-  max-width: 100%;
++  max-width: min(100%, 900px);
+   margin: 0 auto;
+   object-fit: contain;
++  border-radius: 0;
+ }
+ .cs-carousel .cs-media-expand { display: flex; justify-content: center; }
+ 
+diff --git a/src/components/media/ImageBento.tsx b/src/components/media/ImageBento.tsx
+index cbcc028..449debf 100644
+--- a/src/components/media/ImageBento.tsx
++++ b/src/components/media/ImageBento.tsx
+@@ -36,7 +36,7 @@ export default function ImageBento({ images }: ImageBentoProps) {
+           <div key={img.src} className={img.wide ? 'col-12' : 'col-md-6'}>
+             <button
+               type="button"
+-              className="cs-media-expand rounded-16 overflow-hidden"
++              className="cs-media-expand"
+               aria-label={`Expand image: ${img.alt}`}
+               onClick={() => setOpen(i)}
+             >
+diff --git a/src/components/media/ImageCarousel.tsx b/src/components/media/ImageCarousel.tsx
+index 3877055..f8db03b 100644
+--- a/src/components/media/ImageCarousel.tsx
++++ b/src/components/media/ImageCarousel.tsx
+@@ -24,7 +24,7 @@ interface ImageCarouselProps {
+   perView?: number;
+ }
+ 
+-export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProps) {
++export default function ImageCarousel({ images, perView = 1 }: ImageCarouselProps) {
+   const [open, setOpen] = useState<number | null>(null);
+   const [failed, setFailed] = useState<Set<string>>(new Set());
+ 
+@@ -52,7 +52,7 @@ export default function ImageCarousel({ images, perView = 2 }: ImageCarouselProp
+           <SwiperSlide key={img.src}>
+             <button
+               type="button"
+-              className="cs-media-expand rounded-16 overflow-hidden"
++              className="cs-media-expand"
+               aria-label={`Expand image: ${img.alt}`}
+               onClick={() => setOpen(i)}
+             >
+diff --git a/src/components/media/MdxImage.tsx b/src/components/media/MdxImage.tsx
+index 7a6d4d4..058bf74 100644
+--- a/src/components/media/MdxImage.tsx
++++ b/src/components/media/MdxImage.tsx
+@@ -16,7 +16,7 @@ export default function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement
+     <>
+       <button
+         type="button"
+-        className="cs-media-expand cs-media-expand-full rounded-16 overflow-hidden"
++        className="cs-media-expand cs-media-expand-full"
+         aria-label={`Expand image: ${alt}`}
+         onClick={() => setOpen(true)}
+       >
