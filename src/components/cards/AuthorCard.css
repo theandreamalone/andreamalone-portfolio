@@ -29,3 +29,61 @@
   bottom: 0;
   left: 100%;
 }
+
+/* Excerpt reveal on hover/focus/tap (2026-07-21) — collapsed by default,
+   the card grows downward to reveal it. Never display:none/aria-hidden:
+   only visually clipped, so it stays screen-reader reachable throughout. */
+.testimonial-quote {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.author-grid-wrap:not(.is-dismissed):hover .testimonial-quote,
+.author-grid-wrap:not(.is-dismissed):focus-within .testimonial-quote,
+.author-grid-wrap.is-expanded:not(.is-dismissed) .testimonial-quote {
+  max-height: 240px;
+  opacity: 1;
+}
+
+.testimonial-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.15s ease;
+}
+
+.testimonial-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.testimonial-toggle[aria-expanded="true"] svg,
+.author-grid-wrap:hover .testimonial-toggle svg,
+.author-grid-wrap:focus-within .testimonial-toggle svg {
+  transform: rotate(180deg);
+}
+
+.testimonial-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+/* Visually hidden but still screen-reader reachable — same technique as
+   QuestionHero's .qh-sr, kept local since this file has no shared base. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

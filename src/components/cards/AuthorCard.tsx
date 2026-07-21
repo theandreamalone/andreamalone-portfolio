@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "@/components/common/Link";
 import Image from "@/components/common/Image";
 import { resolveBlock } from "@/lib/blockRegistry";
@@ -13,6 +14,16 @@ import "./AuthorCard.css";
  *
  * Existing call sites that pass only {img, linkPost, name, position,
  * bgstickyCorner} keep working unchanged.
+ *
+ * Excerpt reveal (2026-07-21): the quote is collapsed by default and expands
+ * the card downward on hover or keyboard focus (WCAG 1.4.13 — hoverable via
+ * :focus-within/:hover on the whole card, so moving onto the quote itself
+ * doesn't close it; persistent — no auto-dismiss timer). Touch has no
+ * reliable hover, so a visible toggle button drives the same state via tap;
+ * that same button (and Escape) also covers "dismissible." The quote node
+ * itself is never removed from the DOM or `display:none`/`aria-hidden` —
+ * only visually collapsed (max-height/overflow) — so it's always
+ * screen-reader reachable regardless of expanded state.
  */
 
 type CardProps = {
@@ -28,13 +39,36 @@ type CardProps = {
 };
 
 export default function AuthorCard({ card, idx }: CardProps) {
+  const [expanded, setExpanded] = useState(false);
+  // Escape must dismiss even though the toggle button keeps keyboard focus
+  // afterward (pressing a key doesn't blur its target) — so :focus-within
+  // alone can't be told to close. This flag overrides hover/focus/expanded
+  // until the user actually disengages (mouse leaves, or focus exits the
+  // card) and re-engages, at which point it's armed to reveal again.
+  const [dismissed, setDismissed] = useState(false);
   const Quote = card.quoteSlug
     ? resolveBlock(`block:${card.quoteSlug}` as BlockId)
     : null;
+  const quoteId = `testimonial-quote-${card.quoteSlug ?? idx}`;
 
   return (
     <>
-      <div className={`author-grid-wrap ${card.bgstickyCorner} h-100`} key={idx}>
+      <div
+        className={`author-grid-wrap ${card.bgstickyCorner} h-100 ${expanded ? "is-expanded" : ""} ${dismissed ? "is-dismissed" : ""}`}
+        key={idx}
+        onMouseLeave={() => setDismissed(false)}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+            setDismissed(false);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setExpanded(false);
+            setDismissed(true);
+          }
+        }}
+      >
         <Link href={card.linkPost}>
           <Image
             src={card.img}
@@ -53,12 +87,37 @@ export default function AuthorCard({ card, idx }: CardProps) {
           />
         </Link>
         <div className="author-sticky-block-left-bottom">
-          <Link href={card.linkPost}>
-            <h6 className="fs-7 mb-0">{card.name}</h6>
-          </Link>
+          <div className="d-flex align-items-start justify-content-between gap-2">
+            <Link href={card.linkPost}>
+              <h6 className="fs-7 mb-0">{card.name}</h6>
+            </Link>
+            {Quote && (
+              <button
+                type="button"
+                className="testimonial-toggle"
+                aria-expanded={expanded}
+                aria-controls={quoteId}
+                onClick={(e) => {
+                  setExpanded((v) => !v);
+                  setDismissed(false); // an explicit tap always re-arms, even right after Escape
+                  // Some browsers don't focus a button on click (Safari
+                  // notably never does) — force it so Escape has something
+                  // to bubble from and :focus-within stays in sync with tap.
+                  e.currentTarget.focus();
+                }}
+              >
+                <span className="visually-hidden">
+                  {expanded ? `Hide quote from ${card.name}` : `Show quote from ${card.name}`}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
+          </div>
           <p className="fs-7 m-0">{card.position}</p>
           {Quote && (
-            <div className="testimonial-quote fs-8 mt-2">
+            <div id={quoteId} className="testimonial-quote fs-8 mt-2">
               <Quote />
             </div>
           )}
