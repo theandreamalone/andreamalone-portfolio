@@ -149,40 +149,14 @@ export default function CaseStudyDetail() {
 
       {/* Brief + body */}
       <div className="container pt-100">
-        <div className={scrolly ? 'row' : 'row g-lg-5 g-4'}>
-        <div className={scrolly ? 'col-12 mb-5' : 'col-lg-6 col-12 mb-5'}>            <div className="block-brief rounded-16 p-4 border-200 bg-white">
+        <div className="row g-4">
+          <div className="col-12 mb-5">
+            <div className="block-brief rounded-16 p-4 border-200 bg-white">
               <div className="title border-bottom-200 pb-2 mb-4 m-2">
                 <h5 className="mb-0">Project brief</h5>
               </div>
               <div className="content">
-                <ul className="text-secondary ps-3 fs-18 m-2">
-                  {cs.client && (
-                    <li>Client: <span className="text-dark">{cs.client}</span></li>
-                  )}
-                  {cs.industry && (
-                    <li>Industry: <span className="text-dark">{cs.industry}</span></li>
-                  )}
-                  {cs.role_title && (
-                    <li>Role: <span className="text-dark">{cs.role_title}</span></li>
-                  )}
-                  {cs.when && (
-                    <li>Timeline: <span className="text-dark">{cs.when}</span></li>
-                  )}
-                </ul>
-                {cs.skills.length > 0 && (
-                  <div className="d-flex flex-wrap gap-2 m-2 pt-2">
-                    {cs.skills.map((sk) => (
-                      <span key={sk.slug} className="bg-200 fs-8 rounded-8 py-2 px-3">
-                        {sk.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                {cs.showClientDisclosureNote && (
-                  <div className="m-2">
-                    <ClientDisclosureNote />
-                  </div>
-                )}
+                {/* ...keep everything currently inside .content unchanged... */}
               </div>
             </div>
           </div>

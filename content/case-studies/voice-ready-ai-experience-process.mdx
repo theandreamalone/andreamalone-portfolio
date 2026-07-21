@@ -9,26 +9,21 @@ audience: [recruiter, hiring-manager, collaborator]
 skill: []
 proof_type: scoped-visible
 status: draft
-order: 0
-media:
-  - kind: carousel
-    images:
-      - src: /media/voice-ready-ai-experience/process-1.webp
-        alt: "Low-fidelity wireframes of the desktop and mobile chat layout, including message thread, impacted-sites card, and sources section"
-      - src: /media/voice-ready-ai-experience/process-2.webp
-        alt: "Desktop and mobile screens showing a guided module-access flow with selectable options and an impacted-sites bar chart"
-      - src: /media/voice-ready-ai-experience/process-3.webp
-        alt: "Desktop incident-detail view for a service disruption, with chat Q&A and an impacted-sites chart, alongside the matching mobile chat thread"
-      - src: /media/voice-ready-ai-experience/process-4.webp
-        alt: "Accessibility annotation pass overlaying ARIA landmark labels (header, nav, main, form) on the desktop and mobile chat layouts"
-  - kind: single
-    images:
-      - src: /media/voice-ready-ai-experience/accessibility.webp
-        alt: "Four mobile voice-state screens — AI Listening, AI Listening Prompt, and two User Speaking states — used to review the conversational states for accessibility"
+order: 2
 ---
 
+<ImageCarousel
+  images={[
+    { src: '/media/voice-ready-ai-experience/process-1.webp', alt: "Low-fidelity wireframes of the desktop and mobile chat layout, including message thread, impacted-sites card, and sources section" },
+    { src: '/media/voice-ready-ai-experience/process-2.webp', alt: "Desktop and mobile screens showing a guided module-access flow with selectable options and an impacted-sites bar chart" },
+    { src: '/media/voice-ready-ai-experience/process-3.webp', alt: "Desktop incident-detail view for a service disruption, with chat Q&A and an impacted-sites chart, alongside the matching mobile chat thread" },
+    { src: '/media/voice-ready-ai-experience/process-4.webp', alt: "Accessibility annotation pass overlaying ARIA landmark labels (header, nav, main, form) on the desktop and mobile chat layouts" }
+  ]}
+/>
 [NEED: decision rationale progression — how the design moved from text-first
 constraint through the split-mode proposal to the approved voice-state cycle.
 Candidates from Figma: Current vs. Future logic frames, Alterations & Fixes
 reasoning, the 7-state cycle evolution. Author via brief → ChatGPT → Claude
 review pipeline.]
+
+![Four mobile voice-state screens — AI Listening, AI Listening Prompt, and two User Speaking states — used to review the conversational states for accessibility](/media/voice-ready-ai-experience/accessibility.webp)

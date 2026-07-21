@@ -9,24 +9,7 @@ audience: [recruiter, hiring-manager, collaborator]
 skill: []
 proof_type: scoped-visible
 status: published
-order: 2
-media:
-  - kind: carousel
-    images:
-      - src: /media/voice-ready-ai-experience/solution-voice-cycle-1.webp
-        alt: "Voice state cycle, part 1: AI Listening, AI Listening Prompt, and two User Speaking states on mobile"
-      - src: /media/voice-ready-ai-experience/solution-voice-cycle-2.webp
-        alt: "Voice state cycle, part 2: User Stopped Speaking, Speaker Transition, AI Working, and AI Speaking states on mobile"
-      - src: /media/voice-ready-ai-experience/solution-voice-cycle-3.webp
-        alt: "Voice state cycle, part 3: AI Stopped Speaking returning to AI Listening, completing the loop"
-  - kind: single
-    images:
-      - src: /media/voice-ready-ai-experience/solution-multi-modal-input.webp
-        alt: "Desktop chat showing typed input, a voice waveform indicator, and a confirmation chip together in one active conversation"
-  - kind: single
-    images:
-      - src: /media/voice-ready-ai-experience/solution-handoff-error.webp
-        alt: "Desktop chat with three stacked error states — message failed to load, AI unavailable, and no connection"
+order: 3
 ---
 
 ## The voice interaction system
@@ -48,6 +31,14 @@ system heard them correctly before it commits to anything. An audio-reactive
 glow reinforces that feedback in real time, removing the "did it hear me?"
 uncertainty that undermines trust in voice UX generally.
 
+<ImageCarousel
+  images={[
+    { src: '/media/voice-ready-ai-experience/solution-voice-cycle-1.webp', alt: "Voice state cycle, part 1: AI Listening, AI Listening Prompt, and two User Speaking states on mobile" },
+    { src: '/media/voice-ready-ai-experience/solution-voice-cycle-2.webp', alt: "Voice state cycle, part 2: User Stopped Speaking, Speaker Transition, AI Working, and AI Speaking states on mobile" },
+    { src: '/media/voice-ready-ai-experience/solution-voice-cycle-3.webp', alt: "Voice state cycle, part 3: AI Stopped Speaking returning to AI Listening, completing the loop" }
+  ]}
+/>
+
 ![Side-by-side comparison of Immersive (voice-led) and Traditional (text-led) chat modes, including exit and waveform-pressed states](/media/voice-ready-ai-experience/solution-mode-switching.webp)
 
 Input mode stays a deliberate, reversible choice within either mode, not a
@@ -55,6 +46,8 @@ fork a user gets locked into. The mic and keyboard exist as toggled states
 within the same input bar — someone can start speaking, see a live "Start
 speaking" prompt, and drop back to typing mid-conversation without losing
 context.
+
+![Desktop chat showing typed input, a voice waveform indicator, and a confirmation chip together in one active conversation](/media/voice-ready-ai-experience/solution-multi-modal-input.webp)
 
 ## Holding both modes to parity on mobile
 
