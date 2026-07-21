@@ -124,7 +124,12 @@ export default function AdaptiveHome() {
       : "idle";
   const level = tts.speaking ? tts.level : mic.level;
 
-  const orderedSections = [...response.sections].sort((a, b) => a.order - b.order);
+  // QuestionHero above already covers the Hero slot (same reasoning as Home.tsx) —
+  // without this filter, SectionRouter's Hero case (SectionIntro) renders a second,
+  // redundant "hero" block right under it.
+  const orderedSections = [...response.sections]
+    .filter((spec) => spec.kind !== "Hero")
+    .sort((a, b) => a.order - b.order);
 
   return (
     <Layout>

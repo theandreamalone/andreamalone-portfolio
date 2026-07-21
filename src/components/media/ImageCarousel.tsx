@@ -20,11 +20,15 @@ import Lightbox, { type LightboxImage } from './Lightbox';
 
 interface ImageCarouselProps {
   images: LightboxImage[];
-  /** Slides visible at desktop width. Default 2; use 1 for full-width slides. */
-  perView?: number;
+  /**
+   * Slides sized naturally by default: every image shares one height and
+   * takes the width its aspect ratio needs — phone frames sit 2–3 up,
+   * desktop shots go wide. Pass a number to force fixed slides-per-view.
+   */
+  perView?: number | 'auto';
 }
 
-export default function ImageCarousel({ images, perView = 1 }: ImageCarouselProps) {
+export default function ImageCarousel({ images, perView = 'auto' }: ImageCarouselProps) {
   const [open, setOpen] = useState<number | null>(null);
   const [failed, setFailed] = useState<Set<string>>(new Set());
 
@@ -45,8 +49,7 @@ export default function ImageCarousel({ images, perView = 1 }: ImageCarouselProp
         navigation
         pagination={{ clickable: true }}
         spaceBetween={16}
-        slidesPerView={1}
-        breakpoints={{ 768: { slidesPerView: perView } }}
+        slidesPerView={perView}
       >
         {live.map((img, i) => (
           <SwiperSlide key={img.src}>

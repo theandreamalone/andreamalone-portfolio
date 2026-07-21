@@ -168,29 +168,41 @@
   margin-bottom: 10vh;
 }
 
-/* ---- Media sizing caps (2026-07-20 bug pass; revised 2026-07-21) ----
-   Images are MIXED aspect ratios: wide desktop screenshots AND tall phone
-   frames in the same carousels. Capping by height alone let tall frames
-   dominate and left wide shots floating tiny in the column. Cap BOTH height
-   and width, center, and let each image keep its own shape ("natural, capped").
-   Screenshots render square-cornered — rounding a screenshot-of-a-screen clips
-   real UI corners. */
+/* ---- Media sizing (revised 2026-07-21: stacked layout) ----
+   Body now spans the full container (brief stacked above, no side column).
+   Article pattern: prose stays at a readable measure; media uses the full
+   width. Carousel slides share ONE height and take natural width per image
+   (slidesPerView:'auto') — phone frames sit 2–3 up, desktop shots go wide.
+   Screenshots are square-cornered: rounding a screenshot clips real UI. */
 
-/* Inline MDX images + single media */
+/* Readable prose measure, centered; media exempt */
+.case-study-body h2,
+.case-study-body h3,
+.case-study-body p,
+.case-study-body ul,
+.case-study-body ol {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+/* Inline MDX images + single media — full width, height-capped */
 .case-study-body img {
-  max-height: 72vh;
+  max-height: 78vh;
   width: auto;
-  max-width: min(100%, 900px);
+  max-width: 100%;
   margin-inline: auto;
   object-fit: contain;
   border-radius: 0;
 }
 
-/* Carousel slides */
-.cs-carousel img {
-  max-height: 68vh;
+/* Carousel: fixed slide height, natural per-image width */
+.cs-carousel .swiper-slide {
   width: auto;
-  max-width: min(100%, 900px);
+}
+.cs-carousel img {
+  height: min(62vh, 640px);
+  width: auto;
+  max-width: 92vw;
   margin: 0 auto;
   object-fit: contain;
   border-radius: 0;
