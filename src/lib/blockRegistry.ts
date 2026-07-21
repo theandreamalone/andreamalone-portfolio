@@ -19,6 +19,12 @@ const blockModules = import.meta.glob('/content/blocks/*.mdx', { eager: true });
 const caseStudyModules = import.meta.glob('/content/case-studies/*.mdx', {
   eager: true,
 });
+// Testimonial quote prose (Option A applies here too — quotes live in MDX,
+// the testimonials table holds metadata only). AuthorCard resolves
+// `block:{quote_slug}` through this same registry.
+const testimonialModules = import.meta.glob('/content/testimonials/*.mdx', {
+  eager: true,
+});
 
 type MdxModule = { default: ComponentType; frontmatter?: Record<string, unknown> };
 
@@ -39,6 +45,7 @@ function ingest(modules: Record<string, unknown>) {
 
 ingest(blockModules);
 ingest(caseStudyModules);
+ingest(testimonialModules);
 
 /** Strip the `block:` namespace prefix. */
 function slugOf(id: BlockId): string {
