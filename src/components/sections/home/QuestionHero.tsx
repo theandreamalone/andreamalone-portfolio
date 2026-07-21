@@ -20,6 +20,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VoiceUnavailable } from '@/components/VoiceUnavailable';
+import WaveformIcon from '@/components/icons/WaveformIcon';
 import { useMicLevel } from '@/lib/voice/useMicLevel';
 import { useVoiceInput } from '@/lib/voice/useVoiceInput';
 
@@ -108,7 +109,7 @@ export default function QuestionHero() {
                     aria-pressed={voice.listening}
                     aria-label={voice.listening ? 'Stop listening' : 'Ask by voice'}
                   >
-                    {voice.listening ? '◼' : '🎤'}
+                    {voice.listening ? '◼' : <WaveformIcon />}
                   </button>
                 ) : (
                   <span className="qh-mic qh-mic-unavailable">

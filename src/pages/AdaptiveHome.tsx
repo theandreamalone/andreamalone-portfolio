@@ -3,6 +3,7 @@ import Layout from "@/components/layout/Layout";
 import SectionRouter from "@/components/SectionRouter";
 import { VoiceGlow, type VoiceMode } from "@/components/VoiceGlow";
 import { VoiceUnavailable } from "@/components/VoiceUnavailable";
+import WaveformIcon from "@/components/icons/WaveformIcon";
 import { route, SUGGESTED_QUESTIONS } from "@/lib/hardcodedRouter";
 import { STATIC_BASELINE } from "@/lib/staticBaseline";
 import { useMicLevel } from "@/lib/voice/useMicLevel";
@@ -152,7 +153,7 @@ export default function AdaptiveHome() {
                           voice.listening ? "Stop listening" : "Ask by voice"
                         }
                       >
-                        {voice.listening ? "◼" : "🎤"}
+                        {voice.listening ? "◼" : <WaveformIcon />}
                       </button>
                     ) : (
                       <VoiceUnavailable />
