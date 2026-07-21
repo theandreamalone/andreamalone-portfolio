@@ -12,12 +12,14 @@
 import Marquee from "@/util/Marquee2";
 
 const LOGOS: { src: string; alt: string; h: number }[] = [
-  { src: "/media/logos/ibm-logo-white.svg", alt: "IBM", h: 40 },
+  { src: "/media/logos/ibm-logo-white.png", alt: "IBM", h: 40 },
   { src: "/media/logos/att-logo-white.png", alt: "AT&T", h: 40 },
   { src: "/media/logos/community-boost-logo-white.svg", alt: "Community Boost", h: 34 },
   { src: "/media/logos/northlight-logo-white.png", alt: "Northlight Theatre", h: 38 },
   { src: "/media/logos/bbbs-logo-white.png", alt: "Big Brothers Big Sisters", h: 44 },
   { src: "/media/logos/simidigi-logo-white.png", alt: "SimiDigi", h: 34 },
+  // T-Mobile chip — enable only after disclosure permission (master plan item 25).
+  // { src: "/media/logos/t-mobile-logo-white.png", alt: "T-Mobile", h: 40 },
 ];
 
 export default function Section2() {
