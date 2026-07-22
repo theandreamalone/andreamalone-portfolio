@@ -84,7 +84,13 @@ export function isRecordId(x: unknown): x is RecordId {
 // Router response envelope
 // ============================================================================
 
-export type Confidence = 'high' | 'medium' | 'low';
+/**
+ * 0–1. Was a 'high' | 'medium' | 'low' string enum pre-Rung-2 (2026-07-21) —
+ * widened to a number so confidence can gate the Rung 2 text fields at
+ * specific thresholds (0.4, 0.7) instead of three coarse buckets. See
+ * "The response ladder" in docs/codebase-ground-truth.md.
+ */
+export type Confidence = number;
 
 export interface SectionSpec {
   kind: SectionKind;
@@ -99,18 +105,39 @@ export interface RouterResponse {
   confidence: Confidence;
   /** Metadata for events log. NOT a layout directive. */
   intent_tag?: string;
+  /**
+   * Rung 2 (2026-07-21) — the ONE sanctioned exception to "IDs and enums
+   * only." Both fields are bounded template output, never free generation:
+   * see view-schema-contract.md Invariant 1 and codebase-ground-truth.md's
+   * "response ladder" for the exact rules. Do not add further free-text
+   * fields without amending that invariant explicitly — it is not a
+   * precedent for open-ended prose.
+   */
+  /** 1 sentence, <=160 chars. Template: "You're asking {intent_frame}." */
+  restated_question?: string;
+  /** 1-3 sentences, <=380 chars. Facts must all appear in selected blocks' frontmatter. */
+  answer?: string;
 }
 
 // ============================================================================
 // Runtime validation
 // ============================================================================
 
+const RESTATED_QUESTION_MAX = 160;
+const ANSWER_MAX = 380;
+
 export function isValidRouterResponse(x: unknown): x is RouterResponse {
   if (typeof x !== 'object' || x === null) return false;
   const r = x as Record<string, unknown>;
   if (!Array.isArray(r.sections)) return false;
   if (!r.sections.every(isValidSectionSpec)) return false;
-  if (!['high', 'medium', 'low'].includes(r.confidence as string)) return false;
+  if (typeof r.confidence !== 'number' || r.confidence < 0 || r.confidence > 1) return false;
+  if (r.restated_question !== undefined) {
+    if (typeof r.restated_question !== 'string' || r.restated_question.length > RESTATED_QUESTION_MAX) return false;
+  }
+  if (r.answer !== undefined) {
+    if (typeof r.answer !== 'string' || r.answer.length > ANSWER_MAX) return false;
+  }
   return true;
 }
 
@@ -143,7 +170,7 @@ export function isValidSectionSpec(x: unknown): x is SectionSpec {
 export const ROUTER_TOOL_SCHEMA = {
   name: 'compose_sections',
   description:
-    'Compose portfolio sections that answer the visitor question. Return sections with their record IDs. Never return text — the frontend resolves IDs to authored content.',
+    'Compose portfolio sections that answer the visitor question, plus a bounded restatement and answer. Sections carry record IDs only, resolved to authored content by the frontend. restated_question and answer are templated from pre-authored scaffolds and verified frontmatter only — never free generation (see the response ladder, Rung 2).',
   input_schema: {
     type: 'object',
     additionalProperties: false,
@@ -167,8 +194,10 @@ export const ROUTER_TOOL_SCHEMA = {
           },
         },
       },
-      confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+      confidence: { type: 'number', minimum: 0, maximum: 1 },
       intent_tag: { type: 'string' },
+      restated_question: { type: 'string', maxLength: 160 },
+      answer: { type: 'string', maxLength: 380 },
     },
   },
 } as const;

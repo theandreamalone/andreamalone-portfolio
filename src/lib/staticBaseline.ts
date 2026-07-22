@@ -67,6 +67,6 @@ export const STATIC_BASELINE: RouterResponse = {
       record_ids: [],
     },
   ],
-  confidence: 'high',
+  confidence: 1,
   intent_tag: 'static_baseline',
 };

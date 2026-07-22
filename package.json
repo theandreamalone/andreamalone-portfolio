@@ -8,11 +8,13 @@
         "build": "tsc -b && vite build",
         "preview": "vite preview",
         "lint": "eslint .",
-        "images": "node scripts/process-images.mjs"
+        "images": "node scripts/process-images.mjs",
+        "verify:router": "node scripts/verify-router-answers.mjs"
     },
     "dependencies": {
         "@supabase/supabase-js": "^2.110.2",
         "bootstrap": "^5.3.3",
+        "framer-motion": "^12.42.2",
         "gsap": "^3.12.7",
         "howler": "^2.2.4",
         "isotope-layout": "^3.0.6",

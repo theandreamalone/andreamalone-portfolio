@@ -8,14 +8,20 @@ that matters. Composition = section arrangement.
 **Companion code:** `src/lib/viewContract.ts` (types must stay in sync with
 this doc; this doc wins on conflict).
 **Section vocabulary:** `src/lib/templateGlossary.ts` (mappers + data shapes).
+**Rung 2 (2026-07-21):** the envelope now also carries `restated_question` and
+`answer` — bounded, templated text, not free generation. See "The response
+ladder" in `codebase-ground-truth.md` and `docs/intent-tags-v1.md`. This
+amends Invariant 1 below; read that invariant's note before assuming "no text
+fields" still holds literally.
 
 ---
 
 ## The contract in one line
 
-The router returns **`{ sections, confidence, intent_tag? }`** where each
-section carries its kind, order, record IDs, and optional emphasis/variant.
-IDs and enums only, never text.
+The router returns **`{ sections, confidence, intent_tag?, restated_question?,
+answer? }`** where each section carries its kind, order, record IDs, and
+optional emphasis/variant. `sections` stays IDs and enums only; the two new
+fields are bounded template output, never free text (see Invariant 1).
 
 ```json
 {
@@ -25,10 +31,17 @@ IDs and enums only, never text.
     { "kind": "CaseStudyBento", "order": 2, "record_ids": ["cs:enterprise-network-operations", "cs:network-fault-investigation", "cs:executive-dashboard"] },
     { "kind": "CTABar", "order": 3, "record_ids": ["cta:contact-primary"] }
   ],
-  "confidence": "high",
-  "intent_tag": "landing_default"
+  "confidence": 0.87,
+  "intent_tag": "ai_product_experience",
+  "restated_question": "You're asking about Andrea's experience designing AI products.",
+  "answer": "Yes — she led the response architecture for a voice-first AI network-operations assistant for a Fortune 100 telecommunications company."
 }
 ```
+
+`evidence_intro` ("Selected work below shows this in practice.") is **not**
+part of this envelope — it's a fixed frontend string constant, never returned
+by the router, so it can never drift. See "Router response envelope (full)"
+below for field-by-field rules.
 
 The same site, composed differently per question: a leadership question might
 return `[Hero, Testimonials, CareerHighlights, CaseStudyBento(leadership-tagged), CTABar]`.
@@ -37,9 +50,17 @@ return `[Hero, Testimonials, CareerHighlights, CaseStudyBento(leadership-tagged)
 
 ## Invariants (apply to every response)
 
-1. **No text fields.** The router never returns prose, titles, labels, or
-   summaries. Any schema change adding a free-text field is a
-   claims-integrity violation by definition.
+1. **No *free* text fields.** The router never returns prose, titles, labels,
+   or summaries it composed itself. **Amended 2026-07-21 (Rung 2):**
+   `restated_question` and `answer` are the one sanctioned exception — both
+   are template output, not generation: `restated_question` slots a
+   pre-authored `intent_frame` phrase (author-written, keyed by `intent_tag`,
+   never paraphrased) into a fixed template string; `answer` may only contain
+   facts already present in the frontmatter of the selected sections' blocks
+   (titles, oneLiners, metric chips, org names, tags) — no new claim, number,
+   or organization name may appear that isn't already sitting in that
+   metadata. Any *other* schema change adding a field that could carry
+   original prose is still a claims-integrity violation by definition.
 2. **`sections` order is meaningful.** Array order = page order (Level 0).
 3. **Selection is disclosure, not deletion** (Level 1). Omitted sections
    are deprioritized, never unreachable. The archive path ignores payload.
@@ -92,8 +113,10 @@ Each is a React component consuming a mapped shape from `templateGlossary.ts`.
 ```ts
 interface RouterResponse {
   sections: SectionSpec[];
-  confidence: 'high' | 'medium' | 'low';
+  confidence: number;        // 0–1. Was 'high'|'medium'|'low' pre-Rung-2.
   intent_tag?: string;
+  restated_question?: string; // Rung 2 — ≤160 chars, 1 sentence, templated
+  answer?: string;            // Rung 2 — ≤380 chars, 1–3 sentences, frontmatter-only
 }
 
 interface SectionSpec {
@@ -105,8 +128,22 @@ interface SectionSpec {
 }
 ```
 
-`confidence` is not a license to generate. `intent_tag` is metadata for the
-events log; it is NOT a layout directive.
+`confidence` is not a license to generate — it gates whether the two Rung 2
+text fields render at all, not what they're allowed to say. `intent_tag` is
+metadata for the events log; it is NOT a layout directive.
+
+### Confidence gating (Rung 2)
+
+- `>= 0.7`: render `restated_question` + `answer` + the fixed evidence-bridge
+  line + sections.
+- `0.4–0.7`: skip `answer`; render `restated_question` + the fixed string
+  `"Here's the closest matching work:"` + sections.
+- `< 0.4`: static fallback header only (Rung 1 behavior) + sections from the
+  default composition.
+
+Thresholds live as constants next to the hardcoded router
+(`src/lib/hardcodedRouter.ts`) today; they'll move to the Edge Function when
+step 7 ships. Tune from the events log, not by guessing.
 
 ## Events log shape (plan item 11)
 

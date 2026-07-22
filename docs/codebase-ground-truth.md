@@ -174,6 +174,31 @@ Slugs must be globally unique across `content/blocks/` and
 - Pipeline: brief → ChatGPT drafts → Claude reviews → MDX commit. Claude does
   not author portfolio prose.
 
+### The response ladder
+
+- **Rung 1 — Boxed.** Router returns sections only; UI renders cards under a static
+  header. Zero generated text. (Pre-2026-07-21 state.)
+- **Rung 2 — Templated composition.** The AI fills pre-authored answer templates:
+  a restatement derived from `intent_tag`, a 1–3 sentence answer assembled only
+  from the frontmatter of the blocks it already selected, and a fixed evidence-bridge
+  line. Generation is bounded to slotting verified metadata into authored scaffolds.
+  **(Shipped state — decision 2026-07-21.)**
+- **Rung 3 — Free generation.** Open-ended prose about the work. Out of scope;
+  violates the claims-integrity boundary.
+
+Amended boundary line: *"The AI selects, arranges, and fills authored templates;
+it never writes free narrative."*
+
+Rung 2 is answer scaffolding above the cards — **not** Level 3 (D4). Level 3
+(alternate pre-authored MDX framings per audience) remains deferred per master-plan
+§1D; Rung 2 adds no new MDX variants, no audience-specific prose. The three
+grandfathered orchestrator variants (voice-ready-ai-experience's
+`.recruiter.mdx`/`.hiring-manager.mdx`/`.engineer-peer.mdx`) stay as-is and are
+unrelated to this feature.
+
+Companion doc: `docs/intent-tags-v1.md` — the v1 intent tag set and their
+`intent_frame` phrases that `restated_question` is templated from.
+
 ---
 
 # PART 2 — Database reality

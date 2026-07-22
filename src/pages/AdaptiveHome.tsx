@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import SectionRouter from "@/components/SectionRouter";
 import type { VoiceMode } from "@/components/VoiceGlow";
 import QuestionHero from "@/components/sections/home/QuestionHero";
+import ResponseComposition from "@/components/sections/home/ResponseComposition";
 import { route, SUGGESTED_QUESTIONS } from "@/lib/hardcodedRouter";
 import { STATIC_BASELINE } from "@/lib/staticBaseline";
 import { useMicLevel } from "@/lib/voice/useMicLevel";
@@ -149,10 +151,7 @@ export default function AdaptiveHome() {
         belowForm={
           asked && (
             <div className="qh-status" role="status">
-              <span>
-                Composed for: {response.intent_tag ?? "default"}
-                {response.confidence === "low" && " (no close match)"}
-              </span>
+              <span>Composed for: {response.intent_tag ?? "default"}</span>
               <button type="button" className="qh-status-reset" onClick={reset}>
                 Reset
               </button>
@@ -161,9 +160,15 @@ export default function AdaptiveHome() {
         }
       />
 
-      {orderedSections.map((spec, idx) => (
-        <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
-      ))}
+      {asked && <ResponseComposition response={response} askedKey={asked} />}
+
+      <AnimatePresence mode="popLayout">
+        {orderedSections.map((spec, idx) => (
+          <motion.div key={`${spec.kind}-${spec.order}-${idx}`} layout transition={{ duration: 0.3 }}>
+            <SectionRouter spec={spec} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </Layout>
   );
 }

@@ -115,23 +115,25 @@ for management visibility. Website and router never read it.
 - [x] 6. Build hardcoded `SectionSpec[]` compositions rendering via `SectionRouter` — COMPLETE. STATIC_BASELINE (9 sections) + hardcodedRouter.ts (7 intent rules + empty-state fallback), all dispatched through SectionRouter. (Verified 2026-07-16.)
 - [ ] 7. Wire Claude router as Supabase Edge Function via structured outputs/tool use — returns `{sections, confidence, intent_tag?}` only
 - [x] 8. Free-text question input path — COMPLETE. AdaptiveHome.tsx: real text input submits to hardcodedRouter's route(question); chips (SUGGESTED_QUESTIONS) are secondary, matching D3. (Verified 2026-07-16.)
-- [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7 (= Phase 3), (b) GSAP transition on section change (GSAP is installed; Framer Motion is not — wording corrected 2026-07-19).
+- [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7 (= Phase 3), (b) card layout transitions on section change. Framer Motion installed 2026-07-21 for the Rung 2 answer-composition transitions (item 19) — supersedes the 2026-07-19 GSAP-only note; GSAP remains for its existing consumers, this is not a migration.
 - [x] 10. Static baseline confirmed working — COMPLETE. STATIC_BASELINE in src/lib/staticBaseline.ts. (Verified 2026-07-16.)
 - [ ] 11. Events table logging question + chosen view (cheap; interview gold)
 
 ### 1C. Trust surface
 - [ ] 12. Persistent "full case study" path that ignores audience — deprioritize, never hide
-- [x] 13. Visible "Tailored for X — switch view" chip — COMPLETE. AdaptiveHome renders "Composed for: {intent_tag}" + Reset button. (Verified 2026-07-16.)
-- [x] 14. "How this site works" page — the boundary-as-product articulation (draws directly from `ai-orchestration-purpose.md`)
+- [x] 13. Visible "Tailored for X — switch view" chip — SUPERSEDED by item 19 (Rung 2). The crude "Composed for: {intent_tag}" + Reset status line is replaced by the restatement/answer/evidence-bridge composition; Reset remains.
+- [x] 14. "How this site works" page — the boundary-as-product articulation (draws directly from `ai-orchestration-purpose.md`). Updated 2026-07-21 with one line naming Rung 2 explicitly (see `content/blocks/fallback-how-this-site-works.mdx`).
+- [x] 19. Rung 2 — templated answer composition (2026-07-21): extend router contract with `restated_question` + `answer`; author one `intent_frame` phrase per v1 intent tag; add answer-composition rules to router prompt; add confidence gating; update frontend render order; add Framer Motion transitions. Level 3 remains deferred — this item does not touch MDX. Full spec: response ladder section in `codebase-ground-truth.md` + `docs/intent-tags-v1.md`.
 
 ### 1D. Deferred (explicit, so they don't creep)
 - Level 3 alternate pre-authored framings (compatible with Option A — paired MDX blocks with stable IDs, router picks the ID; deferred for deadline only)
-- Intent tags beyond v1 scope (enterprise_scale, leadership, design_systems, competency_map) — these are scoring labels, not views to build. Deferred means unscored/untagged, not unbuilt.
+- Intent tags beyond v1 scope (enterprise_scale, leadership, design_systems, competency_map) — these are scoring labels, not views to build. Deferred means unscored/untagged, not unbuilt. (v1 scope finalized 2026-07-21 in `docs/intent-tags-v1.md` — 10 tags, none of which are these four.)
 - Anecdote-level MDX blocks tagged with specific evidence they carry (unblocks intersection composition)
 - Intersection-friendly tag expansion in the `skills` and `tags` tables (informed by events log data)
 - Router prompt engineering to decompose multi-dimensional questions (planned as part of step 7 refinement, not step 7 initial)
 - ai-portfolio-orchestrator case study row + prose — post-ship. Blocked on the events log (item 11) producing real composition data; writing it before launch would make speculative claims about a system with no outcomes yet. Item 14 ("How this site works") carries the boundary story in v1. The three grandfathered Level 3 MDX variants already exist and stay as-is.
 - Network Fault Investigation Dashboard case study (both thin drafts)
+- `personal` (hobbies/outside-work) questions no longer get a dedicated answer as of item 19 — they route to `out_of_scope`. `fallback-outside-work` MDX stays in the tree if this gets revisited.
 
 Move to active tasks when events log shows real questions the current tagging can't answer well (per D9).
 
