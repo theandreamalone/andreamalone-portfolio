@@ -8,7 +8,7 @@ export default function PortfolioDetails() {
     const cardCollectionsData = cardCollections.cardPortfolio_related;
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <Section1 />
                 <section className="related-post sec-padding bg-white">
                     <div className="container">

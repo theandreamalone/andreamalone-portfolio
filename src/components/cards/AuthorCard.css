@@ -85,6 +85,13 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #2a2c30, #17181a);
+  /* An <img> gets its height from width/height attrs; this div had none, so
+     the card collapsed to the caption block (Leanne Busch — no photo file at
+     /media/testimonials/leanne-busch.webp). Match the photo's 280×370 box. */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 280 / 370;
+  border-radius: 1rem;
 }
 
 .author-initials-avatar span {

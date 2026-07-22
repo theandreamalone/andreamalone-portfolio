@@ -5,7 +5,7 @@ import Section6 from "@/components/sections/home-4/Section6";
 export default function PortfolioArchive1() {
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <Section1 />
                 <Section6 />
             </Layout>

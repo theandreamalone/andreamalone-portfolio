@@ -17,9 +17,11 @@ const STATS: { count: number; suffix?: string; label: string }[] = [
   { count: 100, suffix: "+", label: "Screens Designed & Accessibility-Annotated" },
 ];
 
-export default function Stats() {
+export default function Stats({ classList = "pt-0" }: { classList?: string }) {
+  // classList default preserves the About placement (flush under the hero);
+  // Home passes "" to keep normal section padding mid-page.
   return (
-    <section className="sec-outcomes sec-padding pt-0">
+    <section className={`sec-outcomes sec-padding ${classList}`}>
       <div className="container">
         <div className="row g-4 justify-content-center text-center">
           {STATS.map((stat) => (

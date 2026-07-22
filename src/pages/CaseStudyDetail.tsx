@@ -53,7 +53,7 @@ export default function CaseStudyDetail() {
 
   if (state.status === 'loading') {
     return (
-      <Layout headerStyle={2} footerStyle={4}>
+      <Layout footerStyle={4}>
         <section className="container py-5">
           <p>Loading…</p>
         </section>
@@ -63,7 +63,7 @@ export default function CaseStudyDetail() {
 
   if (state.status === 'not-found') {
     return (
-      <Layout headerStyle={2} footerStyle={4}>
+      <Layout footerStyle={4}>
       <section className="container py-5">
         <h1 className="ds-6">Case study not found</h1>
         <p>The case study <code>{slug}</code> doesn’t exist or isn’t published.</p>
@@ -75,7 +75,7 @@ export default function CaseStudyDetail() {
 
   if (state.status === 'error') {
     return (
-      <Layout headerStyle={2} footerStyle={4}>
+      <Layout footerStyle={4}>
         <section className="container py-5">
           <h1 className="ds-6">Something went wrong</h1>
           <p>{state.message}</p>
@@ -89,7 +89,7 @@ export default function CaseStudyDetail() {
   const scrolly = blockFrontmatter(`block:${slug}` as BlockId)?.layout === 'scrolly';
 
   return (
-    <Layout headerStyle={2} footerStyle={4}>
+    <Layout footerStyle={4}>
     <section className="sec-1-portfolio-archive pb-100">
       {/* Breadcrumb */}
       <div className="container">

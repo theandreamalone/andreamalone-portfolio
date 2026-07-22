@@ -5,7 +5,7 @@ import Section1 from "@/components/sections/home/Section11";
 export default function Page_Login() {
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <div className="container pt-70 pb-300">
                     <div className="row">
                         <div className="col-lg-5 col-md-8 mx-auto text-center">

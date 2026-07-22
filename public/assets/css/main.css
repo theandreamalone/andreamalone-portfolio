@@ -2725,9 +2725,16 @@ textarea {
 .navbar .navbar-nav .nav-item.mega-menu-item:hover .sub-mega-menu {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .navbar .navbar-nav .nav-item.mega-menu-item .sub-mega-menu {
+    /* pointer-events: none while closed — during the 0.3s fade-out the panel
+       is still technically visible and, as a child of the nav item, hovering
+       its (invisible) area re-triggered :hover and re-opened the menu.
+       Blocking pointer events when not hovered kills that loop; the :hover
+       rule above re-enables them the moment the menu is legitimately open. */
+    pointer-events: none;
     position: absolute;
     top: 100%;
     margin-top: 1px;

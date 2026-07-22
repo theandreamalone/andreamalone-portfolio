@@ -7,7 +7,7 @@ import Ads from "@/components/elements/ads";
 export default function Page_Search_Results() {
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <Section1 />
                 <Section2 />
                 <div className="container pt-70">

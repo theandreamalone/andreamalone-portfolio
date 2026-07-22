@@ -85,7 +85,9 @@ export default function Section3({
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <TitleWhite title={title} description={description} />
+              {/* Real destination for this section's View More — the bento is
+                  a case-study teaser, so it links to the full grid. */}
+              <TitleWhite title={title} description={description} linkHref="/case-studies" linkLabel="View More" />
             </div>
           </div>
           <div className="row mt-3 g-4 align-items-stretch">

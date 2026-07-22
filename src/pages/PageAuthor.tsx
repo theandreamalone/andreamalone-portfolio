@@ -8,7 +8,7 @@ import Image from "@/components/common/Image";
 export default function Page_Author() {
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <div className="container pt-100">
                     <div className="row">
                         <div className="col-lg-6 col-md-8 mx-auto">

@@ -12,6 +12,7 @@
 import Layout from '@/components/layout/Layout';
 import SectionRouter from '@/components/SectionRouter';
 import QuestionHero from '@/components/sections/home/QuestionHero';
+import Stats from '@/components/sections/who-i-am/Stats';
 import { STATIC_BASELINE } from '@/lib/staticBaseline';
 
 export default function Home() {
@@ -26,9 +27,17 @@ export default function Home() {
   return (
     <Layout>
       <QuestionHero />
-      {orderedSections.map((spec, idx) => (
-        <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
-      ))}
+      {orderedSections.map((spec, idx) =>
+        spec.kind === 'Outcomes' ? (
+          // Static home shows the same at-a-glance strip as /page-about
+          // (Andrea-confirmed fixed numbers, 2026-07-21) instead of the
+          // NetHive-only Supabase outcomes. Router-driven pages (AdaptiveHome)
+          // still render the real Outcomes section via SectionRouter.
+          <Stats key={`Stats-${spec.order}-${idx}`} classList="" />
+        ) : (
+          <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
+        )
+      )}
     </Layout>
   );
 }

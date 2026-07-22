@@ -94,7 +94,7 @@ export default function AuthorCard({ card, idx }: CardProps) {
               onError={() => setPhotoOk(false)}
             />
           ) : (
-            <div className="author-image-avator author-initials-avatar w-100 h-100" aria-hidden="true">
+            <div className="author-image-avator author-initials-avatar" aria-hidden="true">
               <span>{initialsOf(card.name)}</span>
             </div>
           )}

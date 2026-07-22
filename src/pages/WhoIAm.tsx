@@ -15,7 +15,7 @@ import CTABar from "@/components/sections/CTABar";
 export default function WhoIAm() {
   return (
     <>
-      <Layout headerStyle={2} footerStyle={4}>
+      <Layout footerStyle={4}>
         <Section1 />
         <Stats />
         <Section2 />

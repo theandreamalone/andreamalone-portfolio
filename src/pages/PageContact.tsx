@@ -5,7 +5,7 @@ import Link from "@/components/common/Link";
 export default function Page_Contact() {
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <div className="container">
                     <div className="row">
                         <div className="col-12">

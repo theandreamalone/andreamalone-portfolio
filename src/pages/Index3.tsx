@@ -9,7 +9,7 @@ import Section6 from "@/components/sections/home-3/Section4";
 export default function Home_3() {
     return (
         <>
-            <Layout headerStyle={3} footerStyle={3}>
+            <Layout footerStyle={3}>
                 <Section1 displayBtn="d-flex" />
                 <Section2 />
                 <Section3 blockForYou="d-none" blockTopTrending="d-block" />

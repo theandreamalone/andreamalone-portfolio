@@ -8,7 +8,7 @@ export default function Single_1() {
     const cardCollectionsData = cardCollections.cardCollections;
     return (
         <>
-            <Layout headerStyle={2} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <Section1 />
                 <section className="related-post sec-padding bg-white">
                     <div className="container">

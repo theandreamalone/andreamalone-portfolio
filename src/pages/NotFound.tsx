@@ -5,7 +5,7 @@ import Image from "@/components/common/Image";
 
 export default function NotFound() {
     return (
-        <Layout headerStyle={2} footerStyle={4}>
+        <Layout footerStyle={4}>
             <div className="container">
                 <div className="row">
                     <div className="col-12">

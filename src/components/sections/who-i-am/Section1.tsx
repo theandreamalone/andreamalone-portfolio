@@ -54,11 +54,14 @@ function SkillPills() {
     <div className="d-flex flex-wrap gap-2 mt-4">
       {skills.map((skill) => {
         const pill = mapSkillToPill(skill);
+        // Plain spans, not links — there is no /skills/:slug route, so the
+        // glossary's linkHref 404s. Matches CaseStudyDetail's skill chips.
+        // If a skill detail page ships later, restore <Link href={pill.linkHref}>.
         return (
-          <Link key={skill.slug} href={pill.linkHref} className="bg-200 fs-8 rounded-8 py-2 px-3 text-dark">
+          <span key={skill.slug} className="bg-200 fs-8 rounded-8 py-2 px-3 text-dark">
             {pill.name}
             {pill.suffix && <span className="text-600"> · {pill.suffix}</span>}
-          </Link>
+          </span>
         );
       })}
     </div>

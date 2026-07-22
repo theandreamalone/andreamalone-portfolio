@@ -9,7 +9,13 @@ type TitleWhiteProps = {
   linkLabel?: string;
 };
 
-export default function TitleWhite({ title, description }: TitleWhiteProps) {
+export default function TitleWhite({ title, description, linkHref, linkLabel }: TitleWhiteProps) {
+  // The link renders ONLY when a caller provides linkHref. The template
+  // hardcoded "View More → /archive-3" on every instance, which (a) sent the
+  // CTABar's link to a template demo page instead of bar.linkHref, and
+  // (b) occupied the top-right slot where the testimonial carousel parks its
+  // prev/next arrows (top:-80px) — the two overlapped. Section titles that
+  // don't pass a link now leave that slot free.
   return (
     <>
       <div className="section-title d-flex align-items-center justify-content-between gap-3">
@@ -22,14 +28,16 @@ export default function TitleWhite({ title, description }: TitleWhiteProps) {
           </div>
           <p className="fs-7 ms-3 mb-2 d-none d-lg-block">{description}</p>
         </div>
-        <div className="d-none d-md-block">
-          <Link href="/archive-3" className="view-more">
-            <span className="circle" aria-hidden="true">
-              <span className="icon arrow" />
-            </span>
-            <span className="button-text">View More</span>
-          </Link>
-        </div>
+        {linkHref && (
+          <div className="d-none d-md-block">
+            <Link href={linkHref} className="view-more">
+              <span className="circle" aria-hidden="true">
+                <span className="icon arrow" />
+              </span>
+              <span className="button-text">{linkLabel ?? "View More"}</span>
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );

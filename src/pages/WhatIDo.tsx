@@ -11,7 +11,7 @@ import Section2 from "@/components/sections/home-4/Section6";
 export default function WhatIDo() {
   return (
     <>
-      <Layout headerStyle={2} footerStyle={4}>
+      <Layout footerStyle={4}>
         <Section1 />
         <Section2 />
       </Layout>

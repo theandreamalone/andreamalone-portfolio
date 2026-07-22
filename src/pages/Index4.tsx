@@ -9,7 +9,7 @@ import Section6 from "@/components/sections/home-4/Section6";
 export default function Home_4() {
     return (
         <>
-            <Layout headerStyle={4} footerStyle={4}>
+            <Layout footerStyle={4}>
                 <Section1 />
                 <Section2 />
                 <Section3 />
