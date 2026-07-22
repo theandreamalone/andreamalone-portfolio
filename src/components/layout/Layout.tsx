@@ -1,8 +1,5 @@
 import BackToTop from "@/components/elements/BackToTop";
 import Footer1 from "@/components/layout/footer/Footer1";
-import Footer2 from "@/components/layout/footer/Footer2";
-import Footer3 from "@/components/layout/footer/Footer3";
-import Footer4 from "@/components/layout/footer/Footer4";
 import Header1 from "@/components/layout/header/Header1";
 import Header2 from "@/components/layout/header/Header2";
 import Header3 from "@/components/layout/header/Header3";
@@ -17,14 +14,6 @@ const HEADER_COMPONENTS = {
     4: Header4,
 } as const;
 
-// Footer component mapping
-const FOOTER_COMPONENTS = {
-    1: Footer1,
-    2: Footer2,
-    3: Footer3,
-    4: Footer4,
-} as const;
-
 // Header component with proper composition
 function Header({ style }: { style?: number }) {
     if (!style) {
@@ -35,14 +24,11 @@ function Header({ style }: { style?: number }) {
     return HeaderComponent ? <HeaderComponent /> : <Header1 />;
 }
 
-// Footer component with proper composition
-function Footer({ style }: { style?: number }) {
-    if (!style) {
-        return <Footer1 />;
-    }
-
-    const FooterComponent = FOOTER_COMPONENTS[style as keyof typeof FOOTER_COMPONENTS];
-    return FooterComponent ? <FooterComponent /> : <Footer1 />;
+// Footer removed sitewide (2026-07-21) — Magzin template footer variants
+// (newsletter/categories/Instagram grid and the "Your Gateway to Global
+// News" link footer) were unreviewed template content, not real site copy.
+function Footer(_props: { style?: number }) {
+    return null;
 }
 
 // Main layout interface

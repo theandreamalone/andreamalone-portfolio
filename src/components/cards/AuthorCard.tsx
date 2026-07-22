@@ -38,8 +38,22 @@ type CardProps = {
   idx: number;
 };
 
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export default function AuthorCard({ card, idx }: CardProps) {
   const [expanded, setExpanded] = useState(false);
+  // No real photo on file for this person — degrade to an initials badge
+  // rather than the template's 41x41 stock avatar (pixelates hard at the
+  // card's 280x370 display size).
+  const [photoOk, setPhotoOk] = useState(true);
   // Escape must dismiss even though the toggle button keeps keyboard focus
   // afterward (pressing a key doesn't blur its target) — so :focus-within
   // alone can't be told to close. This flag overrides hover/focus/expanded
@@ -70,21 +84,20 @@ export default function AuthorCard({ card, idx }: CardProps) {
         }}
       >
         <Link href={card.linkPost}>
-          <Image
-            src={card.img}
-            alt={card.name}
-            className="author-image-avator w-100 h-100"
-            width={280}
-            height={370}
-            onError={(e) => {
-              // Derived local photo path can 404 for a new person without a
-              // file in /media/testimonials — degrade to the template avatar
-              // instead of a broken image.
-              const el = e.currentTarget;
-              const fallback = "/assets/imgs/template/author/author-5.png";
-              if (!el.src.endsWith(fallback)) el.src = fallback;
-            }}
-          />
+          {photoOk ? (
+            <Image
+              src={card.img}
+              alt={card.name}
+              className="author-image-avator w-100 h-100"
+              width={280}
+              height={370}
+              onError={() => setPhotoOk(false)}
+            />
+          ) : (
+            <div className="author-image-avator author-initials-avatar w-100 h-100" aria-hidden="true">
+              <span>{initialsOf(card.name)}</span>
+            </div>
+          )}
         </Link>
         <div className="author-sticky-block-left-bottom">
           <div className="d-flex align-items-start justify-content-between gap-2">

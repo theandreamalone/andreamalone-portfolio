@@ -19,9 +19,8 @@
  * Unsupported browsers get VoiceUnavailable (visible degraded state, not a
  * hidden feature).
  *
- * Headshot: drop the real image at public/media/site/headshot.webp
- * (4:5 — process via the testimonials preset, 560×740) and it replaces
- * the placeholder automatically via onError fallback.
+ * Headshot: public/media/site/headshot-v2.webp (757×1024, portrait) —
+ * displayed via onError fallback to a placeholder if the file is missing.
  */
 
 import { useState, type ReactNode } from 'react';
@@ -200,15 +199,17 @@ export default function QuestionHero({
             <div className="qh-portrait">
               {imgOk ? (
                 <img
-                  src="/media/site/headshot.webp"
+                  src="/media/site/headshot-v2.webp"
                   alt="Andrea Malone"
+                  width={757}
+                  height={1024}
                   onError={() => setImgOk(false)}
                 />
               ) : (
                 <span className="qh-portrait-placeholder">
                   Headshot placeholder
                   <br />
-                  4:5 · public/media/site/headshot.webp
+                  4:5 · public/media/site/headshot-v2.webp
                 </span>
               )}
             </div>
@@ -388,7 +389,7 @@ export default function QuestionHero({
             var(--tc-bg-2, #17181a);
           display: grid;
           place-items: center;
-          max-width: 420px;
+          max-width: 375px;
           margin-inline: auto;
         }
         .qh-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }

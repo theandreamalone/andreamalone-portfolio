@@ -101,11 +101,13 @@ export default function Section1() {
 
           <div className="row align-items-center g-5">
             <div className="col-lg-5">
-              <div className="rounded-16 overflow-hidden">
+              <div className="rounded-16 overflow-hidden" style={{ maxWidth: 375 }}>
                 {headshotOk ? (
                   <img
-                    src="/media/site/headshot.webp"
+                    src="/media/site/headshot-v2.webp"
                     alt="Andrea Malone"
+                    width={757}
+                    height={1024}
                     className="w-100 h-auto d-block"
                     onError={() => setHeadshotOk(false)}
                   />
@@ -114,7 +116,7 @@ export default function Section1() {
                     <span className="fs-7 text-600 text-center px-4">
                       Headshot placeholder
                       <br />
-                      public/media/site/headshot.webp
+                      public/media/site/headshot-v2.webp
                     </span>
                   </div>
                 )}

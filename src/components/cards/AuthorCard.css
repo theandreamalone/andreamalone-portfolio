@@ -77,6 +77,23 @@
   transition: transform 0.2s ease;
 }
 
+/* Initials badge — replaces a missing testimonial photo (2026-07-21).
+   author-image-avator already positions/sizes this via main.css; these
+   rules only style the fill since there's no <img> to cover the box. */
+.author-initials-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2a2c30, #17181a);
+}
+
+.author-initials-avatar span {
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* Visually hidden but still screen-reader reachable — same technique as
    QuestionHero's .qh-sr, kept local since this file has no shared base. */
 .visually-hidden {

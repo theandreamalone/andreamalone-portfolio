@@ -1,5 +1,6 @@
 import Layout from "@/components/layout/Layout";
 import Section1 from "@/components/sections/who-i-am/Section1";
+import Stats from "@/components/sections/who-i-am/Stats";
 import Section2 from "@/components/sections/who-i-am/Section2";
 import CTABar from "@/components/sections/CTABar";
 
@@ -16,6 +17,7 @@ export default function WhoIAm() {
     <>
       <Layout headerStyle={2} footerStyle={4}>
         <Section1 />
+        <Stats />
         <Section2 />
         <CTABar variant="contact" />
       </Layout>

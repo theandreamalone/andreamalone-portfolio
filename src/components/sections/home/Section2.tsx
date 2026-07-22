@@ -28,8 +28,8 @@ export default function Section2() {
     <>
       {/* Home 1 Section 2 — client logos */}
       <style data-id="logo-theme-styles">{`
-        [data-bs-theme="dark"] .logo-light-only { display: none; }
-        [data-bs-theme="light"] .logo-dark-only { display: none; }
+        [data-bs-theme="dark"] .sec-2-home-1 .logo-light-only { display: none; }
+        [data-bs-theme="light"] .sec-2-home-1 .logo-dark-only { display: none; }
         [data-bs-theme="light"] .logo-invert-on-light { filter: invert(1); }
       `}</style>
       <section className="sec-2-home-1 bg-100 mask-image py-5">
