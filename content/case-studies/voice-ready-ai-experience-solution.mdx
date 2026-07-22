@@ -49,6 +49,15 @@ context.
 
 ![Desktop chat showing typed input, a voice waveform indicator, and a confirmation chip together in one active conversation](/media/voice-ready-ai-experience/solution-multi-modal-input.webp)
 
+Failure needed its own explicit states too. Rather than one generic "something
+went wrong" banner, I designed separate, named error states for the failure
+modes that actually occur in this system — a message that failed to load, the
+AI itself being unavailable, and a lost connection — so a responder mid-incident
+knows exactly what happened and what to try next, instead of guessing at a
+silently stalled conversation.
+
+![Three stacked error toasts over a live incident chat thread — "Message did not load," "AI unavailable," and "No connection" — each with its own Close action](/media/voice-ready-ai-experience/solution-handoff-error.webp)
+
 ## Holding both modes to parity on mobile
 
 **I proposed carrying both modes through to mobile at full parity**, rather
