@@ -420,8 +420,8 @@ Hosting: GitHub Pages via Actions.
 
 ## Routes
 
-`/` → `Home` (static baseline) · `/adaptive` → `AdaptiveHome` (question-driven)
-· `/case-studies` → `PortfolioArchive1` · `/case-studies/:slug` →
+`/` → `AdaptiveHome` (question-driven, live) · `/fallback` → `Home` (static baseline)
+· `/case-studies` → `WhatIDo` · `/case-studies/:slug` →
 `CaseStudyDetail`
 
 ## Key files

@@ -87,7 +87,7 @@ export default function QuestionHero({
       onAsk(query);
       return;
     }
-    navigate(query ? `/adaptive?q=${encodeURIComponent(query)}` : '/adaptive');
+    navigate(query ? `/?q=${encodeURIComponent(query)}` : '/');
   };
 
   const internalVoice = useVoiceInput((finalText) => {

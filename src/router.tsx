@@ -26,8 +26,8 @@ const Single2 = dynamic(() => import("@/pages/Single2"));
 const Single3 = dynamic(() => import("@/pages/Single3"));
 
 export const router = createBrowserRouter([
-    { path: "/", element: <Home /> },
-    { path: "/adaptive", element: <AdaptiveHome /> },
+    { path: "/", element: <AdaptiveHome /> },
+    { path: "/fallback", element: <Home /> },
     { path: "/how-it-works", element: <HowItWorks /> },
     { path: "/case-studies", element: <WhatIDo /> },
     { path: "/case-studies/:slug", element: <CaseStudyDetail /> },
