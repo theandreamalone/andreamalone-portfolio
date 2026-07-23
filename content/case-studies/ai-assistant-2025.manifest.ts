@@ -6,7 +6,7 @@ import type { ImageManifest } from "../../src/types/image-manifest";
 export const aiAssistant2025Images: ImageManifest = {
   "ai-assistant-2025-dashboard-dark": {
     id: "ai-assistant-2025-dashboard-dark",
-    src: "/case-studies/ai-assistant-2025/ai-assistant-2025-dashboard-dark.webp",
+    src: "/media/case-studies/ai-assistant-2025/ai-assistant-2025-dashboard-dark.webp",
     alt: "AI Assistant dashboard in dark mode, showing the admin focus-area table with severity tags",
     layout: "full",
     width: 2688,
@@ -15,7 +15,7 @@ export const aiAssistant2025Images: ImageManifest = {
   },
   "ai-assistant-2025-thread-basic-mobile": {
     id: "ai-assistant-2025-thread-basic-mobile",
-    src: "/case-studies/ai-assistant-2025/ai-assistant-2025-thread-basic-mobile.webp",
+    src: "/media/case-studies/ai-assistant-2025/ai-assistant-2025-thread-basic-mobile.webp",
     alt: "VERIFY: AI assistant thread basic mobile",
     layout: "inset",
     width: 750,

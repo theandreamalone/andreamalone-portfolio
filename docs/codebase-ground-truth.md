@@ -174,6 +174,20 @@ Slugs must be globally unique across `content/blocks/` and
 - Pipeline: brief → ChatGPT drafts → Claude reviews → MDX commit. Claude does
   not author portfolio prose.
 
+### Logo/highlight distinction
+
+Different rooms, different rules — the home client-logo bar and the Career
+Highlights section make two different claims and must not be conflated:
+
+- **Home client-logo bar = AI-work claim.** Only clients where AI work was
+  performed belong here. Currently: T-Mobile, IBM, AT&T, Amdocs.
+- **Career Highlights section = employment history.** The full 16+ year arc,
+  regardless of whether the role involved AI. Epsilon, Lindenwood, Value
+  Vinyls, PPA, Community Boost, and CZI all belong here.
+
+Do not add non-AI employers to the home logo bar — it dilutes the AI
+credibility signal a hiring manager scans for.
+
 ### The response ladder
 
 - **Rung 1 — Boxed.** Router returns sections only; UI renders cards under a static

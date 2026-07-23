@@ -50,7 +50,7 @@
 
 import type { RecordId, RouterResponse, SectionSpec } from '@/lib/viewContract';
 import { STATIC_BASELINE } from '@/lib/staticBaseline';
-import { restatedQuestionFor, type IntentTag } from '@/lib/intentFrames';
+import { restatedQuestionFor, INTENT_LABELS, type IntentTag } from '@/lib/intentFrames';
 
 /** Every published case study, in default display order. */
 const ALL_CASE_STUDIES: RecordId[] = [
@@ -131,10 +131,19 @@ function section(
   return { kind, order, record_ids, ...extra };
 }
 
+/**
+ * `hil_triggered` and `reasoning` are computed centrally in route() from the
+ * rest of the response (see composeReasoning/computeHilTriggered below), not
+ * authored per rule — so a rule's compose() returns everything BUT those two
+ * fields, and route() fills them in once, after the fact, for every branch
+ * including emptyStateResponse() and STATIC_BASELINE.
+ */
+type ComposedResponse = Omit<RouterResponse, 'hil_triggered' | 'reasoning'>;
+
 interface Rule {
   intent: string;
   test: RegExp;
-  compose: () => RouterResponse;
+  compose: () => ComposedResponse;
 }
 
 /** Named-project detection, checked first — a named project beats every broader intent. */
@@ -416,7 +425,7 @@ const RULES: Rule[] = [
  * Per docs/intent-tags-v1.md, an unmatched question is out_of_scope, not a
  * third catch-all tag — general_overview and out_of_scope are the only two.
  */
-function emptyStateResponse(): RouterResponse {
+function emptyStateResponse(): ComposedResponse {
   return {
     sections: [
       section('Hero', 0, ['block:home-hero'], { emphasis: 'positioning' }),
@@ -431,6 +440,59 @@ function emptyStateResponse(): RouterResponse {
 }
 
 /**
+ * HIL trigger rule (Reasoning Panel spec §5, 2026-07-22). 0.5 is not an
+ * arbitrary midpoint — it's the floor of the lowest confidence any real
+ * (non-out_of_scope) rule above emits (technical_capability, 0.5), found by
+ * reading every rule's confidence value above. `confidence < FLOOR` (strict)
+ * means that lowest legitimate match still clears the floor and does NOT
+ * trigger HIL; anything weaker than the weakest real match does.
+ * `out_of_scope` always triggers regardless of its confidence value.
+ */
+const HIL_CONFIDENCE_FLOOR = 0.5;
+
+function computeHilTriggered(intentTag: string | undefined, confidence: number): boolean {
+  return intentTag === 'out_of_scope' || confidence < HIL_CONFIDENCE_FLOOR;
+}
+
+/** cs:{slug} -> title, for composeReasoning's "selected from X" line. */
+const CASE_STUDY_TITLES: Record<string, string> = Object.fromEntries(
+  Object.entries(CASE_STUDY_FACTS).map(([slug, facts]) => [`cs:${slug}`, facts.title])
+);
+
+/** "X" / "X and Y" / "X, Y, and Z" — plain join() reads as "X and Y and Z" at 3+. */
+function listJoin(items: string[]): string {
+  if (items.length <= 1) return items.join('');
+  if (items.length === 2) return items.join(' and ');
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+}
+
+/**
+ * Synthesizes the Reasoning Panel's 3 lines from the response's own real
+ * fields — matched intent, sections actually selected, confidence/HIL
+ * outcome. Not hand-authored per rule (13 near-identical arrays would drift
+ * from the rules they describe); computed once, here, so it can never say
+ * something the response didn't actually do.
+ */
+function composeReasoning(res: ComposedResponse & { hil_triggered: boolean }): string[] {
+  const tag = res.intent_tag ?? 'general_overview';
+  const label = INTENT_LABELS[tag] ?? tag.replace(/_/g, ' ');
+
+  const csIds = res.sections.flatMap((s) => s.record_ids).filter((id) => id.startsWith('cs:'));
+  const csNames = [...new Set(csIds.map((id) => CASE_STUDY_TITLES[id] ?? id))];
+  const sectionCount = res.sections.length;
+
+  const line1 = `Matched your question to ${label}`;
+  const line2 = csNames.length
+    ? `Selected ${sectionCount} section${sectionCount === 1 ? '' : 's'} from ${listJoin(csNames)}`
+    : `Selected ${sectionCount} section${sectionCount === 1 ? '' : 's'} to answer this`;
+  const line3 = `Confidence ${Math.round(res.confidence * 100)}% — ${
+    res.hil_triggered ? "routed to a human — Andrea will follow up" : 'no human follow-up needed'
+  }`;
+
+  return [line1, line2, line3];
+}
+
+/**
  * Compose a response for a visitor question.
  * Empty input returns the static baseline — the cold-load state.
  */
@@ -440,7 +502,10 @@ export function route(question: string): RouterResponse {
 
   lastQuestion = q;
   const hit = RULES.find((rule) => rule.test.test(q));
-  return hit ? hit.compose() : emptyStateResponse();
+  const base = hit ? hit.compose() : emptyStateResponse();
+  const hil_triggered = computeHilTriggered(base.intent_tag, base.confidence);
+  const withHil = { ...base, hil_triggered };
+  return { ...withHil, reasoning: composeReasoning(withHil) };
 }
 
 /** Chips are training wheels for visitors who don't know what to ask (D3). */

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import dynamic from "@/util/dynamic";
+import { AdaptiveErrorBoundary } from "@/components/AdaptiveErrorBoundary";
 
 const CaseStudyDetail = dynamic(() => import("@/pages/CaseStudyDetail"));
 const NotFound = dynamic(() => import("@/pages/NotFound"));
@@ -26,7 +27,7 @@ const Single2 = dynamic(() => import("@/pages/Single2"));
 const Single3 = dynamic(() => import("@/pages/Single3"));
 
 export const router = createBrowserRouter([
-    { path: "/", element: <AdaptiveHome /> },
+    { path: "/", element: <AdaptiveErrorBoundary><AdaptiveHome /></AdaptiveErrorBoundary> },
     { path: "/fallback", element: <Home /> },
     { path: "/how-it-works", element: <HowItWorks /> },
     { path: "/case-studies", element: <WhatIDo /> },

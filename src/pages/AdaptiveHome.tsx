@@ -6,8 +6,12 @@ import SectionRouter from "@/components/SectionRouter";
 import type { VoiceMode } from "@/components/VoiceGlow";
 import QuestionHero from "@/components/sections/home/QuestionHero";
 import ResponseComposition from "@/components/sections/home/ResponseComposition";
+import ReasoningPanel, { HilBanner } from "@/components/sections/home/ReasoningPanel";
+import FeedbackWidget from "@/components/sections/home/FeedbackWidget";
 import { route, SUGGESTED_QUESTIONS } from "@/lib/hardcodedRouter";
 import { STATIC_BASELINE } from "@/lib/staticBaseline";
+import { logEvent } from "@/lib/events";
+import { INTENT_LABELS } from "@/lib/intentFrames";
 import { useMicLevel } from "@/lib/voice/useMicLevel";
 import { useSpeechOutput } from "@/lib/voice/useSpeechOutput";
 import { useVoiceInput } from "@/lib/voice/useVoiceInput";
@@ -45,11 +49,15 @@ const SPOKEN_CONFIRMATIONS: Record<string, string> = {
  */
 const VOICE_SUBMIT_DEBOUNCE_MS = 900;
 
+type AskPhase = "idle" | "collapsing" | "revealing-header" | "revealing-answer" | "revealing-sections";
+
 export default function AdaptiveHome() {
   const [searchParams] = useSearchParams();
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState<RouterResponse>(STATIC_BASELINE);
   const [asked, setAsked] = useState<string | null>(null);
+  const [phase, setPhase] = useState<AskPhase>("idle");
+  const [eventId, setEventId] = useState<string | null>(null);
 
   const mic = useMicLevel();
   const tts = useSpeechOutput();
@@ -58,9 +66,23 @@ export default function AdaptiveHome() {
   /** The one submit path — form, chips, and voice all funnel through this. */
   function ask(q: string): RouterResponse {
     setQuestion(q);
-    setAsked(q.trim() || null);
+    const trimmed = q.trim();
+    setAsked(trimmed || null);
+    const startedAt = performance.now();
     const res = route(q);
     setResponse(res);
+    setPhase("collapsing");
+    setTimeout(() => setPhase("revealing-header"), 350);
+    setTimeout(() => setPhase("revealing-answer"), 650);
+    setTimeout(() => setPhase("revealing-sections"), 1200);
+
+    // An empty submit routes to STATIC_BASELINE, not a real routed answer —
+    // don't log it as an event.
+    if (trimmed) {
+      setEventId(
+        logEvent({ question: trimmed, response: res, latencyMs: Math.round(performance.now() - startedAt) })
+      );
+    }
     return res;
   }
 
@@ -117,6 +139,8 @@ export default function AdaptiveHome() {
     setQuestion("");
     setAsked(null);
     setResponse(STATIC_BASELINE);
+    setPhase("idle");
+    setEventId(null);
   }
 
   const mode: VoiceMode = tts.speaking
@@ -162,9 +186,33 @@ export default function AdaptiveHome() {
 
       {asked && <ResponseComposition response={response} askedKey={asked} />}
 
+      {asked && (
+        <div className="container">
+          <HilBanner hilTriggered={response.hil_triggered} />
+          <ReasoningPanel
+            intentLabel={INTENT_LABELS[response.intent_tag ?? "general_overview"] ?? response.intent_tag ?? ""}
+            confidence={response.confidence}
+            reasoning={response.reasoning}
+            sectionCount={response.sections.length}
+            hilTriggered={response.hil_triggered}
+          />
+          {eventId && <FeedbackWidget eventId={eventId} />}
+        </div>
+      )}
+
+      {phase === "idle" && orderedSections.map((spec, idx) => (
+        <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
+      ))}
+
       <AnimatePresence mode="popLayout">
-        {orderedSections.map((spec, idx) => (
-          <motion.div key={`${spec.kind}-${spec.order}-${idx}`} layout transition={{ duration: 0.3 }}>
+        {phase === "revealing-sections" && orderedSections.map((spec, idx) => (
+          <motion.div
+            key={`${spec.kind}-${spec.order}-${idx}`}
+            layout
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: idx * 0.15 }}
+          >
             <SectionRouter spec={spec} />
           </motion.div>
         ))}

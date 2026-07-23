@@ -69,4 +69,10 @@ export const STATIC_BASELINE: RouterResponse = {
   ],
   confidence: 1,
   intent_tag: 'static_baseline',
+  hil_triggered: false,
+  reasoning: [
+    'No question asked yet — showing the default overview',
+    'Selected 9 sections spanning case studies, skills, and testimonials',
+    'Confidence 100% — this is the static baseline, not a routed answer',
+  ],
 };

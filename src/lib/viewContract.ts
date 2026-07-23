@@ -117,6 +117,22 @@ export interface RouterResponse {
   restated_question?: string;
   /** 1-3 sentences, <=380 chars. Facts must all appear in selected blocks' frontmatter. */
   answer?: string;
+  /**
+   * Reasoning Panel / events-log feature (2026-07-22). Both fields are
+   * router-computed, never model-authored free text: `hil_triggered` is a
+   * deterministic rule over intent_tag/confidence (see hardcodedRouter.ts's
+   * computeHilTriggered), and `reasoning` is synthesized from the response's
+   * own real fields (matched intent, sections selected, confidence/HIL
+   * outcome) — not a narrative the model writes about itself. In Phase 2
+   * (real Edge Function), `reasoning` instead comes from the function's own
+   * instrumented classify/score/compose stages. Neither belongs in
+   * ROUTER_TOOL_SCHEMA below — that schema is Claude's own tool-call output;
+   * these are computed after/around it.
+   */
+  /** Whether this response should be flagged for Andrea's manual follow-up. */
+  hil_triggered: boolean;
+  /** Ordered, real stage descriptions — 3 lines. Never decorative filler. */
+  reasoning: string[];
 }
 
 // ============================================================================
@@ -138,6 +154,8 @@ export function isValidRouterResponse(x: unknown): x is RouterResponse {
   if (r.answer !== undefined) {
     if (typeof r.answer !== 'string' || r.answer.length > ANSWER_MAX) return false;
   }
+  if (typeof r.hil_triggered !== 'boolean') return false;
+  if (!Array.isArray(r.reasoning) || !r.reasoning.every((line) => typeof line === 'string')) return false;
   return true;
 }
 

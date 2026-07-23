@@ -44,6 +44,28 @@ export const INTENT_FRAMES: Record<FramedIntentTag, string> = {
 };
 
 /**
+ * Short, human-readable labels for the Reasoning Panel (2026-07-22) — NOT
+ * the raw snake_case tag. Distinct from INTENT_FRAMES: those phrases are
+ * shaped for "You're asking {frame}."; these are shaped for "Matched your
+ * question to {label}." Covers `how_this_works`/`contact`, the two utility
+ * intents that live outside the v1 taxonomy (see hardcodedRouter.ts header).
+ */
+export const INTENT_LABELS: Record<string, string> = {
+  ai_product_experience: 'AI product experience',
+  ai_design_patterns: 'AI design patterns',
+  accessibility: 'accessibility work',
+  evaluation_rigor: 'evaluation and design rigor',
+  enterprise_experience: 'enterprise experience',
+  specific_project: 'a specific project',
+  technical_capability: 'technical capability',
+  process_collaboration: 'process and collaboration',
+  general_overview: 'a general overview',
+  out_of_scope: 'something outside the portfolio',
+  how_this_works: 'how this site works',
+  contact: 'getting in touch',
+};
+
+/**
  * Slots the authored intent_frame into the fixed restatement template.
  * Never call with 'out_of_scope' — that tag renders no restatement at all
  * (confidence 0 short-circuits before this is reached in the router).

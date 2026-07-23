@@ -1,4 +1,6 @@
-// verify-router-answers.mjs — Rung 2 guardrails (docs/intent-tags-v1.md, "Tests / guardrails").
+// verify-router-answers.mjs — Rung 2 + Reasoning Panel guardrails
+// (docs/intent-tags-v1.md "Tests / guardrails" + the Reasoning Panel spec's
+// own decisions-for-you §7.4: "set the floor after the smoke test").
 //
 // Loads the real hardcodedRouter.ts through Vite's SSR module graph (so `@/`
 // aliases resolve exactly as they do in the app — no reimplementation to
@@ -9,6 +11,10 @@
 //      CASE_STUDY_FACTS of the sections it selected
 //   3. every v1 intent_tag (except out_of_scope) has an intent_frame
 //   4. confidence-gate boundary snapshot (0.39 / 0.41 / 0.69 / 0.71)
+//   5. every response has hil_triggered: boolean and reasoning: 3 non-empty
+//      strings; HIL_CONFIDENCE_FLOOR (0.5) sits below the weakest real
+//      match (technical_capability, 0.5) without tripping it, and
+//      out_of_scope always triggers regardless of its confidence value
 //
 // Run: node scripts/verify-router-answers.mjs
 
@@ -83,6 +89,33 @@ async function main() {
     }
     if (res.restated_question && res.restated_question.length > RESTATED_MAX) {
       fail(`${landedTag} restated_question exceeds ${RESTATED_MAX} chars`);
+    }
+
+    if (typeof res.hil_triggered !== 'boolean') {
+      fail(`${landedTag} hil_triggered is not a boolean`);
+    }
+    if (!Array.isArray(res.reasoning) || res.reasoning.length !== 3 || res.reasoning.some((l) => !l)) {
+      fail(`${landedTag} reasoning is not exactly 3 non-empty lines (got ${JSON.stringify(res.reasoning)})`);
+    }
+    const expectedHil = expectedTag === 'out_of_scope' || res.confidence < 0.5;
+    if (res.hil_triggered !== expectedHil) {
+      fail(`${landedTag} hil_triggered=${res.hil_triggered}, expected ${expectedHil} (confidence ${res.confidence})`);
+    }
+  }
+
+  console.log('\n--- Guardrail 5: HIL floor boundary ---');
+  {
+    const weakest = route(SMOKE_QUESTIONS.technical_capability); // confidence 0.5, the lowest real match
+    if (weakest.confidence === 0.5 && weakest.hil_triggered === false) {
+      pass(`technical_capability at confidence 0.5 does NOT trigger HIL (floor is exclusive)`);
+    } else {
+      fail(`technical_capability expected confidence 0.5 / hil_triggered false, got ${weakest.confidence} / ${weakest.hil_triggered}`);
+    }
+    const oos = route(SMOKE_QUESTIONS.out_of_scope);
+    if (oos.hil_triggered === true) {
+      pass(`out_of_scope always triggers HIL regardless of confidence (${oos.confidence})`);
+    } else {
+      fail(`out_of_scope expected hil_triggered true, got false`);
     }
   }
 

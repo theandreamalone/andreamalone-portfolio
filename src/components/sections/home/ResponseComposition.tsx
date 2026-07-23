@@ -19,7 +19,10 @@ import type { RouterResponse } from "@/lib/viewContract";
  *                 generated text at all)
  */
 
-const EVIDENCE_INTRO = "Selected work below shows this in practice.";
+// Exported (not just local) so events.ts can mirror the exact same fixed
+// string into the logged event record — one canonical constant, never two
+// copies that could drift.
+export const EVIDENCE_INTRO = "Selected work below shows this in practice.";
 const CLOSEST_MATCH_LABEL = "Here's the closest matching work:";
 
 const HIGH_CONFIDENCE = 0.7;
