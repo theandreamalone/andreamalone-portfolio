@@ -18,14 +18,17 @@ import { useVoiceInput } from "@/lib/voice/useVoiceInput";
 import type { RouterResponse } from "@/lib/viewContract";
 
 /**
- * AdaptiveHome — the question-driven composition surface (`/adaptive`).
+ * AdaptiveHome — the site's primary home (`/`). Question-driven composition.
  *
  * The page becomes the answer to the visitor's question, composed from
  * pre-authored evidence. Free text is the product; the chips are training
  * wheels (D3).
  *
- * Cold load renders the static baseline — identical to `/`. Nothing about the
- * page depends on the router succeeding.
+ * Cold load (phase === "idle") renders STATIC_BASELINE sections directly —
+ * the same content /fallback serves. On Ask, a 4-phase timeline collapses the
+ * hero, reveals the answer, then cascades the new section composition in.
+ * Nothing on this page depends on the router itself succeeding; an error
+ * boundary in router.tsx redirects to /fallback on runtime failure.
  *
  * Voice layer: mic input feeds the same ask() path as typing; the glow is
  * audio-reactive on the mic and cadence-driven during TTS. Spoken output is
@@ -63,8 +66,19 @@ export default function AdaptiveHome() {
   const tts = useSpeechOutput();
   const voiceSubmitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Tracks the three phase-transition setTimeouts scheduled by ask() so a
+  // second Ask fired mid-sequence can cancel the first cleanly. Without this,
+  // stale timers fire late and stomp newer phase transitions out of order.
+  const phaseTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  function clearPhaseTimers() {
+    phaseTimers.current.forEach(clearTimeout);
+    phaseTimers.current = [];
+  }
+
   /** The one submit path — form, chips, and voice all funnel through this. */
   function ask(q: string): RouterResponse {
+    clearPhaseTimers(); // guard against back-to-back asks stomping the sequence
     setQuestion(q);
     const trimmed = q.trim();
     setAsked(trimmed || null);
@@ -72,9 +86,11 @@ export default function AdaptiveHome() {
     const res = route(q);
     setResponse(res);
     setPhase("collapsing");
-    setTimeout(() => setPhase("revealing-header"), 350);
-    setTimeout(() => setPhase("revealing-answer"), 650);
-    setTimeout(() => setPhase("revealing-sections"), 1200);
+    phaseTimers.current.push(
+      setTimeout(() => setPhase("revealing-header"), 350),
+      setTimeout(() => setPhase("revealing-answer"), 650),
+      setTimeout(() => setPhase("revealing-sections"), 1200),
+    );
 
     // An empty submit routes to STATIC_BASELINE, not a real routed answer —
     // don't log it as an event.
@@ -116,6 +132,7 @@ export default function AdaptiveHome() {
   useEffect(() => {
     return () => {
       if (voiceSubmitTimer.current) clearTimeout(voiceSubmitTimer.current);
+      clearPhaseTimers();
     };
   }, []);
 
@@ -134,6 +151,7 @@ export default function AdaptiveHome() {
   }
 
   function reset() {
+    clearPhaseTimers();
     tts.cancel();
     stopVoice();
     setQuestion("");
@@ -201,13 +219,13 @@ export default function AdaptiveHome() {
       )}
 
       {phase === "idle" && orderedSections.map((spec, idx) => (
-        <SectionRouter key={`${spec.kind}-${spec.order}-${idx}`} spec={spec} />
+        <SectionRouter key={`baseline-${spec.kind}-${spec.order}-${idx}`} spec={spec} />
       ))}
 
       <AnimatePresence mode="popLayout">
         {phase === "revealing-sections" && orderedSections.map((spec, idx) => (
           <motion.div
-            key={`${spec.kind}-${spec.order}-${idx}`}
+            key={`cascade-${spec.kind}-${spec.order}-${idx}`}
             layout
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
