@@ -117,7 +117,7 @@ for management visibility. Website and router never read it.
 - [x] 8. Free-text question input path — COMPLETE. AdaptiveHome.tsx: real text input submits to hardcodedRouter's route(question); chips (SUGGESTED_QUESTIONS) are secondary, matching D3. (Verified 2026-07-16.)
 - [ ] 9. Connect loop — MOSTLY COMPLETE. Question → RouterResponse → SectionRouter → section components (which fetch by record_ids) works end-to-end today, on the hardcoded router. Remaining: (a) swap in the Edge Function per item 7 (= Phase 3), (b) card layout transitions on section change. Framer Motion installed 2026-07-21 for the Rung 2 answer-composition transitions (item 19) — supersedes the 2026-07-19 GSAP-only note; GSAP remains for its existing consumers, this is not a migration.
 - [x] 10. Static baseline confirmed working — COMPLETE. STATIC_BASELINE in src/lib/staticBaseline.ts. (Verified 2026-07-16.)
-- [ ] 11. Events table logging question + chosen view (cheap; interview gold)
+- [ ] 11. Events table logging question + intent_tag + section IDs returned (cheap; interview gold)
 
 ### 1C. Trust surface
 - [ ] 12. Persistent "full case study" path that ignores audience — deprioritize, never hide
